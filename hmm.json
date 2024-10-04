@@ -7,8 +7,8 @@
         },
         {
             "name": "lime",
-            "type": "haxelib",
-            "version": null
+            "type": "git",
+            "url": "https://github.com/mcagabe19-stuff/lime.git"
         },
         {
             "name": "flixel",
@@ -32,8 +32,8 @@
         },
         {
             "name": "hxcpp",
-            "type": "haxelib",
-            "version": null
+            "type": "git",
+            "url": "https://github.com/mcagabe19-stuff/hxcpp.git"
         },
         {
             "name": "flxanimate",
@@ -62,6 +62,13 @@
             "dir": null,
             "ref": "61b98a7a353b7f529a8fec84ed9afc919a2dffdd",
             "url": "https://github.com/FunkinCrew/hxCodec"
+        },
+        {
+            "name": "extension-androidtools",
+            "type": "git",
+            "dir": null,
+            "ref": "main",
+            "url": "https://github.com/MAJigsaw77/extension-androidtools/"
         }
     ]
 }
