@@ -34,7 +34,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		super();
 
-		Config.setFramerate(144);
+		Config.setFramerate(60);
 
 		PlayState.instance.tweenManager.active = false;
 

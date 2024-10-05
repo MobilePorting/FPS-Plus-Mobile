@@ -134,7 +134,7 @@ class ResultsState extends FlxUIStateExt
 
     override function create() {
 
-        Config.setFramerate(144);
+        Config.setFramerate(60);
 
 		persistentUpdate = persistentDraw = true;
 

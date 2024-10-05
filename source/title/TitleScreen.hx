@@ -55,7 +55,7 @@ class TitleScreen extends MusicBeatState
 
 		// DEBUG BULLSHIT
 
-		Config.setFramerate(144);
+		Config.setFramerate(60);
 
 		useDefaultTransIn = false;
 

@@ -43,7 +43,7 @@ class FreeplayStateOld extends MusicBeatState
 	override function create()
 	{
 
-		Config.setFramerate(144);
+		Config.setFramerate(60);
 		
 		curSelected = 0;
 

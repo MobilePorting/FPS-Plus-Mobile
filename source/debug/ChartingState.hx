@@ -160,7 +160,7 @@ class ChartingState extends MusicBeatState
 	override function create()
 	{
 
-		Config.setFramerate(120);
+		Config.setFramerate(60);
 
 		PlayState.fromChartEditor = true;
 		SaveManager.global();
