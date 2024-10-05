@@ -6,6 +6,9 @@ import flixel.FlxGame;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import debug.*;
+#if mobile
+import mobile.MobileUtil;
+#end
 
 class Main extends Sprite
 {
@@ -17,6 +20,14 @@ class Main extends Sprite
 
 	public function new()
 	{
+		#if mobile
+		#if android
+		MobileUtil.requestPermsFromUser();
+		#end
+		Sys.setCwd(MobileUtil.getStorageDirectory());
+		#end
+		CrashHandler.init();
+
 		super();
 
 		#if (sys && !mobile)
@@ -43,7 +54,7 @@ class Main extends Sprite
 		FlxG.signals.gameResized.add(function (w, h) {
 			if(fpsDisplay != null)
 				fpsDisplay.positionFPS(10, 3, Math.min(w / FlxG.width, h / FlxG.height));
-		}
+		});
 		#end
 
 		#if (sys && !mobile)

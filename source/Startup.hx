@@ -21,13 +21,16 @@ import openfl.system.System;
 //import openfl.utils.Future;
 //import flixel.addons.util.FlxAsyncLoop;
 import extensions.flixel.FlxUIStateExt;
+#if mobile
+import mobile.CopyState;
+#end
 
 using StringTools;
 
 class Startup extends FlxState
 {
 
-    var nextState:FlxState = new TitleVideo();
+    var nextState:FlxState = #if mobile !CopyState.checkExistingFiles() ? new CopyState() : #end new TitleVideo();
     //var nextState:FlxState = new results.ResultsState(null, "Results Test", "Pico");
 
     var splash:FlxSprite;
@@ -91,7 +94,7 @@ class Startup extends FlxState
     public static var hasEe2:Bool;
 
 	override function create()
-	{
+	{  
 
         //cast(nextState, results.ResultsState).enableDebugControls = true;
 
@@ -135,6 +138,11 @@ class Startup extends FlxState
 				StoryMenuState.weekUnlocked[0] = true;
 		}*/
 
+        #if mobile
+        songsCached = true;
+        charactersCached = true;
+        graphicsCached = true;
+        #else
         if(!CacheConfig.check()) {
             openPreloadSettings();
         }
@@ -143,6 +151,7 @@ class Startup extends FlxState
             charactersCached = !CacheConfig.characters;
             graphicsCached = !CacheConfig.graphics;
         }
+        #end
 
         hasEe2 = Utils.exists(Paths.inst("Lil-Buddies"));
 

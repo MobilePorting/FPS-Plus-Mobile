@@ -5,7 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 
-#if desktop
+#if hxCodec
 import hxcodec.openfl.Video;
 #elseif web
 import openfl.media.SoundTransform;
@@ -49,7 +49,7 @@ class VideoHandler extends FlxSprite
 	public var onStart:FlxSignal = new FlxSignal();
 	public var onEnd:FlxSignal = new FlxSignal();
 
-	#if desktop
+	#if hxCodec
 	var bitmap:Video;
 	#elseif web
 	var video:Video;
@@ -69,7 +69,7 @@ class VideoHandler extends FlxSprite
 	**/
 	public function playMP4(videoPath:String, callback:Void->Void, ?repeat:Bool = false){
 
-		#if desktop
+		#if hxCodec
 		playDesktopMP4(videoPath, callback, repeat);
 		#end
 
@@ -81,7 +81,7 @@ class VideoHandler extends FlxSprite
 
 	//===========================================================================================================//
 
-	#if desktop
+	#if hxCodec
 	/**
 		Plays MP4s using VLC Bitmaps as the source.
 		Only works on desktop builds.
@@ -262,7 +262,7 @@ class VideoHandler extends FlxSprite
 
 		super.update(elapsed);
 
-		#if desktop
+		#if hxCodec
 		if(bitmap != null){
 
 			if(FlxG.sound.muted || __muted){
@@ -334,7 +334,7 @@ class VideoHandler extends FlxSprite
 		FlxG.signals.focusLost.remove(pause);
 		FlxG.signals.focusGained.remove(resume);
 
-		#if desktop
+		#if hxCodec
 		if(!completed){
 			vlcClean();
 		}
@@ -355,7 +355,7 @@ class VideoHandler extends FlxSprite
 	**/
 	public function pause(){
 
-		#if desktop
+		#if hxCodec
 		if(bitmap != null && !paused){
 			bitmap.pause();
 		}
@@ -375,7 +375,7 @@ class VideoHandler extends FlxSprite
 	**/
 	public function resume(){
 
-		#if desktop
+		#if hxCodec
 		if(bitmap != null && paused){ 
 			bitmap.resume();
 		}
@@ -392,7 +392,7 @@ class VideoHandler extends FlxSprite
 
 	public function skip(){
 
-		#if desktop
+		#if hxCodec
 		onVLCComplete();
 		#end
 		#if web
@@ -418,7 +418,7 @@ class VideoHandler extends FlxSprite
 	
 
 	function get_length():Float {
-		#if desktop
+		#if hxCodec
 		return bitmap.length / 1000;
 		#end
 		#if web

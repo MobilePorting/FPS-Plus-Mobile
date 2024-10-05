@@ -1,6 +1,6 @@
 ![](/art/logo.png)
 
-# Friday Night Funkin' FPS Plus
+# Friday Night Funkin' FPS Plus Mobile
 Friday Night Funkin' FPS Plus is an engine mod of Friday Night Funkin' that aims to improve gameplay and add quality of life features.
 
 *You can find the original game here:* **[Newgrounds](https://www.newgrounds.com/portal/view/770371) - [itch.io](https://ninja-muffin24.itch.io/funkin) - [GitHub](https://github.com/ninjamuffin99/Funkin)**
@@ -20,8 +20,6 @@ To download and install all libraries required compiling, you must install Haxe'
     ```
 
 * After `hmm`'s install is complete, run `hmm install` in the root directory to install all haxelibs.
-
-* If you have issues with the compiler reporting that `hxCodec` isn't installed, refer to [this issue](https://github.com/ThatRozebudDude/FPS-Plus-Public/issues/91).
 
 * After installing all libraries, run `haxelib run lime setup` to set up `lime`.
 
