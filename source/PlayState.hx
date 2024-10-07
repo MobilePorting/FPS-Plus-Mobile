@@ -66,6 +66,8 @@ class PlayState extends MusicBeatState
 	public static var fceForLilBuddies:Bool = false;
 	
 	public static var returnLocation:String = "main";
+
+	var previousReportedSongTime:Float = -1;
 	
 	private var canHit:Bool = false;
 	private var missTime:Float = 0;
@@ -89,6 +91,7 @@ class PlayState extends MusicBeatState
 
 	public var camFollowOffset:FlxPoint;
 	private var offsetTween:FlxTween;
+	private var returnedToCenter:Bool = true;
 
 	public var camFollowShake:FlxPoint;
 	private var shakeTween:FlxTween;
@@ -110,6 +113,7 @@ class PlayState extends MusicBeatState
 	public var vocals:FlxSound;
 	public var vocalsOther:FlxSound;
 	public var vocalType:VocalType = combinedVocalTrack;
+	public var canChangeVocalVolume:Bool = true;
 
 	public var dad:Character;
 	public var gf:Character;
@@ -1416,7 +1420,21 @@ class PlayState extends MusicBeatState
 
 		}*/
 		else{
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			if(previousReportedSongTime != FlxG.sound.music.time){
+				Conductor.songPosition = FlxG.sound.music.time;
+				previousReportedSongTime = FlxG.sound.music.time;
+			}
+			else{
+				Conductor.songPosition += FlxG.elapsed * 1000;
+			}
+		}
+
+		if(!dad.isSinging && !boyfriend.isSinging && !returnedToCenter){
+			returnedToCenter = true;
+			changeCamOffset(0, 0);
+		}
+		if(dad.isSinging || boyfriend.isSinging){
+			returnedToCenter = false;
 		}
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !endingSong) {
@@ -1562,7 +1580,7 @@ class PlayState extends MusicBeatState
 			if(daNote.tooLate){
 				if (!daNote.didTooLateAction && !daNote.isFake){
 					noteMiss(daNote.noteData, daNote.missCallback, Scoring.MISS_DAMAGE_AMMOUNT, true, true);
-					vocals.volume = 0;
+					if(canChangeVocalVolume){ vocals.volume = 0; }
 					daNote.didTooLateAction = true;
 				}
 			}
@@ -1601,9 +1619,9 @@ class PlayState extends MusicBeatState
 
 				switch(vocalType){
 					case splitVocalTrack:
-						vocalsOther.volume = 1;
+						if(canChangeVocalVolume){ vocalsOther.volume = 1; }
 					case combinedVocalTrack:
-						vocals.volume = 1;
+						if(canChangeVocalVolume){ vocals.volume = 1;}
 					default:
 				}
 					
@@ -1761,7 +1779,7 @@ class PlayState extends MusicBeatState
 			case "story":
 				switchState(new StoryMenuState());
 			case "freeplay":
-				switchState(new FreeplayState(false));
+				switchState(new FreeplayState(fromSongExit));
 			default:
 				switchState(new MainMenuState());
 		}
@@ -1948,7 +1966,7 @@ class PlayState extends MusicBeatState
 
 					if(releaseTimes[daNote.noteData] >= releaseBufferTime){
 						noteMiss(daNote.noteData, daNote.missCallback, Scoring.HOLD_DROP_INITAL_DAMAGE, true, false, true, Scoring.HOLD_DROP_INITIAL_PENALTY);
-						vocals.volume = 0;
+						if(canChangeVocalVolume){ vocals.volume = 0; }
 						daNote.tooLate = true;
 						daNote.destroy();
 						boyfriend.holdTimer = 0;
@@ -2215,7 +2233,7 @@ class PlayState extends MusicBeatState
 			});
 
 			note.wasGoodHit = true;
-			vocals.volume = 1;
+			if(canChangeVocalVolume){ vocals.volume = 1; }
 
 			if(!note.isSustainNote){
 				note.destroy();
