@@ -103,13 +103,12 @@ class Startup extends FlxState
         FlxG.mouse.visible = false;
         FlxG.sound.muteKeys = null;
 
-        //FlxG.save.bind("data", "Rozebud/FunkinFPSPlus");
-		Highscore.load();
-
 		Config.configCheck();
 		Config.reload();
 
         Binds.init();
+
+		Highscore.load();
 
         SaveManager.global();
         
@@ -123,7 +122,7 @@ class Startup extends FlxState
         Main.fpsDisplay.visible = Config.showFPS;
 
         FlxUIStateExt.defaultTransIn = ScreenWipeIn;
-        FlxUIStateExt.defaultTransInArgs = [1.2];
+        FlxUIStateExt.defaultTransInArgs = [0.6];
         FlxUIStateExt.defaultTransOut = ScreenWipeOut;
         FlxUIStateExt.defaultTransOutArgs = [0.6];
 
