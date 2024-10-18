@@ -22,8 +22,8 @@ class MobileData
 		save = new FlxSave();
 		save.bind('MobileControls', "Rozebud/FunkinFPSPlus");
 
-		readDirectory('assets/mobile/DPadModes'), dpadModes);
-		readDirectory('assets/mobile/ActionModes'), actionModes);
+		readDirectory('assets/mobile/DPadModes', dpadModes);
+		readDirectory('assets/mobile/ActionModes', actionModes);
 	}
 
 	public static function setButtonsColors(buttonsInstance:Dynamic):Dynamic
