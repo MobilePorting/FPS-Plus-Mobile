@@ -11,7 +11,9 @@ import mobile.MobileData;
 
 class MusicBeatSubstate extends FlxSubState
 {
+	public static instance:MusicBeatSubstate;
 	public function new(){
+		instance = this;
 		super();
 	}
 
