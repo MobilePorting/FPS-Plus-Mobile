@@ -93,13 +93,13 @@ class Utils
 	}
 
 	/*
-	* Uses FileSystem.exists for desktop and Assets.exists for non-desktop builds.
+	* Uses FileSystem.exists for sys and Assets.exists for non-sys builds.
 	* This is because Assets.exists just checks the manifest and can't find files that weren't compiled with the game.
 	* This also means that if you delete a file, it will return true because it's still in the manifest.
 	* FileSystem only works on certain build types though (namely, not web).
 	*/
 	public static function exists(path:String):Bool{
-		#if desktop
+		#if sys
 		return FileSystem.exists(path);
         #else
         return Assets.exists(path);
@@ -108,7 +108,7 @@ class Utils
 
 	//Same as above but for getting text from a file.
 	public static function getText(path:String):String{
-		#if desktop
+		#if sys
 		return File.getContent(path);
         #else
         return Assets.getText(path);
@@ -142,6 +142,17 @@ class Utils
 		r.scale.set(width/zoomAdjustment, height/zoomAdjustment);
 		r.updateHitbox();
 		return r;
+	}
+
+	public static function colorFromString(color:String):FlxColor
+	{
+		var hideChars = ~/[\t\n\r]/;
+		var color:String = hideChars.split(color).join('').trim();
+		if(color.startsWith('0x')) color = color.substring(color.length - 6);
+
+		var colorNum:Null<FlxColor> = FlxColor.fromString(color);
+		if(colorNum == null) colorNum = FlxColor.fromString('#$color');
+		return colorNum != null ? colorNum : FlxColor.WHITE;
 	}
 
 	public static inline function keyToString(key:FlxKey):String{
@@ -265,6 +276,21 @@ class Utils
 				return "RS LEFT";
 			default:
 				return button.toString();
+		}
+	}
+
+	public static inline function mobileButtonToString(button:MobileInputID):String{
+		switch(button){
+			case HITBOX_UP:
+				return "UP";
+			case HITBOX_RIGHT:
+				return "RIGHT";
+			case HITBOX_DOWN:
+				return "DOWN";
+			case HITBOX_LEFT:
+				return "RIGHT";
+			default:
+				button.toString();
 		}
 	}
 }
