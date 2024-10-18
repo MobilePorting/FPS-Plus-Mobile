@@ -68,7 +68,7 @@ class TouchPad extends MobileInputManager
 			for (buttonData in MobileData.dpadModes.get(DPad).buttons)
 			{
 				Reflect.setField(this, buttonData.button,
-					createButton(buttonData.x, buttonData.y, buttonData.graphic, CoolUtil.colorFromString(buttonData.color),
+					createButton(buttonData.x, buttonData.y, buttonData.graphic, Utils.colorFromString(buttonData.color),
 						Reflect.getProperty(this, buttonData.button).IDs));
 				add(Reflect.field(this, buttonData.button));
 			}
@@ -82,7 +82,7 @@ class TouchPad extends MobileInputManager
 			for (buttonData in MobileData.actionModes.get(Action).buttons)
 			{
 				Reflect.setField(this, buttonData.button,
-					createButton(buttonData.x, buttonData.y, buttonData.graphic, CoolUtil.colorFromString(buttonData.color),
+					createButton(buttonData.x, buttonData.y, buttonData.graphic, Utils.colorFromString(buttonData.color),
 						Reflect.getProperty(this, buttonData.button).IDs));
 				add(Reflect.field(this, buttonData.button));
 			}
