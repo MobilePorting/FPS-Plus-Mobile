@@ -1,5 +1,7 @@
 package mobile;
 
+import flixel.FlxCamera;
+import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.input.touch.FlxTouch;
 
