@@ -6,7 +6,7 @@ import flixel.util.FlxColor;
 
 using StringTools;
 
-class TitleVideo extends FlxState
+class TitleVideo extends MusicBeatState
 {
 	var oldFPS:Int = VideoHandler.MAX_FPS;
 	var video:VideoHandler;
