@@ -93,6 +93,7 @@ class Binds
             category: "Gameplay",
             binds: [R],
             controllerBinds: [BACK],
+            mobileBinds: [MobileInputID.NONE],
             local: false
         };
         r.set("killbind", k);
@@ -165,6 +166,7 @@ class Binds
             category: "Menu",
             binds: [Q],
             controllerBinds: [LEFT_SHOULDER],
+            mobileBinds: [MobileInputID.NONE],
             local: false
         };
         r.set("menuCycleLeft", k);
@@ -174,6 +176,7 @@ class Binds
             category: "Menu",
             binds: [E],
             controllerBinds: [RIGHT_SHOULDER],
+            mobileBinds: [MobileInputID.NONE],
             local: false
         };
         r.set("menuCycleRight", k);
@@ -183,6 +186,7 @@ class Binds
             category: "Menu",
             binds: [TAB],
             controllerBinds: [Y],
+            mobileBinds: [MobileInputID.NONE],
             local: false
         };
         r.set("menuChangeCharacter", k);
@@ -317,8 +321,7 @@ class Binds
         var r:Bool = false;
         for(x in binds.get(input).controllerBinds){
             r = FlxG.gamepads.anyJustPressed(x);
-            if(r){
-                break; }
+            if(r){ break; }
         }
         return r;
     }
@@ -333,49 +336,61 @@ class Binds
     }
     
     public var isInSubstate:Bool = false;
-    public final requestedInstance:Dynamic = (isInSubstate) ? MusicBeatSubstate.instance : MusicBeatState.instance;
-    public final mobileC:Bool = (Config.mobileCAlpha <= 0) ? false : true;
+    public static var requestedInstance:Dynamic = (isInSubstate) ? MusicBeatSubstate.instance : MusicBeatState.instance;
+    public var mobileC:Bool = (config.Config.mobileCAlpha != null && config.Config.mobileCAlpha <= 0) ? false : true;
 
-    inline static public function pressedMobileCOnly(input:String) {
+    inline static public function pressedMobileCOnly(input:String){
+        var p:Bool = false;
 		for (x in binds.get(input).mobileBinds) {
 			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
-					return requestedInstance.hitbox.anyPressed(x);
+					p = requestedInstance.hitbox.anyPressed(x);
+					if(p){ break; }
 				}
 			} else {
 				if (requestedInstance.touchPad != null) {
-					return requestedInstance.touchPad.anyPressed(x);
+					p = requestedInstance.touchPad.anyPressed(x);
+					if(p){ break; }
 				}
 			}
 		}
+		return p;
 	}
 
     inline static public function justPressedMobileCOnly(input:String){
-        for (x in binds.get(input).mobileBinds) {
+        var p:Bool = false;
+		for (x in binds.get(input).mobileBinds) {
 			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
-					return requestedInstance.hitbox.anyJustPressed(x);
+					p = requestedInstance.hitbox.anyJustPressed(x);
+					if(p){ break; }
 				}
 			} else {
 				if (requestedInstance.touchPad != null) {
-					return requestedInstance.touchPad.anyJustPressed(x);
+					p = requestedInstance.touchPad.anyJustPressed(x);
+					if(p){ break; }
 				}
 			}
 		}
+		return p;
     }
 
     inline static public function justReleasedMobileCOnly(input:String){
-        for (x in binds.get(input).mobileBinds) {
+        var p:Bool = false;
+		for (x in binds.get(input).mobileBinds) {
 			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
-					return requestedInstance.hitbox.anyJustReleased(x);
+					p = requestedInstance.hitbox.anyJustReleased(x);
+					if(p){ break; }
 				}
 			} else {
 				if (requestedInstance.touchPad != null) {
-					return requestedInstance.touchPad.anyJustReleased(x);
+					p = requestedInstance.touchPad.anyJustReleased(x);
+					if(p){ break; }
 				}
 			}
 		}
+		return p;
     }
     
 }
