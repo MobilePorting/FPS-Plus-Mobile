@@ -133,6 +133,8 @@ class MainMenuState extends MusicBeatState
 		//Offset Stuff
 		Config.reload();
 
+		addTouchPad("UP_DOWN", "A_B");
+
 		super.create();
 	}
 
