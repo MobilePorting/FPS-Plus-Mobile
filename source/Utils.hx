@@ -1,5 +1,6 @@
 package;
 
+import mobile.input.MobileInputID;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.util.FlxColor;
@@ -281,13 +282,13 @@ class Utils
 
 	public static inline function mobileButtonToString(button:MobileInputID):String{
 		switch(button){
-			case HITBOX_UP:
+			case MobileInputID.HITBOX_UP:
 				return "UP";
-			case HITBOX_RIGHT:
+			case MobileInputID.HITBOX_RIGHT:
 				return "RIGHT";
-			case HITBOX_DOWN:
+			case MobileInputID.HITBOX_DOWN:
 				return "DOWN";
-			case HITBOX_LEFT:
+			case MobileInputID.HITBOX_LEFT:
 				return "RIGHT";
 			default:
 				button.toString();
