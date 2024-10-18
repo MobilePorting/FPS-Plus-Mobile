@@ -168,6 +168,9 @@
 	<!-- pretty (haxeflixel default), indent, classic (haxe compiler default) -->
 	<haxedef name="message.reporting" value="pretty" />
 
+	<!-- Do whatever you want I'm tired uninstall and install everytime -->
+	<certificate path="key.keystore" password="fpsplus" alias="fpsplusport" alias-password="fpsplus" if="android" unless="debug" />
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!-- Disable trace() calls in release builds to bump up performance. -->
