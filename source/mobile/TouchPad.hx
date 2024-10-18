@@ -1,5 +1,6 @@
 package mobile;
 
+import flixel.util.FlxColor;
 import mobile.input.MobileInputManager;
 import mobile.input.MobileInputID;
 
