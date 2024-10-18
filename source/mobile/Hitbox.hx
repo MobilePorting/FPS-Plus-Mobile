@@ -87,7 +87,7 @@ class Hitbox extends MobileInputManager
 		hint.label.loadGraphic(createHintGraphic(Width, Math.floor(Height * 0.035), true));
 		hint.label.offset.y -= (hint.height - hint.label.height) / 2;
 
-		if (Config.hitboxType != "Hidden")
+		if (config.Config.hitboxType != "Hidden")
 		{
 			var hintTween:FlxTween = null;
 			var hintLaneTween:FlxTween = null;
