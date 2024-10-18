@@ -1,5 +1,7 @@
 package mobile;
 
+import flixel.FlxSprite;
+import flixel.FlxG;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
 import flixel.graphics.FlxGraphic;
@@ -130,9 +132,9 @@ class Hitbox extends MobileInputManager
 		hint.immovable = hint.multiTouch = true;
 		hint.solid = hint.moves = false;
 		hint.alpha = 0.00001;
-		hint.label.alpha = (Config.hitboxType != "Hidden") ? Config.mobileCAlpha : 0.00001;
+		hint.label.alpha = (config.Config.hitboxType != "Hidden") ? config.Config.mobileCAlpha : 0.00001;
 		hint.canChangeLabelAlpha = false;
-		hint.label.antialiasing = hint.antialiasing = Config.antialiasing;
+		hint.label.antialiasing = hint.antialiasing = true;
 		hint.color = Color;
 		#if FLX_DEBUG
 		hint.ignoreDrawDebug = true;
