@@ -2,6 +2,7 @@ package mobile;
 
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.util.FlxDestroyUtil;
 import mobile.input.MobileInputManager;
 import mobile.input.MobileInputID;
 
