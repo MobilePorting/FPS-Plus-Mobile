@@ -12,6 +12,7 @@ import flixel.sound.FlxSound;
 #if mac
 import flixel.input.mouse.FlxMouseButton;
 #end
+import mobile.input.MobileInputID;
 import shaders.flixel.system.FlxShader;
 
 /**
