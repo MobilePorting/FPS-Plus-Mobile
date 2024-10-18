@@ -32,7 +32,7 @@ jobs:
           artifactName: macOSBuild-arm64
           artifactPath: export/release/macos/bin/*
         - name: Android
-          os: macos-15
+          os: ubuntu-24.04
           buildArgs: "android -ONLY_ARMV7"
           artifactName: androidBuild
           artifactPath: export/release/android/bin/app/build/outputs/apk/release/*.apk
@@ -79,7 +79,7 @@ jobs:
           cd export/release/ios/build/*-iphoneos
           mkdir Payload
           mv *.app Payload
-          zip -r FPSPlus.ipa Payload
+          zip -r FunkinFPSPlus.ipa Payload
 
       - name: Upload Artifact
         uses: actions/upload-artifact@main
