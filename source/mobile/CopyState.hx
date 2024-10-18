@@ -48,7 +48,7 @@ class CopyState extends MusicBeatState
 		}
 
 		#if android
-		MobileUtil.showPopUp("Seems like you have some missing files that are necessary to run the game\nPress OK to begin the copy process", "Notice!");
+		Utils.showPopUp("Seems like you have some missing files that are necessary to run the game\nPress OK to begin the copy process", "Notice!");
 		#end
 		
 		shouldCopy = true;
@@ -89,7 +89,7 @@ class CopyState extends MusicBeatState
 				if (failedFiles.length > 0)
 				{
 					#if android
-					MobileUtil.showPopUp(failedFiles.join('\n'), 'Failed To Copy ${failedFiles.length} File.');
+					Utils.showPopUp(failedFiles.join('\n'), 'Failed To Copy ${failedFiles.length} File.');
 					#end
 					if (!FileSystem.exists('logs'))
 						FileSystem.createDirectory('logs');
