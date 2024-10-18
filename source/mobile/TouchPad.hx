@@ -1,5 +1,6 @@
 package mobile;
 
+import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import mobile.input.MobileInputManager;
 import mobile.input.MobileInputID;
@@ -86,7 +87,7 @@ class TouchPad extends MobileInputManager
 			}
 		}
 
-		alpha = Config.mobileCAlpha;
+		alpha = config.Config.mobileCAlpha;
 		scrollFactor.set();
 		updateTrackedButtons();
 
@@ -125,7 +126,7 @@ class TouchPad extends MobileInputManager
 
 		button.immovable = true;
 		button.solid = button.moves = false;
-		button.label.antialiasing = button.antialiasing = Config.antialiasing;
+		button.label.antialiasing = button.antialiasing = true;
 		button.tag = Graphic.toUpperCase();
 		button.color = Color;
 		button.parentAlpha = button.alpha;
