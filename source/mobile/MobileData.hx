@@ -28,13 +28,10 @@ class MobileData
 
 	public static function setButtonsColors(buttonsInstance:Dynamic):Dynamic
 	{
-		// Dynamic Controls Color
-		var data:Dynamic = FlxG.save.data;
-
-		buttonsInstance.buttonLeft.color = data.arrowRGB[0][0];
-		buttonsInstance.buttonDown.color = data.arrowRGB[1][0];
-		buttonsInstance.buttonUp.color = data.arrowRGB[2][0];
-		buttonsInstance.buttonRight.color = data.arrowRGB[3][0];
+		buttonsInstance.buttonLeft.color = 0xFFC24B99;
+		buttonsInstance.buttonDown.color = 0xFF00FFFF;
+		buttonsInstance.buttonUp.color = 0xFF12FA05;
+		buttonsInstance.buttonRight.color = 0xFFFF884E;
 
 		return buttonsInstance;
 	}
