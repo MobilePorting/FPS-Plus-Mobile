@@ -5,6 +5,7 @@ import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
 import flixel.util.FlxColor;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
+import flixel.sound.FlxSound;
 #if mac
 import flixel.input.mouse.FlxMouseButton;
 #end
