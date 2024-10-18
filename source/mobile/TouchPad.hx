@@ -85,7 +85,7 @@ class TouchPad extends MobileInputManager
 			}
 		}
 
-		alpha = FlxG.save.data.controlsAlpha;
+		alpha = Config.mobileCAlpha;
 		scrollFactor.set();
 		updateTrackedButtons();
 
@@ -124,7 +124,7 @@ class TouchPad extends MobileInputManager
 
 		button.immovable = true;
 		button.solid = button.moves = false;
-		button.label.antialiasing = button.antialiasing = FlxG.save.data.antialiasing;
+		button.label.antialiasing = button.antialiasing = Config.antialiasing;
 		button.tag = Graphic.toUpperCase();
 		button.color = Color;
 		button.parentAlpha = button.alpha;

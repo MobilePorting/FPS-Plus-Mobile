@@ -79,11 +79,11 @@ class Hitbox extends MobileInputManager
 		hint.loadGraphic(createHintGraphic(Width, Height));
 
 		hint.label = new FlxSprite();
-		hint.labelStatusDiff = (FlxG.save.data.hitboxType != "Hidden") ? FlxG.save.data.controlsAlpha : 0.00001;
+		hint.labelStatusDiff = (Config.hitboxType != "Hidden") ? Config.mobileCAlpha : 0.00001;
 		hint.label.loadGraphic(createHintGraphic(Width, Math.floor(Height * 0.035), true));
 		hint.label.offset.y -= (hint.height - hint.label.height) / 2;
 
-		if (FlxG.save.data.hitboxType != "Hidden")
+		if (Config.hitboxType != "Hidden")
 		{
 			var hintTween:FlxTween = null;
 			var hintLaneTween:FlxTween = null;
@@ -96,12 +96,12 @@ class Hitbox extends MobileInputManager
 				if (hintLaneTween != null)
 					hintLaneTween.cancel();
 
-				hintTween = FlxTween.tween(hint, {alpha: FlxG.save.data.controlsAlpha}, FlxG.save.data.controlsAlpha / 100, {
+				hintTween = FlxTween.tween(hint, {alpha: Config.mobileCAlpha}, Config.mobileCAlpha / 100, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
 
-				hintLaneTween = FlxTween.tween(hint.label, {alpha: 0.00001}, FlxG.save.data.controlsAlpha / 10, {
+				hintLaneTween = FlxTween.tween(hint.label, {alpha: 0.00001}, Config.mobileCAlpha / 10, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
@@ -115,12 +115,12 @@ class Hitbox extends MobileInputManager
 				if (hintLaneTween != null)
 					hintLaneTween.cancel();
 
-				hintTween = FlxTween.tween(hint, {alpha: 0.00001}, FlxG.save.data.controlsAlpha / 10, {
+				hintTween = FlxTween.tween(hint, {alpha: 0.00001}, Config.mobileCAlpha / 10, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
 
-				hintLaneTween = FlxTween.tween(hint.label, {alpha: FlxG.save.data.controlsAlpha}, FlxG.save.data.controlsAlpha / 100, {
+				hintLaneTween = FlxTween.tween(hint.label, {alpha: Config.mobileCAlpha}, Config.mobileCAlpha / 100, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
@@ -130,9 +130,9 @@ class Hitbox extends MobileInputManager
 		hint.immovable = hint.multiTouch = true;
 		hint.solid = hint.moves = false;
 		hint.alpha = 0.00001;
-		hint.label.alpha = (FlxG.save.data.hitboxType != "Hidden") ? FlxG.save.data.controlsAlpha : 0.00001;
+		hint.label.alpha = (Config.hitboxType != "Hidden") ? Config.mobileCAlpha : 0.00001;
 		hint.canChangeLabelAlpha = false;
-		hint.label.antialiasing = hint.antialiasing = FlxG.save.data.antialiasing;
+		hint.label.antialiasing = hint.antialiasing = Config.antialiasing;
 		hint.color = Color;
 		#if FLX_DEBUG
 		hint.ignoreDrawDebug = true;
@@ -145,7 +145,7 @@ class Hitbox extends MobileInputManager
 		var shape:Shape = new Shape();
 		shape.graphics.beginFill(0xFFFFFF);
 
-		if (FlxG.save.data.hitboxType == "No Gradient")
+		if (Config.hitboxType == "No Gradient")
 		{
 			var matrix:Matrix = new Matrix();
 			matrix.createGradientBox(Width, Height, 0, 0, 0);
@@ -157,13 +157,13 @@ class Hitbox extends MobileInputManager
 			shape.graphics.drawRect(0, 0, Width, Height);
 			shape.graphics.endFill();
 		}
-		else if (FlxG.save.data.hitboxType == "No Gradient (Old)")
+		else if (Config.hitboxType == "No Gradient (Old)")
 		{
 			shape.graphics.lineStyle(10, 0xFFFFFF, 1);
 			shape.graphics.drawRect(0, 0, Width, Height);
 			shape.graphics.endFill();
 		}
-		else // if (FlxG.save.data.hitboxType == 'Gradient')
+		else // if (Config.hitboxType == 'Gradient')
 		{
 			shape.graphics.lineStyle(3, 0xFFFFFF, 1);
 			shape.graphics.drawRect(0, 0, Width, Height);
