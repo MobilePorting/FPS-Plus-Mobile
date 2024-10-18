@@ -43,7 +43,7 @@ class Binds
             category: "Gameplay",
             binds: [LEFT, A],
             controllerBinds: [DPAD_LEFT, X],
-            mobileBinds: [HITBOX_LEFT],
+            mobileBinds: [MobileInputID.HITBOX_LEFT],
             local: false
         };
         r.set("gameplayLeft", k);
@@ -53,7 +53,7 @@ class Binds
             category: "Gameplay",
             binds: [DOWN, S],
             controllerBinds: [DPAD_DOWN, A],
-            mobileBinds: [HITBOX_DOWN],
+            mobileBinds: [MobileInputID.HITBOX_DOWN],
             local: false
         };
         r.set("gameplayDown", k);
@@ -63,7 +63,7 @@ class Binds
             category: "Gameplay",
             binds: [UP, W],
             controllerBinds: [DPAD_UP, Y],
-            mobileBinds: [HITBOX_UP],
+            mobileBinds: [MobileInputID.HITBOX_UP],
             local: false
         };
         r.set("gameplayUp", k);
@@ -73,7 +73,7 @@ class Binds
             category: "Gameplay",
             binds: [RIGHT, D],
             controllerBinds: [DPAD_RIGHT, B],
-            mobileBinds: [HITBOX_RIGHT],
+            mobileBinds: [MobileInputID.HITBOX_RIGHT],
             local: false
         };
         r.set("gameplayRight", k);
@@ -83,6 +83,7 @@ class Binds
             category: "Gameplay",
             binds: [ESCAPE, ENTER],
             controllerBinds: [START],
+            mobileBinds: [MobileInputID.P],
             local: false
         };
         r.set("pause", k);
@@ -104,7 +105,7 @@ class Binds
             category: "Menu",
             binds: [UP, W],
             controllerBinds: [DPAD_UP, LEFT_STICK_DIGITAL_UP],
-            mobileBinds: [UP, UP2],
+            mobileBinds: [MobileInputID.UP, MobileInputID.UP2],
             local: false
         };
         r.set("menuUp", k);
@@ -114,7 +115,7 @@ class Binds
             category: "Menu",
             binds: [DOWN, S],
             controllerBinds: [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
-            mobileBinds: [DOWN, DOWN2],
+            mobileBinds: [MobileInputID.DOWN, MobileInputID.DOWN2],
             local: false
         };
         r.set("menuDown", k);
@@ -124,7 +125,7 @@ class Binds
             category: "Menu",
             binds: [LEFT, A],
             controllerBinds: [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
-            mobileBinds: [LEFT, LEFT2],
+            mobileBinds: [MobileInputID.LEFT, MobileInputID.LEFT2],
             local: false
         };
         r.set("menuLeft", k);
@@ -134,7 +135,7 @@ class Binds
             category: "Menu",
             binds: [RIGHT, D],
             controllerBinds: [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
-            mobileBinds: [RIGHT, RIGHT2],
+            mobileBinds: [MobileInputID.RIGHT, MobileInputID.RIGHT2],
             local: false
         };
         r.set("menuRight", k);
@@ -144,7 +145,7 @@ class Binds
             category: "Menu",
             binds: [ENTER, SPACE],
             controllerBinds: [A, START],
-            mobileBinds: [A],
+            mobileBinds: [MobileInputID.A],
             local: false
         };
         r.set("menuAccept", k);
@@ -154,7 +155,7 @@ class Binds
             category: "Menu",
             binds: [ESCAPE, BACKSPACE],
             controllerBinds: [B],
-            mobileBinds: [B],
+            mobileBinds: [MobileInputID.B],
             local: false
         };
         r.set("menuBack", k);
@@ -333,7 +334,7 @@ class Binds
     
     public var isInSubstate:Bool = false;
     public final requestedInstance:Dynamic = (isInSubstate) ? MusicBeatSubstate.instance : MusicBeatState.instance;
-    //public final mobileC:Bool;
+    public final mobileC:Bool = (Config.mobileCAlpha <= 0) ? false : true;
 
     inline static public function pressedMobileCOnly(input:String) {
 		for (x in binds.get(input).mobileBinds) {
