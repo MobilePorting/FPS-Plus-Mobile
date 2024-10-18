@@ -1,5 +1,6 @@
 package mobile;
 
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
