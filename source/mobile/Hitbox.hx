@@ -102,12 +102,12 @@ class Hitbox extends MobileInputManager
 				if (hintLaneTween != null)
 					hintLaneTween.cancel();
 
-				hintTween = FlxTween.tween(hint, {alpha: Config.mobileCAlpha}, Config.mobileCAlpha / 100, {
+				hintTween = FlxTween.tween(hint, {alpha: config.Config.mobileCAlpha}, config.Config.mobileCAlpha / 100, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
 
-				hintLaneTween = FlxTween.tween(hint.label, {alpha: 0.00001}, Config.mobileCAlpha / 10, {
+				hintLaneTween = FlxTween.tween(hint.label, {alpha: 0.00001}, config.Config.mobileCAlpha / 10, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
@@ -121,12 +121,12 @@ class Hitbox extends MobileInputManager
 				if (hintLaneTween != null)
 					hintLaneTween.cancel();
 
-				hintTween = FlxTween.tween(hint, {alpha: 0.00001}, Config.mobileCAlpha / 10, {
+				hintTween = FlxTween.tween(hint, {alpha: 0.00001}, config.Config.mobileCAlpha / 10, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
 
-				hintLaneTween = FlxTween.tween(hint.label, {alpha: Config.mobileCAlpha}, Config.mobileCAlpha / 100, {
+				hintLaneTween = FlxTween.tween(hint.label, {alpha: config.Config.mobileCAlpha}, config.Config.mobileCAlpha / 100, {
 					ease: FlxEase.circInOut,
 					onComplete: (twn:FlxTween) -> hintTween = null
 				});
