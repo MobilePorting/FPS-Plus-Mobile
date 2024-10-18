@@ -1,5 +1,6 @@
 package mobile;
 
+import flixel.util.FlxDestroyUtil;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import openfl.display.BitmapData;
