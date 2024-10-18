@@ -27,6 +27,12 @@ class Config
 	public static var showMisses:Int;
 	public static var enableVariations:Bool;
 
+	#if mobile
+	public static var allowScreenTimeout:Bool;
+	#end
+	public static var mobileCAlpha:Float;
+	public static var hitboxType:String;
+
 	public static var ee1:Bool;
 	public static var ee2:Bool;
 
@@ -54,6 +60,12 @@ class Config
 		FlxG.save.data.showAccuracy = true;
 		FlxG.save.data.showMisses = 1;
 		FlxG.save.data.enableVariations = true;
+
+		#if mobile
+		FlxG.save.data.allowScreenTimeout = false;
+		#end
+		FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
+		FlxG.save.data.hitboxType = 'No Gradient';
 
 		reload();
 
@@ -86,6 +98,12 @@ class Config
 		showAccuracy = FlxG.save.data.showAccuracy;
 		showMisses = FlxG.save.data.showMisses;
 		enableVariations = FlxG.save.data.enableVariations;
+
+		#if mobile
+		allowScreenTimeout = FlxG.save.data.allowScreenTimeout;
+		#end
+		mobileCAlpha = FlxG.save.data.mobileCAlpha;
+		hitboxType = FlxG.save.data.hitboxType;
 
 		ee1 = FlxG.save.data.ee1;
 		ee2 = FlxG.save.data.ee2;
@@ -138,6 +156,12 @@ class Config
 		FlxG.save.data.showMisses = showMissesW;
 		FlxG.save.data.enableVariations = enableVariationsW;
 
+		#if mobile
+		FlxG.save.data.allowScreenTimeout = allowScreenTimeout;
+		#end
+		FlxG.save.data.mobileCAlpha = mobileCAlpha;
+		FlxG.save.data.hitboxType = hitboxType;
+
 		SaveManager.flush();
 		
 		reload();
@@ -189,6 +213,15 @@ class Config
 			FlxG.save.data.showMisses = 1;
 		if(FlxG.save.data.enableVariations == null)
 			FlxG.save.data.enableVariations = true;
+
+		#if mobile
+		if(FlxG.save.data.allowScreenTimeout == null)
+			FlxG.save.data.allowScreenTimeout = false;
+		#end
+		if(FlxG.save.data.mobileCAlpha == null)
+			FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
+		if(FlxG.save.data.hitboxType == null)
+			FlxG.save.data.hitboxType = 'No Gradient';
 		
 
 		if(FlxG.save.data.ee1 == null)
