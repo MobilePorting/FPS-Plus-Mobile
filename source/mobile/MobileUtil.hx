@@ -3,7 +3,6 @@ package mobile;
 #if android
 import android.Permissions as AndroidPermissions;
 import android.Settings as AndroidSettings;
-import android.Tools as AndroidTools;
 import android.content.Context as AndroidContext;
 import android.os.Build.VERSION as AndroidVersion;
 import android.os.Build.VERSION_CODES as AndroidVersionCode;
@@ -53,7 +52,7 @@ class MobileUtil
 			&& !AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_MEDIA_IMAGES'))
 			|| (AndroidVersion.SDK_INT < AndroidVersionCode.TIRAMISU
 				&& !AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_EXTERNAL_STORAGE')))
-                showPopUp('If you accepted the permissions you are all good!' + '\nIf you didn\'t then expect a crash' + '\nPress OK to see what happens',
+                Utils.showPopUp('If you accepted the permissions you are all good!' + '\nIf you didn\'t then expect a crash' + '\nPress OK to see what happens',
 				'Notice!');
 
 		try
@@ -63,18 +62,9 @@ class MobileUtil
 		}
 		catch (e:Dynamic)
 		{
-			showPopUp('Please create directory to\n' + MobileUtil.getStorageDirectory() + '\nPress OK to close the game', 'Error!');
+			Utils.showPopUp('Please create directory to\n' + MobileUtil.getStorageDirectory() + '\nPress OK to close the game', 'Error!');
 		    Sys.exit(1);
 		}
 	}
 	#end
-
-    public static function showPopUp(message:String, title:String):Void
-	{
-		#if android
-		AndroidTools.showAlertDialog(title, message, {name: "OK", func: null}, null);
-		#else
-		FlxG.stage.window.alert(message, title);
-		#end
-	}
 }
