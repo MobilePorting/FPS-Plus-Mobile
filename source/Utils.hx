@@ -282,14 +282,14 @@ class Utils
 
 	public static inline function mobileButtonToString(button:MobileInputID):String{
 		switch(button){
-			case MobileInputID.HITBOX_UP:
+			case MobileInputID.UP2 | MobileInputID.HITBOX_UP:
 				return "UP";
-			case MobileInputID.HITBOX_RIGHT:
+			case MobileInputID.RIGHT2 | MobileInputID.HITBOX_RIGHT:
 				return "RIGHT";
-			case MobileInputID.HITBOX_DOWN:
+			case MobileInputID.DOWN2 | MobileInputID.HITBOX_DOWN:
 				return "DOWN";
-			case MobileInputID.HITBOX_LEFT:
-				return "RIGHT";
+			case MobileInputID.LEFT2 | MobileInputID.HITBOX_LEFT:
+				return "LEFT";
 			default:
 				button.toString();
 		}
