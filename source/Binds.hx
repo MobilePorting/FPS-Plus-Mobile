@@ -1,9 +1,12 @@
 package;
 
 import flixel.input.gamepad.FlxGamepadInputID;
+import mobile.input.MobileInputID;
 import haxe.ds.StringMap;
 import flixel.FlxG;
 import flixel.input.keyboard.FlxKey;
+
+using StringTools;
 
 class Binds
 {
@@ -40,6 +43,7 @@ class Binds
             category: "Gameplay",
             binds: [LEFT, A],
             controllerBinds: [DPAD_LEFT, X],
+            mobileBinds: [HITBOX_LEFT],
             local: false
         };
         r.set("gameplayLeft", k);
@@ -49,6 +53,7 @@ class Binds
             category: "Gameplay",
             binds: [DOWN, S],
             controllerBinds: [DPAD_DOWN, A],
+            mobileBinds: [HITBOX_DOWN],
             local: false
         };
         r.set("gameplayDown", k);
@@ -58,6 +63,7 @@ class Binds
             category: "Gameplay",
             binds: [UP, W],
             controllerBinds: [DPAD_UP, Y],
+            mobileBinds: [HITBOX_UP],
             local: false
         };
         r.set("gameplayUp", k);
@@ -67,6 +73,7 @@ class Binds
             category: "Gameplay",
             binds: [RIGHT, D],
             controllerBinds: [DPAD_RIGHT, B],
+            mobileBinds: [HITBOX_RIGHT],
             local: false
         };
         r.set("gameplayRight", k);
@@ -97,6 +104,7 @@ class Binds
             category: "Menu",
             binds: [UP, W],
             controllerBinds: [DPAD_UP, LEFT_STICK_DIGITAL_UP],
+            mobileBinds: [UP, UP2],
             local: false
         };
         r.set("menuUp", k);
@@ -106,6 +114,7 @@ class Binds
             category: "Menu",
             binds: [DOWN, S],
             controllerBinds: [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
+            mobileBinds: [DOWN, DOWN2],
             local: false
         };
         r.set("menuDown", k);
@@ -115,6 +124,7 @@ class Binds
             category: "Menu",
             binds: [LEFT, A],
             controllerBinds: [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
+            mobileBinds: [LEFT, LEFT2],
             local: false
         };
         r.set("menuLeft", k);
@@ -124,6 +134,7 @@ class Binds
             category: "Menu",
             binds: [RIGHT, D],
             controllerBinds: [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
+            mobileBinds: [RIGHT, RIGHT2],
             local: false
         };
         r.set("menuRight", k);
@@ -133,6 +144,7 @@ class Binds
             category: "Menu",
             binds: [ENTER, SPACE],
             controllerBinds: [A, START],
+            mobileBinds: [A],
             local: false
         };
         r.set("menuAccept", k);
@@ -142,6 +154,7 @@ class Binds
             category: "Menu",
             binds: [ESCAPE, BACKSPACE],
             controllerBinds: [B],
+            mobileBinds: [B],
             local: false
         };
         r.set("menuBack", k);
@@ -251,6 +264,7 @@ class Binds
                     category: r.get(x).category,
                     binds: binds.get(x).binds,
                     controllerBinds: binds.get(x).controllerBinds,
+                    mobileBinds: binds.get(x).mobileBinds,
                     local: r.get(x).local
                 };
                 r.set(x, k);
@@ -266,15 +280,15 @@ class Binds
     }
 
     inline static public function pressed(input:String){
-        return pressedKeyboardOnly(input) || pressedControllerOnly(input);
+        return pressedKeyboardOnly(input) || pressedControllerOnly(input) || pressedMobileCOnly(input);
     }
 
     inline static public function justPressed(input:String){
-        return justPressedKeyboardOnly(input) || justPressedControllerOnly(input);
+        return justPressedKeyboardOnly(input) || justPressedControllerOnly(input) || justPressedMobileCOnly(input);
     }
 
     inline static public function justReleased(input:String){
-        return justReleasedKeyboardOnly(input) || justReleasedControllerOnly(input);
+        return justReleasedKeyboardOnly(input) || justReleasedControllerOnly(input) || justReleasedMobileCOnly(input);
     }
 
     inline static public function pressedKeyboardOnly(input:String){
@@ -315,6 +329,52 @@ class Binds
             if(r){ break; }
         }
         return r;
+    }
+    
+    public var isInSubstate:Bool = false;
+    public final requestedInstance:Dynamic = (isInSubstate) ? MusicBeatSubstate.instance : MusicBeatState.instance;
+    //public final mobileC:Bool;
+
+    inline static public function pressedMobileCOnly(input:String) {
+		for (x in binds.get(input).mobileBinds) {
+			if (input.contains('gameplay') {
+				if (requestedInstance.hitbox != null) {
+					return requestedInstance.hitbox.anyPressed(x);
+				}
+			} else {
+				if (requestedInstance.touchPad != null) {
+					return requestedInstance.touchPad.anyPressed(x);
+				}
+			}
+		}
+	}
+
+    inline static public function justPressedMobileCOnly(input:String){
+        for (x in binds.get(input).mobileBinds) {
+			if (input.contains('gameplay') {
+				if (requestedInstance.hitbox != null) {
+					return requestedInstance.hitbox.anyJustPressed(x);
+				}
+			} else {
+				if (requestedInstance.touchPad != null) {
+					return requestedInstance.touchPad.anyJustPressed(x);
+				}
+			}
+		}
+    }
+
+    inline static public function justReleasedMobileCOnly(input:String){
+        for (x in binds.get(input).mobileBinds) {
+			if (input.contains('gameplay') {
+				if (requestedInstance.hitbox != null) {
+					return requestedInstance.hitbox.anyJustReleased(x);
+				}
+			} else {
+				if (requestedInstance.touchPad != null) {
+					return requestedInstance.touchPad.anyJustReleased(x);
+				}
+			}
+		}
     }
     
 }
@@ -377,5 +437,6 @@ typedef Keybind = {
     var category:String;                            //The category of the input in the config menu.
     var binds:Array<FlxKey>;                        //The default keyboard keys of input.
     var controllerBinds:Array<FlxGamepadInputID>;   //The default controller buttons of input.
+    var mobileBinds:Array<MobileInputID>;          //The default mobile controls buttons of input.
     var local:Bool;                                 //Whether the input is global (false) or mod specific (true). If you need to add extra keys that are only for a mod, make this true.
 }
