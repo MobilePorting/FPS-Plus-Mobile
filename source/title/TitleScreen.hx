@@ -173,7 +173,7 @@ class TitleScreen extends MusicBeatState
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
 
-		var pressedEnter:Bool = (!allowControllerPress ? Binds.justPressedKeyboardOnly("menuAccept") : Binds.justPressed("menuAccept"));
+		var pressedEnter:Bool = /*(!mobile.SwipeUtil.swipedAny && */mobile.TouchUtil.justReleased/*)*/ || (!allowControllerPress ? Binds.justPressedKeyboardOnly("menuAccept") : Binds.justPressed("menuAccept"));
 
 		if(!transitioning && Binds.justPressed("menuBack")){
 			System.exit(0);
