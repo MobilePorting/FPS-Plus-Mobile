@@ -147,7 +147,7 @@ class Hitbox extends MobileInputManager
 		var shape:Shape = new Shape();
 		shape.graphics.beginFill(0xFFFFFF);
 
-		if (Config.hitboxType == "No Gradient")
+		if (config.Config.hitboxType == "No Gradient")
 		{
 			var matrix:Matrix = new Matrix();
 			matrix.createGradientBox(Width, Height, 0, 0, 0);
@@ -159,13 +159,13 @@ class Hitbox extends MobileInputManager
 			shape.graphics.drawRect(0, 0, Width, Height);
 			shape.graphics.endFill();
 		}
-		else if (Config.hitboxType == "No Gradient (Old)")
+		else if (config.Config.hitboxType == "No Gradient (Old)")
 		{
 			shape.graphics.lineStyle(10, 0xFFFFFF, 1);
 			shape.graphics.drawRect(0, 0, Width, Height);
 			shape.graphics.endFill();
 		}
-		else // if (Config.hitboxType == 'Gradient')
+		else // if (config.Config.hitboxType == 'Gradient')
 		{
 			shape.graphics.lineStyle(3, 0xFFFFFF, 1);
 			shape.graphics.drawRect(0, 0, Width, Height);
