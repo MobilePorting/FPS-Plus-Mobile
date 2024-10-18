@@ -30,6 +30,15 @@ class Utils
 
 	public static final resultsTextCharacters = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890.-'[]()";
 
+	public static function showPopUp(message:String, title:String):Void
+	{
+		#if android
+		android.Tools.showAlertDialog(title, message, {name: "OK", func: null}, null);
+		#else
+		FlxG.stage.window.alert(message, title);
+		#end
+	}
+
 	public static function coolTextFile(path:String):Array<String>{
 		var daList:Array<String> = getText(path).trim().split('\n');
 
