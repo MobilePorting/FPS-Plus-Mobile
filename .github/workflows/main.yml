@@ -53,16 +53,16 @@ jobs:
           path: export/release/linux/bin/*
           if-no-files-found: error
 
-      - name: Upload Artifact (macOS 12)
-        if: matrix.os == 'macos-12'
+      - name: Upload Artifact (macOS 13)
+        if: matrix.os == 'macos-13'
         uses: actions/upload-artifact@main
         with:
           name: macOSBuild-x86_64
           path: export/release/macos/bin/*
           if-no-files-found: error
 
-      - name: Upload Artifact (macOS 14)
-        if: matrix.os == 'macos-14'
+      - name: Upload Artifact (macOS 15)
+        if: matrix.os == 'macos-15'
         uses: actions/upload-artifact@main
         with:
           name: macOSBuild-arm64
