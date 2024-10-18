@@ -75,7 +75,7 @@ class CrashHandler
 		saveErrorMessage('$m\n$stackLabel');
 		#end
 
-		mobile.MobileUtil.showPopUp('$m\n$stackLabel', "Error!");
+		Utils.showPopUp('$m\n$stackLabel', "Error!");
 		lime.system.System.exit(1);
 	}
 
@@ -93,7 +93,7 @@ class CrashHandler
 		saveErrorMessage(log.join('\n'));
 		#end
 
-		mobile.MobileUtil.showPopUp(log.join('\n'), "Critical Error!");
+		Utils.showPopUp(log.join('\n'), "Critical Error!");
 		lime.system.System.exit(1);
 	}
 	#end
