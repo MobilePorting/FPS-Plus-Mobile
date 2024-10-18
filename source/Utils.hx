@@ -291,7 +291,7 @@ class Utils
 			case MobileInputID.LEFT2 | MobileInputID.HITBOX_LEFT:
 				return "LEFT";
 			default:
-				button.toString();
+				return button.toString();
 		}
 	}
 }
