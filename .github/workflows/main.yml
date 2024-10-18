@@ -42,6 +42,8 @@ jobs:
           artifactName: iOSBuild
           artifactPath: export/release/ios/build/Release-iphoneos/*.ipa
 
+    name: ${{ matrix.name }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@main
