@@ -8,6 +8,8 @@ import flixel.util.FlxSave;
 import sys.io.File;
 import sys.FileSystem;
 
+using StringTools;
+
 /**
  * ...
  * @author: Karim Akra
