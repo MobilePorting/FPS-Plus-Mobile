@@ -103,13 +103,13 @@ class Utils
 	}
 
 	/*
-	* Uses FileSystem.exists for sys and Assets.exists for non-sys builds.
+	* Uses FileSystem.exists for desktop and Assets.exists for non-desktop builds.
 	* This is because Assets.exists just checks the manifest and can't find files that weren't compiled with the game.
 	* This also means that if you delete a file, it will return true because it's still in the manifest.
 	* FileSystem only works on certain build types though (namely, not web).
 	*/
 	public static function exists(path:String):Bool{
-		#if sys
+		#if desktop
 		return FileSystem.exists(path);
         #else
         return Assets.exists(path);
@@ -118,7 +118,7 @@ class Utils
 
 	//Same as above but for getting text from a file.
 	public static function getText(path:String):String{
-		#if sys
+		#if desktop
 		return File.getContent(path);
         #else
         return Assets.getText(path);
