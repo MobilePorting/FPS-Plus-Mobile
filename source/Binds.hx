@@ -338,7 +338,7 @@ class Binds
 
     inline static public function pressedMobileCOnly(input:String) {
 		for (x in binds.get(input).mobileBinds) {
-			if (input.contains('gameplay') {
+			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
 					return requestedInstance.hitbox.anyPressed(x);
 				}
@@ -352,7 +352,7 @@ class Binds
 
     inline static public function justPressedMobileCOnly(input:String){
         for (x in binds.get(input).mobileBinds) {
-			if (input.contains('gameplay') {
+			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
 					return requestedInstance.hitbox.anyJustPressed(x);
 				}
@@ -366,7 +366,7 @@ class Binds
 
     inline static public function justReleasedMobileCOnly(input:String){
         for (x in binds.get(input).mobileBinds) {
-			if (input.contains('gameplay') {
+			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
 					return requestedInstance.hitbox.anyJustReleased(x);
 				}
