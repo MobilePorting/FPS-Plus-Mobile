@@ -1,6 +1,6 @@
 package stages.elements;
 
-import flixel.system.FlxAssets.FlxShader;
+import shaders.flixel.system.FlxShader;
 import flixel.FlxObject;
 import flixel.util.FlxAxes;
 import flixel.sound.FlxSound;

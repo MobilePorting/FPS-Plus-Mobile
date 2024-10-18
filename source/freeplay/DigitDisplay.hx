@@ -1,6 +1,6 @@
 package freeplay;
 
-import flixel.system.FlxAssets.FlxShader;
+import shaders.flixel.system.FlxShader;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;

@@ -2,7 +2,7 @@ package shaders;
 
 import flixel.util.FlxColor;
 import flixel.FlxBasic;
-import flixel.system.FlxAssets.FlxShader;
+import shaders.flixel.system.FlxShader;
 
 /*
 A shader that aims to replicate Adobe Animate's Adjust Color filter with the ability to add a tinted multiply layer similar to how Animate mixes color.

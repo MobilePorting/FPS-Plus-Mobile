@@ -1,7 +1,7 @@
 package shaders;
 
 import flixel.FlxBasic;
-import flixel.system.FlxAssets.FlxShader;
+import shaders.flixel.system.FlxShader;
 
 /*
 A shader that aims to replicate Adobe Animate's Adjust Color filter.

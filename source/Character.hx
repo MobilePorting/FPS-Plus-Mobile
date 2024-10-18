@@ -1,6 +1,6 @@
 package;
 
-import flixel.system.FlxAssets.FlxShader;
+import shaders.flixel.system.FlxShader;
 import flixel.util.FlxSignal;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;

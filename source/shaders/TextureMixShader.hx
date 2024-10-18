@@ -4,7 +4,7 @@ import openfl.display.BitmapData;
 import flixel.FlxBasic;
 import flixel.util.FlxColor;
 import openfl.display.ShaderParameter;
-import flixel.system.FlxAssets.FlxShader;
+import shaders.flixel.system.FlxShader;
 
 class TextureMixShader extends FlxBasic
 {
