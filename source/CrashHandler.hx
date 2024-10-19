@@ -1,8 +1,5 @@
 package;
 
-import openfl.events.UncaughtErrorEvent;
-import openfl.events.ErrorEvent;
-import openfl.errors.Error;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -19,7 +16,7 @@ class CrashHandler
 {
 	public static function init():Void
 	{
-		openfl.Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
+		openfl.Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(openfl.events.UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
 		#if cpp
 		untyped __global__.__hxcpp_set_critical_error_handler(onError);
 		#elseif hl
@@ -27,60 +24,15 @@ class CrashHandler
 		#end
 	}
 
-	private static function onUncaughtError(e:UncaughtErrorEvent):Void
-	{
-		e.preventDefault();
-		e.stopPropagation();
-		e.stopImmediatePropagation();
-
-		var m:String = e.error;
-		if (Std.isOfType(e.error, Error))
-		{
-			var err = cast(e.error, Error);
-			m = '${err.message}';
-		}
-		else if (Std.isOfType(e.error, ErrorEvent))
-		{
-			var err = cast(e.error, ErrorEvent);
-			m = '${err.text}';
-		}
-		var stack = haxe.CallStack.exceptionStack();
-		var stackLabelArr:Array<String> = [];
-		var stackLabel:String = "";
-		for (e in stack)
-		{
-			switch (e)
-			{
-				case CFunction:
-					stackLabelArr.push("Non-Haxe (C) Function");
-				case Module(c):
-					stackLabelArr.push('Module ${c}');
-				case FilePos(parent, file, line, col):
-					switch (parent)
-					{
-						case Method(cla, func):
-							stackLabelArr.push('${file.replace('.hx', '')}.$func() [line $line]');
-						case _:
-							stackLabelArr.push('${file.replace('.hx', '')} [line $line]');
-					}
-				case LocalFunction(v):
-					stackLabelArr.push('Local Function ${v}');
-				case Method(cl, m):
-					stackLabelArr.push('${cl} - ${m}');
-			}
-		}
-		stackLabel = stackLabelArr.join('\r\n');
-
-		#if sys
-		saveErrorMessage('$m\n$stackLabel');
-		#end
-
-		Utils.showPopUp('$m\n$stackLabel', "Error!");
-		lime.system.System.exit(1);
-	}
-
 	#if (cpp || hl)
 	private static function onError(message:Dynamic):Void
+		__onError(message, true);
+	#end
+
+	private static function onUncaughtError(message:Dynamic):Void
+		__onError(message);
+
+	private static function __onError(message:Dynamic, ?isCritical:Bool = false):Void
 	{
 		final log:Array<String> = [];
 
@@ -93,10 +45,9 @@ class CrashHandler
 		saveErrorMessage(log.join('\n'));
 		#end
 
-		Utils.showPopUp(log.join('\n'), "Critical Error!");
+		Utils.showPopUp(log.join('\n'), (isCritical) ? "Critical Error!" : "Error!");
 		lime.system.System.exit(1);
 	}
-	#end
 
 	#if sys
 	private static function saveErrorMessage(message:String):Void
