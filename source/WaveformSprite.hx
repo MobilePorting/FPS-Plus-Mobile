@@ -60,7 +60,7 @@ class WaveformSprite extends FlxSprite
 	var wavData:Array<Array<Array<Float>>> = [[[0], [0]], [[0], [0]]];
 
 	function updateWaveform() {
-		#if desktop
+		#if (lime_cffi && !macro)
 		if(waveformPrinted) {
 			makeGraphic(Std.int(width), Std.int(height), 0x00FFFFFF);
 			pixels.fillRect(new Rectangle(0, 0, width, height), 0x00FFFFFF);

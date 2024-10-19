@@ -12,6 +12,8 @@ import android.os.Environment as AndroidEnvironment;
 import sys.FileSystem;
 #end
 
+using StringTools;
+
 /**
  * ...
  * @author Lily Ross (mcagabe19)
@@ -67,4 +69,19 @@ class MobileUtil
 		}
 	}
 	#end
+
+	public static function readDirectory(directory:String):Array<String>
+	{
+		#if desktop
+		return FileSystem.readDirectory(directory);
+		#else
+		var dirs:Array<String> = [];
+		for(dir in openfl.Assets.list().filter(folder -> folder.startsWith(directory)))
+		{
+			if(openfl.Assets.exists(dir) && !dirs.contains(dir))
+				dirs.push(dir);
+		}
+		return dirs.map(dir -> dir.substr(dir.lastIndexOf("/") + 1));
+		#end
+	}
 }

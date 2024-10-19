@@ -42,18 +42,14 @@ class MobileData
 
 	public static function readDirectory(folder:String, map:Dynamic)
 	{
-		folder = folder.contains(':') ? folder.split(':')[1] : folder;
-
-		if (FileSystem.exists(folder))
-		for (file in FileSystem.readDirectory(folder))
+		for (file in MobileUtil.readDirectory(folder))
 		{
-			var fileWithNoLib:String = file.contains(':') ? file.split(':')[1] : file;
-			if (Path.extension(fileWithNoLib) == 'json')
+			if (Path.extension(file) == 'json')
 			{
 				file = Path.join([folder, Path.withoutDirectory(file)]);
-				var str = File.getContent(file);
+				var str = Assets.getText(file);
 				var json:TouchButtonsData = cast Json.parse(str);
-				var mapKey:String = Path.withoutDirectory(Path.withoutExtension(fileWithNoLib));
+				var mapKey:String = Path.withoutDirectory(Path.withoutExtension(file));
 				map.set(mapKey, json);
 			}
 		}

@@ -11,6 +11,7 @@ import mobile.MobileData;
 
 class MusicBeatState extends FlxUIStateExt
 {
+	public static var instance:MusicBeatState;
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
@@ -21,6 +22,7 @@ class MusicBeatState extends FlxUIStateExt
 	private var curBeat:Int = 0;
 
 	override function create(){
+		instance = this;
 		super.create();
 	}
 

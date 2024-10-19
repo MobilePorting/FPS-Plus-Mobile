@@ -336,7 +336,7 @@ class Binds
     }
     
     public static var isInSubstate:Bool = false;
-    public static var requestedInstance:Dynamic = (isInSubstate) ? FlxG.state : FlxG.state.subState;
+    public static var requestedInstance(get, default):Dynamic;
     public var mobileC:Bool = (config.Config.mobileCAlpha <= 0) ? false : true;
 
     inline static public function pressedMobileCOnly(input:String){
@@ -380,6 +380,15 @@ class Binds
 		}
 		return p;
     }
+
+    @:noCompletion
+	private static function get_requestedInstance():Dynamic
+	{
+		if (isInSubstate)
+			return (FlxG.state.subState != null) ? FlxG.state.subState : MusicBeatSubstate.instance;
+		else
+			return (FlxG.state != null) ? FlxG.state : MusicBeatState.instance;
+	}
     
 }
 
