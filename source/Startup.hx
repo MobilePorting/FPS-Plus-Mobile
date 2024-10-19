@@ -106,6 +106,7 @@ class Startup extends FlxState
 		Config.configCheck();
 		Config.reload();
 
+	mobile.MobileData.init();
         Binds.init();
 
 		Highscore.load();
