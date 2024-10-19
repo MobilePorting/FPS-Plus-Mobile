@@ -74,8 +74,6 @@ class Config
 	public static function reload():Void
 	{
 
-		mobile.MobileData.init();
-
 		SaveManager.global();
 
 		offset = FlxG.save.data.offset;
