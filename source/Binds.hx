@@ -201,14 +201,12 @@ class Binds
 
         SaveManager.global();
         for(key in cast(FlxG.save.data.binds, KeybindMap).keys){
-	    trace(key);
             binds.set(key, FlxG.save.data.binds.get(key));
         }
 
         SaveManager.modSpecific();
         if(FlxG.save.data.binds != null){
             for(key in cast(FlxG.save.data.binds, KeybindMap).keys){
-	        trace(key);
                 binds.set(key, FlxG.save.data.binds.get(key));
             }
         }
@@ -343,17 +341,13 @@ class Binds
 
     inline static public function pressedMobileCOnly(input:String){
         var p:Bool = false;
-		for (x in binds.get(input).mobileBinds) {
-			if (input.contains('gameplay')) {
-				if (requestedInstance.hitbox != null) {
-					p = requestedInstance.hitbox.anyPressed([x]);
-					if(p){ break; }
-				}
-			} else {
-				if (requestedInstance.touchPad != null) {
-					p = requestedInstance.touchPad.anyPressed([x]);
-					if(p){ break; }
-				}
+		if (input.contains('gameplay')) {
+			if (requestedInstance.hitbox != null) {
+				p = requestedInstance.hitbox.anyPressed(binds.get(input).mobileBinds));
+			}
+		} else {
+			if (requestedInstance.touchPad != null) {
+				p = requestedInstance.touchPad.anyPressed(binds.get(input).mobileBinds));
 			}
 		}
 		return p;
@@ -361,17 +355,13 @@ class Binds
 
     inline static public function justPressedMobileCOnly(input:String){
         var p:Bool = false;
-		for (x in binds.get(input).mobileBinds) {
-			if (input.contains('gameplay')) {
-				if (requestedInstance.hitbox != null) {
-					p = requestedInstance.hitbox.anyJustPressed([x]);
-					if(p){ break; }
-				}
-			} else {
-				if (requestedInstance.touchPad != null) {
-					p = requestedInstance.touchPad.anyJustPressed([x]);
-					if(p){ break; }
-				}
+		if (input.contains('gameplay')) {
+			if (requestedInstance.hitbox != null) {
+				p = requestedInstance.hitbox.anyJustPressed(binds.get(input).mobileBinds));
+			}
+		} else {
+			if (requestedInstance.touchPad != null) {
+				p = requestedInstance.touchPad.anyJustPressed(binds.get(input).mobileBinds));
 			}
 		}
 		return p;
@@ -379,17 +369,13 @@ class Binds
 
     inline static public function justReleasedMobileCOnly(input:String){
         var p:Bool = false;
-		for (x in binds.get(input).mobileBinds) {
-			if (input.contains('gameplay')) {
-				if (requestedInstance.hitbox != null) {
-					p = requestedInstance.hitbox.anyJustReleased([x]);
-					if(p){ break; }
-				}
-			} else {
-				if (requestedInstance.touchPad != null) {
-					p = requestedInstance.touchPad.anyJustReleased([x]);
-					if(p){ break; }
-				}
+		if (input.contains('gameplay')) {
+			if (requestedInstance.hitbox != null) {
+				p = requestedInstance.hitbox.anyJustReleased(binds.get(input).mobileBinds));
+			}
+		} else {
+			if (requestedInstance.touchPad != null) {
+				p = requestedInstance.touchPad.anyJustReleased(binds.get(input).mobileBinds));
 			}
 		}
 		return p;
