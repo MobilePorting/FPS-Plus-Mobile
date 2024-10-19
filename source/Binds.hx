@@ -201,14 +201,14 @@ class Binds
 
         SaveManager.global();
         for(key in cast(FlxG.save.data.binds, KeybindMap).keys){
-	    trace(key):
+	    trace(key);
             binds.set(key, FlxG.save.data.binds.get(key));
         }
 
         SaveManager.modSpecific();
         if(FlxG.save.data.binds != null){
             for(key in cast(FlxG.save.data.binds, KeybindMap).keys){
-	        trace(key):
+	        trace(key);
                 binds.set(key, FlxG.save.data.binds.get(key));
             }
         }
