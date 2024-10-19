@@ -336,7 +336,7 @@ class Binds
     }
     
     public static var isInSubstate:Bool = false;
-    public static var requestedInstance:Dynamic = (isInSubstate) ? MusicBeatSubstate.instance : MusicBeatState.instance;
+    public static var requestedInstance:Dynamic = (isInSubstate) ? FlxG.state : FlxG.state.subState;
     public var mobileC:Bool = (config.Config.mobileCAlpha <= 0) ? false : true;
 
     inline static public function pressedMobileCOnly(input:String){
