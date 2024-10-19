@@ -15,6 +15,8 @@ import mobile.MobileData;
 /**
  * This is the basic game "state" object - e.g. in a simple game you might have a menu state and a play state.
  * It is for all intents and purpose a fancy `FlxContainer`. And really, it's not even that fancy.
+ * 
+ * THIS IS BEING SHADOWED DUE TO ROZEBUD'S HARDCODING IN FPS PLUS, I HATE ROZEBUD.
  */
 @:keepSub // workaround for HaxeFoundation/haxe#3749
 #if FLX_NO_UNIT_TEST

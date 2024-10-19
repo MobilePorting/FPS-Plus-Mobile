@@ -111,7 +111,7 @@ class TouchPad extends MobileInputManager
 	{
 		var button = new TouchButton(X, Y, IDs);
 		button.label = new FlxSprite();
-		button.loadGraphic('assets/mobile/images/bg.png');
+		button.loadGraphic('assets/mobile/images/touchpadBG.png');
 		button.label.loadGraphic('assets/mobile/images/touchpad/${Graphic.toUpperCase()}');
 
 		button.scale.set(0.243, 0.243);
