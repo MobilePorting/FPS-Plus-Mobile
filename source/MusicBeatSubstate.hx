@@ -11,9 +11,7 @@ import mobile.MobileData;
 
 class MusicBeatSubstate extends FlxSubState
 {
-	public static var instance:MusicBeatSubstate;
 	public function new(){
-		instance = this;
 		super();
 	}
 
@@ -25,81 +23,6 @@ class MusicBeatSubstate extends FlxSubState
 
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
-	
-	public var touchPad:TouchPad;
-	public var tpadCam:FlxCamera;
-	public var hitbox:Hitbox;
-	public var hboxCam:FlxCamera;
-
-	public function addTouchPad(DPad:String, Action:String)
-	{
-		touchPad = new TouchPad(DPad, Action);
-		add(touchPad);
-	}
-
-	public function removeTouchPad()
-	{
-		if (touchPad != null)
-		{
-			remove(touchPad);
-			touchPad = FlxDestroyUtil.destroy(touchPad);
-		}
-
-		if(tpadCam != null)
-		{
-			FlxG.cameras.remove(tpadCam);
-			tpadCam = FlxDestroyUtil.destroy(tpadCam);
-		}
-	}
-
-	public function addHitbox(defaultDrawTarget:Bool = false):Void
-	{
-		hitbox = new Hitbox();
-		hitbox = MobileData.setButtonsColors(hitbox);
-
-		hboxCam = new FlxCamera();
-		hboxCam.bgColor.alpha = 0;
-		FlxG.cameras.add(hboxCam, defaultDrawTarget);
-
-		hitbox.cameras = [hboxCam];
-		hitbox.visible = false;
-		add(hitbox);
-	}
-
-	public function removeHitbox()
-	{
-		if (hitbox != null)
-		{
-			remove(hitbox);
-			hitbox = FlxDestroyUtil.destroy(hitbox);
-			hitbox = null;
-		}
-
-		if(hboxCam != null)
-		{
-			FlxG.cameras.remove(hboxCam);
-			hboxCam = FlxDestroyUtil.destroy(hboxCam);
-		}
-	}
-
-	public function addTouchPadCamera(defaultDrawTarget:Bool = false):Void
-	{
-		if (touchPad != null)
-		{
-			tpadCam = new FlxCamera();
-			tpadCam.bgColor.alpha = 0;
-			FlxG.cameras.add(tpadCam, defaultDrawTarget);
-			touchPad.cameras = [tpadCam];
-		}
-	}
-
-	override function destroy()
-	{
-		removeTouchPad();
-		removeHitbox();
-		
-		super.destroy();
-	}
 
 	override function create(){
 		super.create();
