@@ -343,11 +343,11 @@ class Binds
         var p:Bool = false;
 		if (input.contains('gameplay')) {
 			if (requestedInstance.hitbox != null) {
-				p = requestedInstance.hitbox.anyPressed(binds.get(input).mobileBinds));
+				p = requestedInstance.hitbox.anyPressed(binds.get(input).mobileBinds);
 			}
 		} else {
 			if (requestedInstance.touchPad != null) {
-				p = requestedInstance.touchPad.anyPressed(binds.get(input).mobileBinds));
+				p = requestedInstance.touchPad.anyPressed(binds.get(input).mobileBinds);
 			}
 		}
 		return p;
@@ -357,11 +357,11 @@ class Binds
         var p:Bool = false;
 		if (input.contains('gameplay')) {
 			if (requestedInstance.hitbox != null) {
-				p = requestedInstance.hitbox.anyJustPressed(binds.get(input).mobileBinds));
+				p = requestedInstance.hitbox.anyJustPressed(binds.get(input).mobileBinds);
 			}
 		} else {
 			if (requestedInstance.touchPad != null) {
-				p = requestedInstance.touchPad.anyJustPressed(binds.get(input).mobileBinds));
+				p = requestedInstance.touchPad.anyJustPressed(binds.get(input).mobileBinds);
 			}
 		}
 		return p;
@@ -371,11 +371,11 @@ class Binds
         var p:Bool = false;
 		if (input.contains('gameplay')) {
 			if (requestedInstance.hitbox != null) {
-				p = requestedInstance.hitbox.anyJustReleased(binds.get(input).mobileBinds));
+				p = requestedInstance.hitbox.anyJustReleased(binds.get(input).mobileBinds);
 			}
 		} else {
 			if (requestedInstance.touchPad != null) {
-				p = requestedInstance.touchPad.anyJustReleased(binds.get(input).mobileBinds));
+				p = requestedInstance.touchPad.anyJustReleased(binds.get(input).mobileBinds);
 			}
 		}
 		return p;
