@@ -346,12 +346,12 @@ class Binds
 		for (x in binds.get(input).mobileBinds) {
 			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
-					p = requestedInstance.hitbox.anyPressed(x);
+					p = requestedInstance.hitbox.anyPressed([x]);
 					if(p){ break; }
 				}
 			} else {
 				if (requestedInstance.touchPad != null) {
-					p = requestedInstance.touchPad.anyPressed(x);
+					p = requestedInstance.touchPad.anyPressed([x]);
 					if(p){ break; }
 				}
 			}
@@ -364,12 +364,12 @@ class Binds
 		for (x in binds.get(input).mobileBinds) {
 			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
-					p = requestedInstance.hitbox.anyJustPressed(x);
+					p = requestedInstance.hitbox.anyJustPressed([x]);
 					if(p){ break; }
 				}
 			} else {
 				if (requestedInstance.touchPad != null) {
-					p = requestedInstance.touchPad.anyJustPressed(x);
+					p = requestedInstance.touchPad.anyJustPressed([x]);
 					if(p){ break; }
 				}
 			}
@@ -382,12 +382,12 @@ class Binds
 		for (x in binds.get(input).mobileBinds) {
 			if (input.contains('gameplay')) {
 				if (requestedInstance.hitbox != null) {
-					p = requestedInstance.hitbox.anyJustReleased(x);
+					p = requestedInstance.hitbox.anyJustReleased([x]);
 					if(p){ break; }
 				}
 			} else {
 				if (requestedInstance.touchPad != null) {
-					p = requestedInstance.touchPad.anyJustReleased(x);
+					p = requestedInstance.touchPad.anyJustReleased([x]);
 					if(p){ break; }
 				}
 			}
