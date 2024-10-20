@@ -51,7 +51,7 @@ class Startup extends FlxState
                                 "Ugh", "Guns", "Stress",
                                 "Darnell", "Lit-Up", "2hot", "Blazin",
                                 "Lil-Buddies",
-                                "klaskiiLoop", "freeplayRandom"]; //Start of the non-gameplay songs.
+                                "klaskiiLoop", "freeplayRandom", "stayFunky"]; //Start of the non-gameplay songs.
                                 
     //List of character graphics and some other stuff.
     //Just in case it want to do something with it later.
