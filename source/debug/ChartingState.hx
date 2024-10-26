@@ -1,5 +1,7 @@
 package debug;
 
+import events.Events;
+import sys.FileSystem;
 import ui.HealthIcon;
 import flixel.util.FlxSort;
 import note.NoteType;
@@ -67,6 +69,9 @@ class ChartingState extends MusicBeatState
 	static var gfList:Array<String> = [];
 	static var stageList:Array<String> = [];
 
+	static var eventIconList:Array<String> = [];
+	static var eventIconOverrides:Map<String, String> = new Map<String, String>();
+
 	/**
 	 * Array of notes showing when each section STARTS in STEPS
 	 * Usually rounded up??
@@ -93,7 +98,7 @@ class ChartingState extends MusicBeatState
 	var opClick:FlxUICheckBox;
 	var gotoSectionStepper:FlxUINumericStepper;
 	var lilBuddiesBox:FlxUICheckBox;
-	//var halfSpeedCheck:FlxUICheckBox;
+	var halfSpeedCheck:FlxUICheckBox;
 
 	var strumLine:FlxSprite;
 	var bullshitUI:FlxGroup;
@@ -131,7 +136,10 @@ class ChartingState extends MusicBeatState
 
 	var eventTagName:FlxUIInputText;
 	var eventTagDrop:FlxUIDropDownMenuScrollable;
+	var eventTagPrefixDrop:FlxUIDropDownMenuScrollable;
+	var eventDescription:FlxUIText;
 	var eventTagList:Array<String> = [""];
+	var allEventPrefixes:Array<String> = [];
 
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
@@ -518,7 +526,7 @@ class ChartingState extends MusicBeatState
 	
 			var check_mute_inst = new FlxUICheckBox(10, 10, null, null, "Mute Instrumental", 100);
 			check_mute_inst.checked = false;
-			check_mute_inst.callback = function() {
+			check_mute_inst.callback = function(){
 				if(check_mute_inst.checked){
 					FlxG.sound.music.volume = 0;
 				}
@@ -529,7 +537,7 @@ class ChartingState extends MusicBeatState
 
 			var check_mute_vox = new FlxUICheckBox(10, 40, null, null, "Mute Vocals", 100);
 			check_mute_vox.checked = false;
-			check_mute_vox.callback = function() {
+			check_mute_vox.callback = function(){
 				if(check_mute_vox.checked){
 					vocals.volume = 0;
 				}
@@ -540,7 +548,7 @@ class ChartingState extends MusicBeatState
 
 			var check_mute_vox_other = new FlxUICheckBox(10, 70, null, null, "Mute Opponent Vocals (if available)", 200);
 			check_mute_vox_other.checked = false;
-			check_mute_vox_other.callback = function() {
+			check_mute_vox_other.callback = function(){
 				if(check_mute_vox_other.checked){
 					vocalsOther.volume = 0;
 				}
@@ -557,15 +565,26 @@ class ChartingState extends MusicBeatState
 
 			lilBuddiesBox = new FlxUICheckBox(10, 160, null, null, "Lil' Buddies", 100);
 			lilBuddiesBox.checked = true;
-			lilBuddiesBox.callback = function()
-			{
+			lilBuddiesBox.callback = function(){
 				lilBf.visible = lilBuddiesBox.checked;
 				lilOpp.visible = lilBuddiesBox.checked;
 				lilStage.visible = lilBuddiesBox.checked;
 			};
 	
-			//halfSpeedCheck = new FlxUICheckBox(10, 170, null, null, "Half Speed", 100);
-			//halfSpeedCheck.checked = false;
+			halfSpeedCheck = new FlxUICheckBox(10, 180, null, null, "Half Speed", 100);
+			halfSpeedCheck.checked = false;
+			halfSpeedCheck.callback = function(){
+				if(halfSpeedCheck.checked){
+					FlxG.sound.music.pitch = 0.5;
+					vocals.pitch = 0.5;
+					vocalsOther.pitch = 0.5;
+				}
+				else{
+					FlxG.sound.music.pitch = 1;
+					vocals.pitch = 1;
+					vocalsOther.pitch = 1;
+				}
+			}
 	
 			var tab_group_tools = new FlxUI(null, UI_box);
 			tab_group_tools.name = "Tools";
@@ -578,6 +597,7 @@ class ChartingState extends MusicBeatState
 			tab_group_tools.add(bfClick);
 			tab_group_tools.add(opClick);
 			tab_group_tools.add(lilBuddiesBox);
+			tab_group_tools.add(halfSpeedCheck);
 			
 	
 			UI_box.addGroup(tab_group_tools);
@@ -723,10 +743,12 @@ class ChartingState extends MusicBeatState
 		eventTagName = new FlxUIInputText(10, 70, 160, "", 8);
 		textBoxArray.push(eventTagName);
 
-		eventTagDrop = new FlxUIDropDownMenuScrollable(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(eventTagList, true), function(tag:String)
-		{
+		eventTagDrop = new FlxUIDropDownMenuScrollable(10, 110, FlxUIDropDownMenu.makeStrIdLabelArray(eventTagList, true), function(tag:String){
 			eventTagName.text = eventTagList[Std.parseInt(tag)];
+			updateEventDescription();
 		});
+
+		var eventDropText = new FlxUIText(eventTagDrop.x, eventTagDrop.y - 13, 0, "Used Events");
 
 		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 40, 1, 1, -999, 999, 0);
 
@@ -740,14 +762,43 @@ class ChartingState extends MusicBeatState
 			clearEventSection(curSection);
 		});
 
+		for(prefix in Events.events.keys()){
+			allEventPrefixes.push(prefix);
+		}
+
+		allEventPrefixes.sort(function(a:String, b:String):Int{
+			a = a.toUpperCase();
+			b = b.toUpperCase();
+			if(a < b){ return -1; }
+			else if(a > b){ return 1; }
+			else{ return 0; }
+		});
+
+		eventTagPrefixDrop = new FlxUIDropDownMenuScrollable(160, 110, FlxUIDropDownMenu.makeStrIdLabelArray(allEventPrefixes, true), function(tag:String){
+			eventTagName.text = allEventPrefixes[Std.parseInt(tag)];
+			updateEventDescription();
+		});
+
+		var eventPrefixDropText = new FlxUIText(eventTagPrefixDrop.x, eventTagPrefixDrop.y - 13, 0, "Event Tag Prefixes");
+
+		eventDescription = new FlxUIText(10, 150, 280, "");
+		eventDescription.setFormat(eventDescription.font, 8, 0xFFFFFFFF, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+
 		var tab_group_event = new FlxUI(null, UI_box);
 		tab_group_event.name = 'Event';
 
+		var eventInfo = new FlxText(10, 400, 400, "EVENT INFORMATION\n\nArguments are separated by a semicolon ( ; )\n\nArgument Types:\n   Int: A non decimal number\n   Float: A decimal number\n   Bool: true or false\n   String: text\n   Hex: A hexadecimal number prefixed with \"0x\"\n   Time: A float that can be suffixed with a \"b\" or an \"s\"\n          \"b\" makes it a length in beats\n          \"s\" makes it a length in steps\n          Otherwise it's in seconds\n   Ease: An FlxEase type", 11);
+
+		tab_group_event.add(eventInfo);
+		tab_group_event.add(eventDescription);
 		tab_group_event.add(eventTagName);
 		tab_group_event.add(eventTagDrop);
+		tab_group_event.add(eventTagPrefixDrop);
 		tab_group_event.add(stepperCopy);
 		tab_group_event.add(copyButton);
 		tab_group_event.add(clearButton);
+		tab_group_event.add(eventDropText);
+		tab_group_event.add(eventPrefixDropText);
 
 		UI_box.addGroup(tab_group_event);
 		
@@ -926,6 +977,10 @@ class ChartingState extends MusicBeatState
 			if(x.hasFocus){
 				anyTextHasFocus = true;
 			}
+		}
+
+		if(eventTagName.hasFocus){
+			updateEventDescription();
 		}
 
 		if (!anyTextHasFocus)
@@ -1358,17 +1413,16 @@ class ChartingState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+	}
 
-		/*if(halfSpeedCheck.checked){
-			if(FlxG.sound.music.playing){
-				FlxG.sound.music.time -= (FlxG.sound.music.time - timeOld) / 2;
-				vocals.time = FlxG.sound.music.time;
-			}
-		timeOld = FlxG.sound.music.time;
-		}*/
-
-		
-
+	function updateEventDescription():Void{
+		if(Events.eventsMeta.exists(eventTagName.text.split(";")[0])){
+			var descText = Events.eventsMeta.get(eventTagName.text.split(";")[0]);
+			if(eventDescription.text == descText){ return; }
+			eventDescription.text = descText;
+		}
+		else{ eventDescription.text = ""; }
+		eventDescription.y = 410 - eventDescription.height;
 	}
 
 	function changeNoteSustain(value:Float):Void
@@ -1658,99 +1712,42 @@ class ChartingState extends MusicBeatState
 				var customIcon:Bool = false;
 
 				#if sys
-				if(tag.startsWith("playAnim;dad;")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("dadPlayAnim"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("playAnim;bf;")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("bfPlayAnim"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("playAnim;gf;")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("gfPlayAnim"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("setAnimSet;dad;")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("dadSetAnimSet"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("setAnimSet;bf;")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("bfSetAnimSet"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("setAnimSet;gf;")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("gfSetAnimSet"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("cc")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("cc"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("camMove")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("camMove"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("camZoom")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("camZoom"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("gfBopFreq")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("gfBopFreq"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("iconBopFreq")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("iconBopFreq"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("camBopFreq")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("camBopFreq"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("flash")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("flash"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("flashHud")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("flashHud"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("fadeOut")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("fadeOut"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("fadeOutHud")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("fadeOutHud"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("camFocusBf")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("camFocusBf"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("camFocusDad")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("camFocusDad"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("camFocusGf")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("camFocusGf"));
-					customIcon = true;
-				}
-				else if(tag.startsWith("camFocusCenter")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic("camFocusCenter"));
-					customIcon = true;
+				var foundIcon:Bool = false;
+
+				for(key => value in eventIconOverrides){
+					if(tag.startsWith(key)){
+						eventSymbol.loadGraphic(loadAndCacheEventGraphic(value));
+						customIcon = true;
+						foundIcon = true;
+						break;
+					}
 				}
 
-				else if(sys.FileSystem.exists("assets/images/chartEditor/event/" + tag + ".png")){
-					eventSymbol.loadGraphic(loadAndCacheEventGraphic(tag));
-					customIcon = true;
+				if(!foundIcon){
+					for(icon in eventIconList){
+						if(tag == icon){
+							eventSymbol.loadGraphic(loadAndCacheEventGraphic(icon));
+							customIcon = true;
+							foundIcon = true;
+							break;
+						}
+						else if(tag.startsWith(icon)){
+							eventSymbol.loadGraphic(loadAndCacheEventGraphic(icon));
+							customIcon = true;
+							foundIcon = true;
+							break;
+						}
+					}
 				}
-				else{
+
+				if(!foundIcon){
 					eventSymbol.loadGraphic(Paths.image("chartEditor/event/genericEvent"));
 				}
 				#else
 					eventSymbol.loadGraphic(Paths.image("chartEditor/event/genericEvent"));
 				#end
 
-				eventSymbol.antialiasing = true;
+				//eventSymbol.antialiasing = true;
 
 				eventSymbol.setGraphicSize(40, 40);
 				eventSymbol.updateHitbox();
@@ -2300,6 +2297,19 @@ class ChartingState extends MusicBeatState
 		gfList.reverse();
 		stageList.reverse();
 
+		var iconsRaw = FileSystem.readDirectory("assets/images/chartEditor/event/");
+		for(icon in iconsRaw){
+			if(icon.split(".")[1] == "png"){
+				eventIconList.push(icon.split(".")[0]);
+			}
+			else if(icon.split(".")[1] == "json"){
+				var json = Json.parse(Utils.getText("assets/images/chartEditor/event/" + icon));
+				for(key in cast(json.overrides, Array<Dynamic>)){
+					eventIconOverrides.set(key, icon.split(".")[0]);
+				}
+			}
+		}
+
 	}
 
 	override function beatHit()
@@ -2347,12 +2357,13 @@ class ChartingState extends MusicBeatState
 
 	function isInScrollableDropdown():Bool{
 		return 
-			player1DropDown.dropPanel.visible == true || 
-			player2DropDown.dropPanel.visible == true || 
-			gfDropDown.dropPanel.visible == true || 
-			stageDropDown.dropPanel.visible == true || 
-			noteTypeDrop.dropPanel.visible == true || 
-			eventTagDrop.dropPanel.visible == true;
+			player1DropDown.dropPanel.visible || 
+			player2DropDown.dropPanel.visible || 
+			gfDropDown.dropPanel.visible || 
+			stageDropDown.dropPanel.visible || 
+			noteTypeDrop.dropPanel.visible || 
+			eventTagDrop.dropPanel.visible ||
+			eventTagPrefixDrop.dropPanel.visible;
 	}
 	
 }

@@ -110,10 +110,11 @@ class PlayState extends MusicBeatState
 	public var gfBopFrequency:Int = 1;
 	public var iconBopFrequency:Int = 1;
 	public var camBopFrequency:Int = 4;
+	public var camBopIntensity:Float = 1;
 
 	public var tweenManager:FlxTweenManager = new FlxTweenManager();
 
-	var instSong:String = null;
+	public var instSong:String = null;
 	public var vocals:FlxSound;
 	public var vocalsOther:FlxSound;
 	public var vocalType:VocalType = combinedVocalTrack;
@@ -1378,6 +1379,16 @@ class PlayState extends MusicBeatState
 
 			switchState(new ChartingState());
 			sectionStart = false;
+
+			if(instSong != null){
+				overrideInsturmental = instSong;
+			}
+
+			canPause = false;
+
+			FlxG.sound.music.pause();
+			vocals.pause();
+			vocalsOther.pause();
 		}
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconP1.xOffset);
@@ -2279,12 +2290,12 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 
-		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition)) > 20 || (vocalType != noVocalTrack && Math.abs(vocals.time - (Conductor.songPosition)) > 20)){
+		if((Math.abs(FlxG.sound.music.time - (Conductor.songPosition)) > 20 || (vocalType != noVocalTrack && Math.abs(vocals.time - (Conductor.songPosition)) > 20)) && FlxG.sound.music.playing){
 			resyncVocals();
 		}
 
 		if(vocalType == splitVocalTrack){
-			if (Math.abs(vocalsOther.time - (Conductor.songPosition)) > 20){
+			if((Math.abs(vocalsOther.time - (Conductor.songPosition)) > 20) && FlxG.sound.music.playing){
 				resyncVocals();
 			}
 		}
@@ -2326,7 +2337,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if(curBeat % camBopFrequency == 0 && autoCamBop){
-			uiBop(0.0175, 0.03, 0.8);
+			uiBop(0.0175 * camBopIntensity, 0.03 * camBopIntensity, 0.8);
 		}
 
 		if (curBeat % iconBopFrequency == 0){

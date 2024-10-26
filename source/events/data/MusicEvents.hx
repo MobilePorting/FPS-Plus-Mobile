@@ -8,13 +8,13 @@ class MusicEvents extends Events
 {
 
     override function defineEvents() {
-        addEvent("muteInst", muteInst);
-        addEvent("playInst", playInst);
+        addEvent("muteInst", muteInst, MUTE_INST_DESC);
+        addEvent("playInst", playInst, PLAY_INST_DESC);
 
-        addEvent("muteVocals", muteVocals);
-        addEvent("playVocals", playVocals);
+        addEvent("muteVocals", muteVocals, MUTE_VOCALS_DESC);
+        addEvent("playVocals", playVocals, PLAY_VOCALS_DESC);
 
-        addEvent("toggleVocalVolumeLock", muteVocals);
+        addEvent("toggleVocalVolumeLock", toggleVocalVolumeLock, TOGGLE_VOCAL_VOLUME_LOCK_DESC);
     }
 
     function muteInst(tag:String):Void{
@@ -29,7 +29,7 @@ class MusicEvents extends Events
         var args = Events.getArgs(tag, ["all"]);
         if(playstate.vocalType == splitVocalTrack){
             switch(args[0]){
-                case "bf" | "boyfreind" |"player":
+                case "bf" | "boyfriend" |"player":
                     playstate.vocals.volume = 0;
                 case "dad" | "opponent":
                     playstate.vocalsOther.volume = 0;
@@ -65,4 +65,12 @@ class MusicEvents extends Events
         playstate.canChangeVocalVolume = !playstate.canChangeVocalVolume;
     }
 
+
+
+    //Event descriptions. Not required but it helps with charting.
+    static inline final MUTE_INST_DESC:String = "Mutes the instrumental.";
+    static inline final PLAY_INST_DESC:String = "Plays the instrumental.";
+    static inline final PLAY_VOCALS_DESC:String = "Plays the instrumental.\n\nArgs:\n    String: Voice track (\"bf\", \"dad\", or \"all\")";
+    static inline final MUTE_VOCALS_DESC:String = "Plays the instrumental.\n\nArgs:\n    String: Voice track (\"bf\", \"dad\", or \"all\")";
+    static inline final TOGGLE_VOCAL_VOLUME_LOCK_DESC:String = "Toggles whether hitting/missing notes will toggle the volume on the vocal tracks.";
 }
