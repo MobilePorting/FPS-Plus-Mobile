@@ -202,6 +202,7 @@ class Binds
             category: "Menu",
             binds: [F11],
             controllerBinds: [],
+            mobileBinds: [MobileInputID.NONE],
             local: false
         };
         r.set("fullscreen", k);
