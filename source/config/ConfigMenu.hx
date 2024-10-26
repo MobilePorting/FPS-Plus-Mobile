@@ -731,10 +731,10 @@ class ConfigMenu extends FlxUIStateExt
             ghostTap.description = ghostTap.extraData[randomTapValue];
         }
 
-
+        var keyBinds:ConfigOption = null;
 
         if (!Binds.mobileC) {
-            var keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press ENTER to change key binds.");
+            keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press ENTER to change key binds.");
             keyBinds.optionUpdate = function(){
                 if (pressAccept) {
                     FlxG.sound.play(Paths.sound('scrollMenu'));
