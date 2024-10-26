@@ -731,21 +731,23 @@ class ConfigMenu extends FlxUIStateExt
 
 
 
-        var keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press ENTER to change key binds.");
-        keyBinds.optionUpdate = function(){
-            if (pressAccept) {
-                FlxG.sound.play(Paths.sound('scrollMenu'));
-                state = "transitioning";
-                startInSubMenu = curSelected;
-                writeToConfig();
-                if(USE_LAYERED_MUSIC && !USE_MENU_MUSIC){
-                    songLayer.fadeOut(0.3);
-                }
-                if(Binds.justPressedControllerOnly("menuAccept")){
-                    switchState(new KeyBindMenu(true));
-                }
-                else{
-                    switchState(new KeyBindMenu(false));
+        if (!Binds.mobileC) {
+            var keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press ENTER to change key binds.");
+            keyBinds.optionUpdate = function(){
+                if (pressAccept) {
+                    FlxG.sound.play(Paths.sound('scrollMenu'));
+                    state = "transitioning";
+                    startInSubMenu = curSelected;
+                    writeToConfig();
+                    if(USE_LAYERED_MUSIC && !USE_MENU_MUSIC){
+                        songLayer.fadeOut(0.3);
+                    }
+                    if(Binds.justPressedControllerOnly("menuAccept")){
+                        switchState(new KeyBindMenu(true));
+                    }
+                    else{
+                        switchState(new KeyBindMenu(false));
+                    }
                 }
             }
         }
@@ -759,7 +761,6 @@ class ConfigMenu extends FlxUIStateExt
             }
             showFPS.setting = ": " + genericOnOff[showFPSValue?0:1];
         }
-
 
 
         //MISC
