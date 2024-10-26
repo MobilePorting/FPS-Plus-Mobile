@@ -26,6 +26,7 @@ class Config
 	public static var showAccuracy:Bool;
 	public static var showMisses:Int;
 	public static var enableVariations:Bool;
+	public static var autoPause:Bool;
 
 	#if mobile
 	public static var allowScreenTimeout:Bool;
@@ -60,6 +61,7 @@ class Config
 		FlxG.save.data.showAccuracy = true;
 		FlxG.save.data.showMisses = 1;
 		FlxG.save.data.enableVariations = true;
+		FlxG.save.data.autoPause = true;
 
 		#if mobile
 		FlxG.save.data.allowScreenTimeout = false;
@@ -96,6 +98,7 @@ class Config
 		showAccuracy = FlxG.save.data.showAccuracy;
 		showMisses = FlxG.save.data.showMisses;
 		enableVariations = FlxG.save.data.enableVariations;
+		autoPause = FlxG.save.data.autoPause;
 
 		#if mobile
 		allowScreenTimeout = FlxG.save.data.allowScreenTimeout;
@@ -127,7 +130,8 @@ class Config
 								showCaptionsW:Bool,
 								showAccuracyW:Bool,
 								showMissesW:Int,
-								enableVariationsW:Bool
+								enableVariationsW:Bool,
+								autoPauseW:Bool
 								):Void
 	{
 
@@ -153,6 +157,7 @@ class Config
 		FlxG.save.data.showAccuracy = showAccuracyW;
 		FlxG.save.data.showMisses = showMissesW;
 		FlxG.save.data.enableVariations = enableVariationsW;
+		FlxG.save.data.autoPause = autoPauseW;
 
 		#if mobile
 		FlxG.save.data.allowScreenTimeout = allowScreenTimeout;
@@ -211,6 +216,8 @@ class Config
 			FlxG.save.data.showMisses = 1;
 		if(FlxG.save.data.enableVariations == null)
 			FlxG.save.data.enableVariations = true;
+		if(FlxG.save.data.autoPause == null)
+			FlxG.save.data.autoPause = true;
 
 		#if mobile
 		if(FlxG.save.data.allowScreenTimeout == null)
@@ -220,7 +227,6 @@ class Config
 			FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
 		if(FlxG.save.data.hitboxType == null)
 			FlxG.save.data.hitboxType = 'No Gradient';
-		
 
 		if(FlxG.save.data.ee1 == null)
 			FlxG.save.data.ee1 = false;

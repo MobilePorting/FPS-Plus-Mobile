@@ -123,6 +123,7 @@ class Startup extends FlxState
         //trace(NoteType.sustainTypes);
 
         Main.fpsDisplay.visible = Config.showFPS;
+        FlxG.autoPause = Config.autoPause;
 
         FlxUIStateExt.defaultTransIn = ScreenWipeIn;
         FlxUIStateExt.defaultTransInArgs = [0.6];
