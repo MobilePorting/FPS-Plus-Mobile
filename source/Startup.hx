@@ -106,7 +106,9 @@ class Startup extends FlxState
 		Config.configCheck();
 		Config.reload();
 
+        #if mobile
         lime.system.System.allowScreenTimeout = Config.allowScreenTimeout;
+        #end
         
         mobile.MobileData.init();
         Binds.init();
