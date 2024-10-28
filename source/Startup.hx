@@ -8,7 +8,6 @@ import flixel.ui.FlxBar;
 import openfl.media.Sound;
 import title.*;
 import config.*;
-import transition.data.*;
 
 import flixel.FlxState;
 import lime.utils.Assets;
@@ -20,17 +19,13 @@ import flixel.text.FlxText;
 import openfl.system.System;
 //import openfl.utils.Future;
 //import flixel.addons.util.FlxAsyncLoop;
-import extensions.flixel.FlxUIStateExt;
-#if mobile
-import mobile.CopyState;
-#end
 
 using StringTools;
 
 class Startup extends FlxState
 {
 
-    var nextState:FlxState = #if mobile !CopyState.checkExistingFiles() ? new CopyState() : #end new TitleVideo();
+    var nextState:FlxState = new TitleVideo();
     //var nextState:FlxState = new results.ResultsState(null, "Results Test", "Pico");
 
     var splash:FlxSprite;
@@ -126,11 +121,6 @@ class Startup extends FlxState
 
         Main.fpsDisplay.visible = Config.showFPS;
         FlxG.autoPause = Config.autoPause;
-
-        FlxUIStateExt.defaultTransIn = ScreenWipeIn;
-        FlxUIStateExt.defaultTransInArgs = [0.6];
-        FlxUIStateExt.defaultTransOut = ScreenWipeOut;
-        FlxUIStateExt.defaultTransOutArgs = [0.6];
 
         /*if (FlxG.save.data.weekUnlocked != null)
 		{

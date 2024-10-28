@@ -1,6 +1,8 @@
 package;
 
 import flixel.system.scaleModes.RatioScaleMode;
+import extensions.flixel.FlxUIStateExt;
+import transition.data.*;
 import flixel.FlxG;
 import flixel.FlxGame;
 import openfl.display.FPS;
@@ -40,7 +42,12 @@ class Main extends Sprite
 		fpsDisplay = new FPS(10, 3, 0xFFFFFF);
 		fpsDisplay.visible = true;
 
-		addChild(new FlxGame(#if mobile 1280, 720 #else 0, 0 #end, Startup, 60, 60, true));
+		FlxUIStateExt.defaultTransIn = ScreenWipeIn;
+        FlxUIStateExt.defaultTransInArgs = [0.6];
+        FlxUIStateExt.defaultTransOut = ScreenWipeOut;
+        FlxUIStateExt.defaultTransOutArgs = [0.6];
+
+		addChild(new FlxGame(#if mobile 1280, 720 #else 0, 0 #end, #if mobile !mobile.CopyState.checkExistingFiles() ? mobile.CopyState : #end Startup, 60, 60, true));
 		addChild(fpsDisplay);
 
 		//On web builds, video tends to lag quite a bit, so this just helps it run a bit faster.

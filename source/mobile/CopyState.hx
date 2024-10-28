@@ -1,6 +1,5 @@
 package mobile;
 
-import title.TitleVideo;
 #if mobile
 import lime.utils.Assets as LimeAssets;
 import openfl.utils.Assets as OpenFLAssets;
@@ -11,6 +10,8 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import openfl.utils.ByteArray;
 import haxe.io.Path;
+import flixel.ui.FlxBar;
+import flixel.ui.FlxBar.FlxBarFillDirection;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
@@ -19,22 +20,22 @@ using StringTools;
 
 class CopyState extends MusicBeatState
 {
+	private static final textFilesExtensions:Array<String> = ['ini', 'txt', 'xml', 'hxs', 'hx', 'lua', 'json', 'frag', 'vert'];
+	public static final IGNORE_FOLDER_FILE_NAME:String = "CopyState-Ignore.txt";
+	private static var directoriesToIgnore:Array<String> = [];
 	public static var locatedFiles:Array<String> = [];
 	public static var maxLoopTimes:Int = 0;
-	public static final IGNORE_FOLDER_FILE_NAME:String = "CopyState-Ignore.txt";
 
 	public var loadingImage:FlxSprite;
-	public var bottomBG:FlxSprite;
+	public var loadingBar:FlxBar;
 	public var loadedText:FlxText;
 	public var copyLoop:FlxAsyncLoop;
 
-	var loopTimes:Int = 0;
-	var failedFiles:Array<String> = [];
 	var failedFilesStack:Array<String> = [];
-	var canUpdate:Bool = true;
+	var failedFiles:Array<String> = [];
 	var shouldCopy:Bool = false;
-
-	private static final textFilesExtensions:Array<String> = ['ini', 'txt', 'xml', 'hxs', 'hx', 'lua', 'json', 'frag', 'vert'];
+	var canUpdate:Bool = true;
+	var loopTimes:Int = 0;
 
 	override function create()
 	{
@@ -43,14 +44,12 @@ class CopyState extends MusicBeatState
 		checkExistingFiles();
 		if (maxLoopTimes <= 0)
 		{
-			switchState(new TitleVideo());
+			switchState(new Startup());
 			return;
 		}
 
-		#if android
 		Utils.showPopUp("Seems like you have some missing files that are necessary to run the game\nPress OK to begin the copy process", "Notice!");
-		#end
-		
+
 		shouldCopy = true;
 
 		add(new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, 0xffcaff4d));
@@ -61,11 +60,11 @@ class CopyState extends MusicBeatState
 		loadingImage.screenCenter();
 		add(loadingImage);
 
-		bottomBG = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
-		bottomBG.alpha = 0.6;
-		add(bottomBG);
+		loadingBar = new FlxBar(0, FlxG.height - 26, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width, 26);
+		loadingBar.setRange(0, maxLoopTimes);
+		add(loadingBar);
 
-		loadedText = new FlxText(bottomBG.x, bottomBG.y + 4, FlxG.width, '', 16);
+		loadedText = new FlxText(loadingBar.x, loadingBar.y + 4, FlxG.width, '', 16);
 		loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER);
 		add(loadedText);
 
@@ -84,24 +83,24 @@ class CopyState extends MusicBeatState
 	{
 		if (shouldCopy && copyLoop != null)
 		{
+			loadingBar.percent = loopTimes / maxLoopTimes * 100;
 			if (copyLoop.finished && canUpdate)
 			{
 				if (failedFiles.length > 0)
 				{
-					#if android
 					Utils.showPopUp(failedFiles.join('\n'), 'Failed To Copy ${failedFiles.length} File.');
-					#end
 					if (!FileSystem.exists('logs'))
 						FileSystem.createDirectory('logs');
 					File.saveContent('logs/' + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
 				}
 				canUpdate = false;
-				FlxG.sound.play(Paths.sound('confirmMenu')).onComplete = () -> {
-					switchState(new TitleVideo());
+				FlxG.sound.play(Paths.sound('confirmMenu')).onComplete = () ->
+				{
+					switchState(new Startup());
 				};
 			}
 
-			if (maxLoopTimes == 0)
+			if (loopTimes == maxLoopTimes)
 				loadedText.text = "Completed!";
 			else
 				loadedText.text = '$loopTimes/$maxLoopTimes';
@@ -174,11 +173,13 @@ class CopyState extends MusicBeatState
 
 	public static function getFile(file:String):String
 	{
-		if(OpenFLAssets.exists(file)) return file;
+		if (OpenFLAssets.exists(file))
+			return file;
 
 		@:privateAccess
-		for(library in LimeAssets.libraries.keys()){
-			if(OpenFLAssets.exists('$library:$file') && library != 'default')
+		for (library in LimeAssets.libraries.keys())
+		{
+			if (OpenFLAssets.exists('$library:$file') && library != 'default')
 				return '$library:$file';
 		}
 
@@ -188,28 +189,38 @@ class CopyState extends MusicBeatState
 	public static function checkExistingFiles():Bool
 	{
 		locatedFiles = OpenFLAssets.list();
-		
+
 		// removes unwanted assets
 		var assets = locatedFiles.filter(folder -> folder.startsWith('assets/'));
 		var mods = locatedFiles.filter(folder -> folder.startsWith('mods/'));
 		locatedFiles = assets.concat(mods);
+		locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(file));
 
 		var filesToRemove:Array<String> = [];
 
 		for (file in locatedFiles)
 		{
-			if (FileSystem.exists(file) || OpenFLAssets.exists(getFile(Path.join([Path.directory(getFile(file)), IGNORE_FOLDER_FILE_NAME]))))
+			if (filesToRemove.contains(file))
+				continue;
+
+			if(file.endsWith(IGNORE_FOLDER_FILE_NAME) && !directoriesToIgnore.contains(Path.directory(file)))
+				directoriesToIgnore.push(Path.directory(file));
+
+			if (directoriesToIgnore.length > 0)
 			{
-				filesToRemove.push(file);
+				for (directory in directoriesToIgnore)
+				{
+					if (file.startsWith(directory))
+						filesToRemove.push(file);
+				}
 			}
 		}
 
-		for (file in filesToRemove)
-			locatedFiles.remove(file);
+		locatedFiles = locatedFiles.filter(file -> !filesToRemove.contains(file));
 
 		maxLoopTimes = locatedFiles.length;
 
-		return (maxLoopTimes < 0);
+		return (maxLoopTimes <= 0);
 	}
 }
 #end
