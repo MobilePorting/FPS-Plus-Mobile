@@ -27,6 +27,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	public static var instance:GameOverSubstate;
 
 	public function new(_x:Float, _y:Float, camX:Float, camY:Float, camZoom:Float, character:String){
+		Binds.isInSubstate = true;
 		super();
 
 		instance = this;
@@ -71,6 +72,9 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 		
 		PlayState.instance.stage.gameOverStart();
+
+		addTouchPad("NONE", "A_B");
+		addTouchPadCamera();
 	}
 
 	override function update(elapsed:Float){
@@ -85,6 +89,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			isEnding = true;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 
+			Binds.isInSubstate = false;
 			PlayState.instance.returnToMenu();
 
 			camGameOver.fade(FlxColor.BLACK, 0.1, false);	
@@ -127,7 +132,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		new FlxTimer().start(0.4, function(tmr:FlxTimer){
 			camGameOver.fade(FlxColor.BLACK, 1.2, false, function(){
 				PlayState.instance.switchState(new PlayState());
-				PlayState.replayStartCutscene = false;
+				Binds.isInSubstate = PlayState.replayStartCutscene = false;
 			});
 		});
 	}

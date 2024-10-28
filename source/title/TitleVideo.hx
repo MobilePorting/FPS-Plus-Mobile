@@ -44,7 +44,7 @@ class TitleVideo extends FlxState
 
 		super.update(elapsed);
 
-		if(Binds.justPressed("menuAccept")){
+		if(mobile.TouchUtil.justPressed || Binds.justPressed("menuAccept")){
 			video.skip();
 		}
 

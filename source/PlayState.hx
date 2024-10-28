@@ -539,6 +539,14 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG.song);
 
+		addHitbox();
+		hitbox.visible = true;
+		#if !android
+		addTouchPad("NONE", "P");
+		addTouchPadCamera();
+		touchPad.visible = true;
+		#end
+
 		add(playerCovers);
 		add(enemyCovers);
 
@@ -1366,7 +1374,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (Binds.justPressed("pause") && startedCountdown && canPause){
+		if (#if android FlxG.android.justReleased.BACK || #end Binds.justPressed("pause") && startedCountdown && canPause){
 			paused = true;
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
@@ -1712,7 +1720,7 @@ class PlayState extends MusicBeatState
 
 	public function endSong():Void{
 		
-		inEndingCutscene = false;
+		inEndingCutscene = hitbox.visible = #if !android touchPad.visible = #end false;
 
 		if(!songEnded){ stopMusic(); }
 

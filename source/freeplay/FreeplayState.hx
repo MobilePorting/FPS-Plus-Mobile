@@ -186,6 +186,9 @@ class FreeplayState extends MusicBeatState
 			addSong(song[0], song[1], song[2], song[3]);
 		}
 
+		addTouchPad("LEFT_FULL", "A_B_C");
+		addTouchPadCamera();
+
 		super.create();
 	} 
 
@@ -278,7 +281,7 @@ class FreeplayState extends MusicBeatState
 						});
 					}
 		
-					if(Binds.justPressed("menuChangeCharacter")){
+					if(touchPad.buttonC.justPressed || Binds.justPressed("menuChangeCharacter")){
 						transitionOver = false;
 						dj.toCharacterSelect();
 						customTransOut = new transition.data.ScreenWipeOutFlipped(dropTime, dropEase);
@@ -871,8 +874,8 @@ class FreeplayState extends MusicBeatState
 	function updateChangeCharacterText(controller:Bool = false):Void{
 		if(!controller){
 			if(Binds.binds.get("menuChangeCharacter").binds.length > 0){
-				var key = Binds.binds.get("menuChangeCharacter").binds[0];
-				changeCharacterText.text = "[" + Utils.keyToString(key) + "] to Change Character";
+				var key:Dynamic = (Config.mobileC) ? mobile.input.MobileInputID.C : Binds.binds.get("menuChangeCharacter").binds[0];
+				changeCharacterText.text = "[" + (Config.mobileC ? Utils.mobileButtonToString(key) : Utils.keyToString(key)) + "] to Change Character";
 			}
 			else{
 				changeCharacterText.text = "Change Character not bound!";
@@ -881,8 +884,8 @@ class FreeplayState extends MusicBeatState
 		}
 		else{
 			if(Binds.binds.get("menuChangeCharacter").controllerBinds.length > 0){
-				var key = Binds.binds.get("menuChangeCharacter").controllerBinds[0];
-				changeCharacterText.text = "[" + Utils.controllerButtonToString(key) + "] to Change Character";
+				var key:Dynamic = (Config.mobileC) ? mobile.input.MobileInputID.C : Binds.binds.get("menuChangeCharacter").controllerBinds[0];
+				changeCharacterText.text = "[" + (Config.mobileC ? Utils.mobileButtonToString(key) : Utils.controllerButtonToString(key)) + "] to Change Character";
 			}
 			else{
 				changeCharacterText.text = "Change Character not bound!";

@@ -161,7 +161,7 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
-		if (FlxG.keys.justPressed.ANY || FlxG.gamepads.anyJustPressed(ANY))
+		if (mobile.TouchUtil.justPressed || FlxG.keys.justPressed.ANY || FlxG.gamepads.anyJustPressed(ANY))
 		{
 
 			if(dialogueFinished){

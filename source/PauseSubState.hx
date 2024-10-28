@@ -32,6 +32,7 @@ class PauseSubState extends MusicBeatSubstate
 	var songArtist:FlxTextExt;
 
 	public function new(x:Float, y:Float){
+		Binds.isInSubstate = true;
 
 		super();
 
@@ -127,6 +128,9 @@ class PauseSubState extends MusicBeatSubstate
 		changeSelection();
 
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.8);
+
+		addTouchPad("UP_DOWN", "A_B");
+		addTouchPadCamera();
 	}
 
 	override function update(elapsed:Float){
@@ -148,7 +152,7 @@ class PauseSubState extends MusicBeatSubstate
 				unpause();
 			}
 	
-			if (!allowControllerPress ? Binds.justPressedKeyboardOnly("menuAccept") : Binds.justPressed("menuAccept")){
+			if (!allowControllerPress && !Config.mobileC ? Binds.justPressedKeyboardOnly("menuAccept") : Binds.justPressed("menuAccept")){
 	
 				PlayState.instance.tweenManager.active = true;
 	
@@ -230,6 +234,7 @@ class PauseSubState extends MusicBeatSubstate
 	}
 
 	override function destroy(){
+		Binds.isInSubstate = false;
 		pauseMusic.fadeTween.cancel();
 		pauseMusic.destroy();
 		if(songName != null){
