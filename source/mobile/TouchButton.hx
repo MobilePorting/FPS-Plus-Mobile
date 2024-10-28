@@ -258,6 +258,21 @@ class TypedTouchButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 				_spriteLabel.cameras = cameras;
 			_spriteLabel.draw();
 		}
+		
+		if (_spriteLabel != null)
+		{
+			if (_spriteLabel.graphic == null)
+				trace('main label graphic is null');
+			if (_spriteLabel.pixels == null)
+				trace('main label bitmap is null');
+			if (!_spriteLabel.visible)
+				trace('main label is not visible');
+		}
+		else
+		{
+			trace('main label variable is null');
+		}
+			
 	}
 
 	#if FLX_DEBUG
