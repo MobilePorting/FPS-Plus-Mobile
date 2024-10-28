@@ -54,7 +54,7 @@ class TouchPad extends MobileInputManager
 	 * Create a gamepad.
 	 *
 	 * @param   DPadMode     The D-Pad mode. `LEFT_FULL` for example.
-	 * @param   ActionMode   The action buttons mode. `A_B_C` for example.
+	 * @param   ActionMode   The action buttons mode. `A_B` for example.
 	 */
 	public function new(DPad:String, Action:String)
 	{

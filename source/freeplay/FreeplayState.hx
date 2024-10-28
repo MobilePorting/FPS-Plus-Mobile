@@ -186,7 +186,7 @@ class FreeplayState extends MusicBeatState
 			addSong(song[0], song[1], song[2], song[3]);
 		}
 
-		addTouchPad("LEFT_FULL", "A_B_C");
+		addTouchPad("LEFT_FULL", "A_B_C_LEFT_RIGHT");
 		addTouchPadCamera();
 
 		super.create();
@@ -233,11 +233,11 @@ class FreeplayState extends MusicBeatState
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 					}
 		
-					if(Binds.justPressed("menuCycleLeft")){
+					if(touchPad.buttonLeft2.justPressed || Binds.justPressed("menuCycleLeft")){
 						changeCategory(-1);
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 					}
-					else if(Binds.justPressed("menuCycleRight")){
+					else if(touchPad.buttonRight2.justPressed || Binds.justPressed("menuCycleRight")){
 						changeCategory(1);
 						FlxG.sound.play(Paths.sound('scrollMenu'));
 					}
