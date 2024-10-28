@@ -230,6 +230,8 @@ class StoryMenuState extends MusicBeatState
 
 		fromPlayState = false;
 
+		addTouchPad("LEFT_FULL", "A_B");
+
 		super.create();
 	}
 

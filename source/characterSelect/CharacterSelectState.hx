@@ -214,6 +214,8 @@ class CharacterSelectState extends MusicBeatState
             canAccept = true;
         });
 
+        addTouchPad("LEFT_FULL", "A_B");
+
         super.create();
     }
 

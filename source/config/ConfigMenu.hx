@@ -230,6 +230,8 @@ class ConfigMenu extends FlxUIStateExt
         customTransIn = new WeirdBounceIn(0.6);
 		customTransOut = new WeirdBounceOut(0.6);
 
+        addTouchPad("LEFT_FULL", "A_B");
+
 		super.create();
 
 	}
@@ -631,7 +633,7 @@ class ConfigMenu extends FlxUIStateExt
 
 
 
-        var noteOffset = new ConfigOption("NOTE OFFSET", ": " + offsetValue, "Adjust note timings.\nPress \"ENTER\" to start the offset calibration." + (Config.ee1?"\nHold \"SHIFT\" to force the pixel calibration.\nHold \"CTRL\" to force the normal calibration.":""));
+        var noteOffset = new ConfigOption("NOTE OFFSET", ": " + offsetValue, "Adjust note timings.\nPress " + (Config.mobileC ? "\"A\"" : "\"ENTER\"") + " to start the offset calibration." + (Config.ee1?"\nHold \"SHIFT\" to force the pixel calibration.\nHold \"CTRL\" to force the normal calibration.":""));
         noteOffset.extraData[0] = 0;
         noteOffset.optionUpdate = function(){
             if (pressRight){
@@ -733,7 +735,7 @@ class ConfigMenu extends FlxUIStateExt
 
 
 
-        var keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press ENTER to change key binds.");
+        var keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press " + (Config.mobileC ? "A" : "ENTER") + " to change key binds.");
         keyBinds.optionUpdate = function(){
             if (pressAccept) {
                 if (Config.mobileC)
@@ -759,7 +761,7 @@ class ConfigMenu extends FlxUIStateExt
             }
         }
 
-        var mobileSettings = new ConfigOption("[EDIT MOBILE OPTIONS]", "", "Press ENTER to change key binds.");
+        var mobileSettings = new ConfigOption("[EDIT MOBILE OPTIONS]", "", "Press " + (Config.mobileC ? "A" : "ENTER") + " to change key binds.");
         mobileSettings.optionUpdate = function(){
             if (pressAccept) {
                 FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -946,7 +948,7 @@ class ConfigMenu extends FlxUIStateExt
 
 
 
-        var cacheSettings = new ConfigOption("[CACHE SETTINGS]", "", "Press ENTER to change what assets the game keeps cached.");
+        var cacheSettings = new ConfigOption("[CACHE SETTINGS]", "", "Press " + (Config.mobileC ? "A" : "ENTER") + " to change what assets the game keeps cached.");
         cacheSettings.optionUpdate = function(){
             if (pressAccept) {
                 #if desktop
@@ -967,8 +969,8 @@ class ConfigMenu extends FlxUIStateExt
 
         var scrollSpeed = new ConfigOption("STATIC SCROLL SPEED", ": " + (scrollSpeedValue > 0 ? "" + (scrollSpeedValue / 10.0) : "[DISABLED]"), "");
         scrollSpeed.extraData[0] = 0;
-        scrollSpeed.extraData[1] = "Press ENTER to enable.\nSets the song scroll speed to the set value instead of the song's default.";
-        scrollSpeed.extraData[2] = "Press ENTER to disable.\nSets the song scroll speed to the set value instead of the song's default.";
+        scrollSpeed.extraData[1] = "Press " + (Config.mobileC ? "A" : "ENTER") + " to enable.\nSets the song scroll speed to the set value instead of the song's default.";
+        scrollSpeed.extraData[2] = "Press " + (Config.mobileC ? "A" : "ENTER") + " to disable.\nSets the song scroll speed to the set value instead of the song's default.";
         scrollSpeed.optionUpdate = function(){
 
             if(scrollSpeedValue != -10){

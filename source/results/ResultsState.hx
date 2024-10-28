@@ -451,7 +451,7 @@ class ResultsState extends FlxUIStateExt
 
     override function update(elapsed:Float) {
 
-        if((Binds.justPressed("menuAccept") || Binds.justPressed("menuBack")) && !exiting && shownRank){
+        if((mobile.TouchUtil.justPressed || Binds.justPressed("menuAccept") || Binds.justPressed("menuBack")) && !exiting && shownRank){
             returnToMenu();
         }
 

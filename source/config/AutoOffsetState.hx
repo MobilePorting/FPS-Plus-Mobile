@@ -126,7 +126,7 @@ class AutoOffsetState extends MusicBeatState
 		previousText.borderQuality = 1;
 		previousText.alpha = 0;
 
-		descText = new FlxText(320, 540, 640, "Tap any key to the beat of the music!\n", 40);
+		descText = new FlxText(320, 540, 640, (Config.mobileC ? "Touch your screen " :  "Tap any key to ") + "the beat of the music!\n", 40);
 		descText.scrollFactor.set(0, 0);
 		descText.setFormat(Paths.font("vcr"), 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		descText.borderSize = 2;
@@ -159,6 +159,8 @@ class AutoOffsetState extends MusicBeatState
 			descText.alpha = 0;
 			FlxTween.tween(descText, {y: descText.y + 10, alpha: 1}, 0.4, {ease: FlxEase.circOut, startDelay: 1.2});
 		});
+		
+		addTouchPad("NONE", "B");
 
 		super.create();
 
@@ -177,7 +179,7 @@ class AutoOffsetState extends MusicBeatState
 				endOfSong = true;
 				endSong();
 			}
-			else if (FlxG.keys.justPressed.ANY && (Conductor.songPosition >= 4500 && Conductor.songPosition <= 43500) && !(ending || endOfSong)){
+			else if ((mobile.TouchUtil.justPressed || FlxG.keys.justPressed.ANY) && (Conductor.songPosition >= 4500 && Conductor.songPosition <= 43500) && !(ending || endOfSong)){
 				hitBeat();
 			}
 
