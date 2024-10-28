@@ -731,26 +731,46 @@ class ConfigMenu extends FlxUIStateExt
             ghostTap.description = ghostTap.extraData[randomTapValue];
         }
 
-        var keyBinds:ConfigOption = null;
 
-        if (!Binds.mobileC) {
-            keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press ENTER to change key binds.");
-            keyBinds.optionUpdate = function(){
-                if (pressAccept) {
-                    FlxG.sound.play(Paths.sound('scrollMenu'));
-                    state = "transitioning";
-                    startInSubMenu = curSelected;
-                    writeToConfig();
-                    if(USE_LAYERED_MUSIC && !USE_MENU_MUSIC){
-                        songLayer.fadeOut(0.3);
-                    }
-                    if(Binds.justPressedControllerOnly("menuAccept")){
-                        switchState(new KeyBindMenu(true));
-                    }
-                    else{
-                        switchState(new KeyBindMenu(false));
-                    }
+
+        var keyBinds = new ConfigOption("[EDIT CONTROLS]", "", "Press ENTER to change key binds.");
+        keyBinds.optionUpdate = function(){
+            if (pressAccept) {
+                if (Config.mobileC)
+                {
+                    FlxG.sound.play(Paths.sound('cancelMenu'));
                 }
+                else
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'));
+					state = "transitioning";
+					startInSubMenu = curSelected;
+					writeToConfig();
+					if(USE_LAYERED_MUSIC && !USE_MENU_MUSIC){
+						songLayer.fadeOut(0.3);
+					}
+					if(Binds.justPressedControllerOnly("menuAccept")){
+						switchState(new KeyBindMenu(true));
+					}
+					else{
+						switchState(new KeyBindMenu(false));
+					}
+                }
+            }
+        }
+
+        var mobileSettings = new ConfigOption("[EDIT MOBILE OPTIONS]", "", "Press ENTER to change key binds.");
+        mobileSettings.optionUpdate = function(){
+            if (pressAccept) {
+                FlxG.sound.play(Paths.sound('scrollMenu'));
+				state = "transitioning";
+				startInSubMenu = curSelected;
+				writeToConfig();
+				if(USE_LAYERED_MUSIC && !USE_MENU_MUSIC){
+					songLayer.fadeOut(0.3);
+				}
+                switchState(new mobile.config.MobileSettings());
+                mobile.config.MobileSettings.returnLoc = new ConfigMenu();
             }
         }
 
@@ -763,6 +783,7 @@ class ConfigMenu extends FlxUIStateExt
             }
             showFPS.setting = ": " + genericOnOff[showFPSValue?0:1];
         }
+
 
 
         //MISC
@@ -1069,7 +1090,7 @@ class ConfigMenu extends FlxUIStateExt
         configOptions = [
                             [fpsCap, noteSplash, noteGlow, extraCamStuff, camBopStuff, captionsStuff, bgDim, showFPS],
                             [noteOffset, downscroll, centeredNotes, ghostTap, keyBinds],
-                            [showMissesSetting, showAccuracyDisplay, comboDisplay, autoPauseSettings, variationsSettings, scrollSpeed, hpGain, hpDrain, cacheSettings]
+                            [showMissesSetting, showAccuracyDisplay, comboDisplay, autoPauseSettings, variationsSettings, scrollSpeed, hpGain, hpDrain, cacheSettings, mobileSettings]
                         ];
 
     }

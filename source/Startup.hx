@@ -19,6 +19,7 @@ import flixel.text.FlxText;
 import openfl.system.System;
 //import openfl.utils.Future;
 //import flixel.addons.util.FlxAsyncLoop;
+import mobile.scalemodes.MobileScaleMode;
 
 using StringTools;
 
@@ -103,6 +104,7 @@ class Startup extends FlxState
 
         #if mobile
         lime.system.System.allowScreenTimeout = Config.allowScreenTimeout;
+        FlxG.scaleMode = new MobileScaleMode();
         #end
         
         mobile.MobileData.init();

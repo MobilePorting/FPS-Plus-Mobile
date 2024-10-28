@@ -48,7 +48,7 @@ class PauseSubState extends MusicBeatSubstate
 			menuItems.insert(2, "Skip Song");
 		}
 		
-		if (!PlayState.isStoryMode){
+		if (!PlayState.isStoryMode && !Config.mobileC){
 			menuItems.insert(2, "Chart Editor");
 		}
 

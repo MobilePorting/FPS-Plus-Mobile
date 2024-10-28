@@ -353,7 +353,6 @@ class Binds
     
     public static var isInSubstate:Bool = false;
     public static var requestedInstance(get, default):Dynamic;
-    public static var mobileC:Bool = (config.Config.mobileCAlpha <= 0) ? false : true;
 
     inline static public function pressedMobileCOnly(input:String){
         var p:Bool = false;

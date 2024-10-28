@@ -30,12 +30,15 @@ class Config
 
 	#if mobile
 	public static var allowScreenTimeout:Bool;
+	public static var wideScreen:Bool;
 	#end
 	public static var mobileCAlpha:Float;
 	public static var hitboxType:String;
 
 	public static var ee1:Bool;
 	public static var ee2:Bool;
+
+	public static var mobileC(get, never):Bool;
 
 	public static function resetSettings():Void{
 
@@ -65,6 +68,7 @@ class Config
 
 		#if mobile
 		FlxG.save.data.allowScreenTimeout = false;
+		FlxG.save.data.wideScreen = false;
 		#end
 		FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
 		FlxG.save.data.hitboxType = 'No Gradient';
@@ -102,6 +106,7 @@ class Config
 
 		#if mobile
 		allowScreenTimeout = FlxG.save.data.allowScreenTimeout;
+		wideScreen = FlxG.save.data.wideScreen;
 		#end
 		mobileCAlpha = FlxG.save.data.mobileCAlpha;
 		hitboxType = FlxG.save.data.hitboxType;
@@ -159,16 +164,24 @@ class Config
 		FlxG.save.data.enableVariations = enableVariationsW;
 		FlxG.save.data.autoPause = autoPauseW;
 
-		#if mobile
-		FlxG.save.data.allowScreenTimeout = allowScreenTimeout;
-		#end
-		FlxG.save.data.mobileCAlpha = mobileCAlpha;
-		FlxG.save.data.hitboxType = hitboxType;
-
 		SaveManager.flush();
 		
 		reload();
 
+	}
+
+	public static function mobileWrite(#if mobile allowScreenTimeoutW:Bool, wideScreenW:Bool, #end mobileCAlphaW:Float, hitboxTypeW:String):Void
+	{
+		#if mobile
+		FlxG.save.data.allowScreenTimeout = allowScreenTimeoutW;
+		FlxG.save.data.wideScreen = wideScreenW;
+		#end
+		FlxG.save.data.mobileCAlpha = mobileCAlphaW;
+		FlxG.save.data.hitboxType = hitboxTypeW;
+
+		SaveManager.flush();
+		
+		reload();
 	}
 	
 	public static function configCheck():Void
@@ -222,6 +235,8 @@ class Config
 		#if mobile
 		if(FlxG.save.data.allowScreenTimeout == null)
 			FlxG.save.data.allowScreenTimeout = false;
+		if(FlxG.save.data.wideScreen == null)
+			FlxG.save.data.wideScreen = false;
 		#end
 		if(FlxG.save.data.mobileCAlpha == null)
 			FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
@@ -241,5 +256,13 @@ class Config
 		FlxG.updateFramerate = fps;
 		FlxG.drawFramerate  = fps;
 	}
-	
+
+	@:noCompletion
+	private static function get_mobileC():Bool
+	{
+		if (mobileCAlpha >= 0.1)
+			return true;
+		else
+			return false;
+	}
 }
