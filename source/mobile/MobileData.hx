@@ -32,10 +32,10 @@ class MobileData
 
 	public static function setButtonsColors(buttonsInstance:Dynamic):Dynamic
 	{
-		buttonsInstance.buttonLeft.color = 0xFFC24B99;
-		buttonsInstance.buttonDown.color = 0xFF00FFFF;
-		buttonsInstance.buttonUp.color = 0xFF12FA05;
-		buttonsInstance.buttonRight.color = 0xFFFF884E;
+		buttonsInstance.buttonLeft.color = 0xC24B99;
+		buttonsInstance.buttonDown.color = 0x00FFFF;
+		buttonsInstance.buttonUp.color = 0x12FA05;
+		buttonsInstance.buttonRight.color = 0xF9393F;
 
 		return buttonsInstance;
 	}
