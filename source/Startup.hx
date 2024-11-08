@@ -1,7 +1,7 @@
 package;
 
-import events.Events;
 import note.NoteType;
+import events.Events;
 import sys.FileSystem;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
@@ -27,7 +27,8 @@ class Startup extends FlxState
 {
 
     var nextState:FlxState = new TitleVideo();
-    //var nextState:FlxState = new results.ResultsState(null, "Results Test", "Pico");
+    //var nextState:FlxState = new modding.ModManagerState();
+    //var nextState:FlxState = new results.ResultsState(null, "Results Test", "PicoResults");
 
     var splash:FlxSprite;
     var loadingBar:FlxBar;
@@ -92,7 +93,7 @@ class Startup extends FlxState
 	override function create()
 	{  
 
-        //cast(nextState, results.ResultsState).enableDebugControls = true;
+        //results.ResultsState.enableDebugControls = true;
 
         SaveManager.global();
 
@@ -114,7 +115,7 @@ class Startup extends FlxState
 
         SaveManager.global();
         
-        debug.ChartingState.loadLists();
+        //debug.ChartingState.loadLists();
 
         NoteType.initTypes();
         Events.initEvents();
@@ -188,8 +189,9 @@ class Startup extends FlxState
 
     }
 
-    override function update(elapsed) 
-    {
+    override function update(elapsed):Void{
+
+        FlxG.mouse.visible = false;
         
         if(splash.animation.curAnim.finished && splash.animation.curAnim.name == "start" && !cacheStart){
             

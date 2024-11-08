@@ -1,0 +1,117 @@
+import flixel.sound.FlxSound;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import flixel.FlxObject;
+import objects.BackgroundDancer;
+
+class Limo extends BaseStage
+{
+
+	var limo:FlxSprite;
+	var grpLimoDancers:Array<BackgroundDancer> = [];
+	var fastCar:FlxSprite;
+
+	var carSound:FlxSound = new FlxSound();
+	var unpauseSoundCheck:Bool = false;
+
+	var fastCarCanDrive:Bool = true;
+
+    public function new(){
+		super();
+
+        name = "limo";
+		startingZoom = 0.9;
+
+		var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image("week4/limo/limoSunset"));
+		skyBG.scrollFactor.set(0.1, 0.1);
+		skyBG.antialiasing = true;
+		addToBackground(skyBG);
+
+		var bgLimo:FlxSprite = new FlxSprite(-200, 480);
+		bgLimo.frames = Paths.getSparrowAtlas("week4/limo/bgLimo");
+		bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
+		bgLimo.animation.play('drive');
+		bgLimo.scrollFactor.set(0.4, 0.4);
+		bgLimo.antialiasing = true;
+		addToBackground(bgLimo);
+
+		for (i in 0...5){
+			var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, bgLimo.y - 400);
+			dancer.scrollFactor.set(0.4, 0.4);
+			grpLimoDancers.push(dancer);
+			addToBackground(dancer);
+		}
+
+		//overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(Paths.images("limo/limoOverlay"));
+		//overlayShit.alpha = 0.5;
+		//add(overlayShit);
+
+		// var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
+
+		// FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
+
+		// overlayShit.shader = shaderBullshit;
+
+		fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image("week4/limo/fastCarLol"));
+		fastCar.antialiasing = true;
+		addToBackground(fastCar);
+
+		limo = new FlxSprite(-120, 550);
+		limo.frames = Paths.getSparrowAtlas("week4/limo/limoDrive");
+		limo.animation.addByPrefix('drive', "Limo stage", 24);
+		limo.animation.play('drive');
+		limo.antialiasing = true;
+		addToMiddle(limo);
+
+		resetFastCar();
+
+		dadStart.set(341, 914);
+		bfStart.set(1235.5, 604);
+		gfStart.set(787, 779);
+
+		bfCameraOffset.set(-200, 0);
+    }
+
+	public override function beat(curBeat:Float){
+		for(dancer in grpLimoDancers){
+			dancer.dance();
+		}
+
+		if (FlxG.random.bool(10) && fastCarCanDrive){
+			fastCarDrive();
+		}
+	} 
+
+	public override function pause() {
+		if(carSound.playing){
+			unpauseSoundCheck = true;
+			carSound.pause();
+		}
+	}
+
+	public override function unpause() {
+		if(unpauseSoundCheck){
+			unpauseSoundCheck = false;
+			carSound.play(false);
+		}
+	}
+
+	function resetFastCar():Void{
+		fastCar.x = -12600;
+		fastCar.y = FlxG.random.int(140, 250);
+		fastCar.velocity.x = 0;
+		fastCarCanDrive = true;
+	}
+
+	function fastCarDrive(){
+		carSound = FlxG.sound.play(Paths.sound('week4/carPass' + FlxG.random.int(0, 1)), 0.7);
+
+		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
+		fastCarCanDrive = false;
+		new FlxTimer().start(2, function(tmr:FlxTimer){
+			resetFastCar();
+		});
+	}
+}

@@ -1,5 +1,6 @@
 package note;
 
+import haxe.Json;
 import flixel.math.FlxPoint;
 
 typedef NoteSplashAnim = {
@@ -23,22 +24,36 @@ typedef NoteSplashSkinInfo = {
 class NoteSplashSkinBase
 {
  
-    public var info:NoteSplashSkinInfo;
+    public var info:NoteSplashSkinInfo = {
+        path: null,
+        anims: [
+            [], [], [], []
+        ],
+        randomRotation: true,
+        limitedRotationAngles: false,
+        alpha: 1,
+        antialiasing: true,
+        scale: 1
+    };
 
-    public function new(){
-        
-        info = {
-            path: null,
-            anims: [
-                [], [], [], []
-            ],
-            randomRotation: true,
-            limitedRotationAngles: false,
-            alpha: 1,
-            antialiasing: true,
-            scale: 1
-        }
+    public function new(_skin:String){
+        var skinJson = Json.parse(Utils.getText(Paths.json(_skin, "data/uiSkins/noteSplash")));
+        info.path = skinJson.path;
+        if(skinJson.randomRotation != null){ info.randomRotation = skinJson.randomRotation; }
+        if(skinJson.limitedRotationAngles != null){ info.limitedRotationAngles = skinJson.limitedRotationAngles; }
+        if(skinJson.alpha != null){ info.alpha = skinJson.alpha; }
+        if(skinJson.antialiasing != null){ info.antialiasing = skinJson.antialiasing; }
+        if(skinJson.scale != null){ info.scale = skinJson.scale; }
 
+        var leftAnims:Array<Dynamic> = skinJson.animations.left;
+        var downAnims:Array<Dynamic> = skinJson.animations.down;
+        var upAnims:Array<Dynamic> = skinJson.animations.up;
+        var rightAnims:Array<Dynamic> = skinJson.animations.right;
+
+        for(anim in leftAnims)   { addAnim(0, anim.prefix, anim.framerateRange, anim.offset); }
+        for(anim in downAnims)   { addAnim(1, anim.prefix, anim.framerateRange, anim.offset); }
+        for(anim in upAnims)     { addAnim(2, anim.prefix, anim.framerateRange, anim.offset); }
+        for(anim in rightAnims)  { addAnim(3, anim.prefix, anim.framerateRange, anim.offset); }
     }
 
     function addAnim(_direction:Int, _name:String, ?_framerateRange:Array<Int>, ?_offset:Array<Float>) {
@@ -62,13 +77,5 @@ class NoteSplashSkinBase
         return [_x, _y];
     }
 
-    var left(get, never):Int;
-    @:noCompletion inline function get_left()   { return 0; }
-    var down(get, never):Int;
-    @:noCompletion inline function get_down()   { return 1; }
-    var up(get, never):Int;
-    @:noCompletion inline function get_up()     { return 2; }
-    var right(get, never):Int;
-    @:noCompletion inline function get_right()  { return 3; }
-
+    public function toString():String{ return "NoteSplashSkinBase"; }
 }

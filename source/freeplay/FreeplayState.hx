@@ -1,5 +1,6 @@
 package freeplay;
 
+import modding.PolymodHandler;
 import flixel.group.FlxSpriteGroup;
 import openfl.filters.ShaderFilter;
 import shaders.BlueFadeShader;
@@ -83,7 +84,7 @@ class FreeplayState extends MusicBeatState
 	public static var curCategory:Int = 0;
 	public static var curVariation:Int = 0;
 
-	public static var djCharacter:String = "Boyfriend";
+	public static var djCharacter:String = "BoyfriendFreeplay";
 
 	var allowedDifficulties:Array<Int> = [0, 1, 2];
 
@@ -170,9 +171,12 @@ class FreeplayState extends MusicBeatState
 		}
 
 		//DJ STUFF
-		var djClass = Type.resolveClass("freeplay.characters." + djCharacter);
-		if(djClass == null){ djClass = freeplay.characters.Boyfriend; }
-		dj = Type.createInstance(djClass, []);
+		//var djClass = Type.resolveClass("freeplay.characters." + djCharacter);
+		//if(djClass == null){ djClass = freeplay.characters.Boyfriend; }
+		//dj = Type.createInstance(djClass, []);
+		dj = ScriptableDJCharacter.init(djCharacter);
+		dj.setup();
+		dj.setupSongList();
 		dj.introFinish = djIntroFinish;
 		dj.cameras = [camFreeplay];
 
@@ -183,7 +187,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		for(song in dj.freeplaySongs){
-			addSong(song[0], song[1], song[2], song[3]);
+			addSong(song[0], song[1], song[2]);
 		}
 
 		addTouchPad("LEFT_FULL", "A_B_C_LEFT_RIGHT");
@@ -351,6 +355,10 @@ class FreeplayState extends MusicBeatState
 		
 		camFollow.x = Utils.fpsAdjsutedLerp(camFollow.x, camTarget.x, MainMenuState.lerpSpeed);
 		camFollow.y = Utils.fpsAdjsutedLerp(camFollow.y, camTarget.y, MainMenuState.lerpSpeed);
+
+		if(Binds.justPressed("polymodReload")){
+			PolymodHandler.reload();
+		}
 
 		super.update(elapsed);
 
@@ -598,7 +606,7 @@ class FreeplayState extends MusicBeatState
 			menuItem.cameras = [camMenu];
 		}
 
-		versionText = new FlxTextExt(5, FlxG.height - 21, 0, "FPS Plus: " + MainMenuState.version, 16);
+		versionText = new FlxTextExt(5, FlxG.height - 21, 0, "FPS Plus: v" + MainMenuState.VERSION + " | Mod API: v" + PolymodHandler.API_VERSION_STRING, 16);
 		versionText.scrollFactor.set();
 		versionText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		versionText.cameras = [camMenu];
@@ -653,24 +661,24 @@ class FreeplayState extends MusicBeatState
 		curBeat = 0;
 	}
 
-	function addSong(_song:String, _icon:String, _week:Int, ?categories:Array<String>):Void{
+	function addSong(_song:String, _icon:String, ?categories:Array<String>):Void{
 
-		var meta = {
-			name: _song.replace("-", ""),
-			artist: "",
-			album: "vol1",
-			difficulties: [0, 0, 0],
-    		dadBeats: [0, 2],
-			bfBeats: [1, 3],
-			compatableInsts: null,
-			mixName: "Original"
-		}
+		var meta = Utils.defaultSongMetadata(_song.replace("-", " "));
+
 		if(Utils.exists("assets/data/songs/" + _song.toLowerCase() + "/meta.json")){
-			meta = Json.parse(Utils.getText("assets/data/songs/" + _song.toLowerCase() + "/meta.json"));
+			var jsonMeta = Json.parse(Utils.getText("assets/data/songs/" + _song.toLowerCase() + "/meta.json"));
+			if(jsonMeta.name != null)				{ meta.name = jsonMeta.name; }
+			if(jsonMeta.artist != null)				{ meta.artist = jsonMeta.artist; }
+			if(jsonMeta.album != null)				{ meta.album = jsonMeta.album; }
+			if(jsonMeta.difficulties != null)		{ meta.difficulties = jsonMeta.difficulties; }
+			if(jsonMeta.dadBeats != null)			{ meta.dadBeats = jsonMeta.dadBeats; }
+			if(jsonMeta.bfBeats != null)			{ meta.bfBeats = jsonMeta.bfBeats; }
+			if(jsonMeta.compatableInsts != null)	{ meta.compatableInsts = jsonMeta.compatableInsts; }
+			if(jsonMeta.mixName != null)			{ meta.mixName = jsonMeta.mixName; }
 		}
 
 		if(categories == null){ categories = ["All"]; }
-		var capsule:Capsule = new Capsule(_song, meta.name, _icon, _week, meta.album, meta.difficulties, meta.compatableInsts, [dj.freeplaySkin, dj.capsuleSelectColor, dj.capsuleDeselectColor, dj.capsuleSelectOutlineColor, dj.capsuleDeselectOutlineColor]);
+		var capsule:Capsule = new Capsule(_song, meta.name, _icon, meta.album, meta.difficulties, meta.compatableInsts, [dj.freeplaySkin, dj.capsuleSelectColor, dj.capsuleDeselectColor, dj.capsuleSelectOutlineColor, dj.capsuleDeselectOutlineColor]);
 		for(cat in categories){
 			createCategory(cat);
 			categoryMap[cat].push(capsule);
@@ -845,8 +853,15 @@ class FreeplayState extends MusicBeatState
 		var newAlbum:String = categoryMap[categoryNames[curCategory]][curSelected].album;
 		if(newAlbum != curAlbum){
 			curAlbum = newAlbum;
-			album.loadGraphic(Paths.image("menu/freeplay/album/" + curAlbum + "/album"));
-			albumTitle.loadGraphic(Paths.image("menu/freeplay/album/" + curAlbum + "/title"));
+
+			if(newAlbum == "none"){
+				albumTitle.visible = false;
+				newAlbum = "vol1";
+			}
+			else{ albumTitle.visible = true; }
+
+			album.loadGraphic(Paths.image("menu/freeplay/album/" + newAlbum + "/album"));
+			albumTitle.loadGraphic(Paths.image("menu/freeplay/album/" + newAlbum + "/title"));
 
 			if(doTween){
 				FlxTween.completeTweensOf(albumDummy);
@@ -861,9 +876,9 @@ class FreeplayState extends MusicBeatState
 				FlxTween.color(albumTitleColorDummy, 0.2, 0xFF4B97F3, 0xFF000000, {ease: FlxEase.quadIn, onUpdate: function(t){
 					albumTitleShader.blackColor = albumTitleColorDummy.color;
 				}});
-				
-				albumTitle.offset.x = (albumTitle.width - 234)/2;
 			}
+
+			albumTitle.offset.x = (albumTitle.width - 234)/2;
 		}
 	}
 
@@ -896,7 +911,7 @@ class FreeplayState extends MusicBeatState
 
 	function calcAvailableDifficulties():Void{
 		allowedDifficulties = [];
-		var filesInDir = FileSystem.readDirectory("assets/data/songs/" + categoryMap[categoryNames[curCategory]][curSelected].song.toLowerCase() + "/");
+		var filesInDir = Utils.readDirectory("assets/data/songs/" + categoryMap[categoryNames[curCategory]][curSelected].song.toLowerCase() + "/");
 
 		if(filesInDir.contains(categoryMap[categoryNames[curCategory]][curSelected].song.toLowerCase() + "-easy.json")){ allowedDifficulties.push(0); }
 		if(filesInDir.contains(categoryMap[categoryNames[curCategory]][curSelected].song.toLowerCase() + ".json")){ allowedDifficulties.push(1); }
@@ -929,7 +944,6 @@ class FreeplayState extends MusicBeatState
 		PlayState.storyDifficulty = curDifficulty;
 		PlayState.loadEvents = true;
 		PlayState.returnLocation = "freeplay";
-		PlayState.storyWeek = categoryMap[categoryNames[curCategory]][curSelected].week;
 		new FlxTimer().start(1.5, function(t){
 			switchState(new PlayState());
 			FlxG.sound.music.fadeOut(0.5);

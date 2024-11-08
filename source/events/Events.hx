@@ -1,10 +1,12 @@
 package events;
 
+import PlayState.VocalType;
 import flixel.tweens.FlxTween.FlxTweenManager;
 import flixel.tweens.FlxEase;
 
 using StringTools;
 
+@:build(modding.GlobalScriptingTypesMacro.build())
 class Events
 {
 
@@ -15,11 +17,9 @@ class Events
         events = new Map<String, (String)->Void>();
         eventsMeta = new Map<String, String>();
 
-        var noteTypeClasses = CompileTime.getAllClasses("events.data", false, Events);
-        trace(noteTypeClasses);
-		for(x in noteTypeClasses){
-			var noteTypeClass = Type.createInstance(x, []);
-            noteTypeClass.defineEvents();
+		for(x in ScriptableEvents.listScriptClasses()){
+			var eventClass:Events = ScriptableEvents.init(x);
+            eventClass.defineEvents();
 		}
     }
 
@@ -173,16 +173,5 @@ class Events
 		return (v.toLowerCase() == "true");
 	}
 
-    var boyfriend(get, never):Character;
-    @:noCompletion inline function get_boyfriend()  { return PlayState.instance.boyfriend; }
-    var gf(get, never):Character;
-    @:noCompletion inline function get_gf()         { return PlayState.instance.gf; }
-    var dad(get, never):Character;
-    @:noCompletion inline function get_dad()        { return PlayState.instance.dad; }
-    var playstate(get, never):PlayState;
-    @:noCompletion inline function get_playstate()  { return PlayState.instance; }
-    var tween(get, never):FlxTweenManager;
-    @:noCompletion inline function get_tween()      { return PlayState.instance.tweenManager; }
-    var data(get, never):Map<String, Dynamic>;
-    @:noCompletion inline function get_data()       { return PlayState.instance.arbitraryData; }
+	public function toString():String{ return "Events"; }
 }

@@ -1,5 +1,6 @@
 package;
 
+import modding.PolymodHandler;
 import flixel.system.scaleModes.RatioScaleMode;
 import extensions.flixel.FlxUIStateExt;
 import transition.data.*;
@@ -31,6 +32,8 @@ class Main extends Sprite
 		CrashHandler.init();
 
 		super();
+
+		PolymodHandler.init();
 
 		#if (sys && !mobile)
 		novid = Sys.args().contains("-novid");

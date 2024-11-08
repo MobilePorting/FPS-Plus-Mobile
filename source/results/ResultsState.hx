@@ -1,5 +1,6 @@
 package results;
 
+import story.StoryMenuState;
 import shaders.TintShader;
 import openfl.filters.ShaderFilter;
 import shaders.ColorGradientShader;
@@ -27,12 +28,14 @@ import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxCamera;
 import extensions.flixel.FlxUIStateExt;
+import modding.PolymodHandler;
 
 using StringTools;
 
 class ResultsState extends FlxUIStateExt
 {
     public static var instance:ResultsState;
+    public static var enableDebugControls:Bool = false;
 
     public var camBg:FlxCamera;
     public var camScroll:FlxCamera;
@@ -71,8 +74,6 @@ class ResultsState extends FlxUIStateExt
 
     public var scrollingTextGroup:FlxSpriteGroup = new FlxSpriteGroup();
 
-    public var enableDebugControls:Bool = false;
-
     var characterString:String;
     var scoreStats:ScoreStats;
     var songNameText:String;
@@ -87,7 +88,9 @@ class ResultsState extends FlxUIStateExt
     var exiting:Bool = false;
     var shownRank:Bool = false;
 
-    public function new(_scoreStats:ScoreStats, ?_songNameText:String = "Fabs is on base game", ?_character:String = "Boyfriend", ?_saveInfo:SaveInfo = null) {
+    var useCustomStickerSet:Array<String>;
+
+    public function new(_scoreStats:ScoreStats, ?_songNameText:String = "Fabs is on base game", ?_character:String = "Boyfriend", ?_saveInfo:SaveInfo = null, ?_useCustomStickerSet:Array<String> = null) {
         super();
 
         instance = this;
@@ -110,6 +113,7 @@ class ResultsState extends FlxUIStateExt
         characterString = _character;
         scoreStats = _scoreStats;
         songNameText = _songNameText;
+        useCustomStickerSet = _useCustomStickerSet;
 
         totalNotes = scoreStats.sickCount + scoreStats.goodCount + scoreStats.badCount + scoreStats.shitCount;
         if(totalNotes + scoreStats.missCount > 0){
@@ -162,9 +166,12 @@ class ResultsState extends FlxUIStateExt
 		FlxG.cameras.setDefaultDrawTarget(camUi, true);
         this.camera = camUi;
 
-        var characterClass = Type.resolveClass("results.characters." + characterString);
-		if(characterClass == null){ characterClass = results.characters.Boyfriend; }
-		character = Type.createInstance(characterClass, [rank]);
+        //var characterClass = Type.resolveClass("results.characters." + characterString);
+		//if(characterClass == null){ characterClass = results.characters.Boyfriend; }
+		//character = Type.createInstance(characterClass, [rank]);
+        if(!ScriptableResultsCharacter.listScriptClasses().contains(characterString)){ characterString = "BoyfriendResults"; }
+        character = ScriptableResultsCharacter.init(characterString, rank);
+        character.setup();
         character.cameras = [camCharacter];
 
         bgShader = new ColorGradientShader(character.gradientBottomColor, character.gradientTopColor);
@@ -562,9 +569,12 @@ class ResultsState extends FlxUIStateExt
                 else{
                     newResultsState = new ResultsState(scoreStats, songNameText, characterString, saveInfo);
                 }
-                newResultsState.enableDebugControls = true;
                 switchState(newResultsState);
             }
+        }
+
+        if(Binds.justPressed("polymodReload")){
+            PolymodHandler.reload();
         }
 
         /*
@@ -640,33 +650,7 @@ class ResultsState extends FlxUIStateExt
 
 		switch(PlayState.returnLocation){
 			case "story":
-
-                var stickerSets:Array<String> = null;
-
-                trace(saveInfo.week);
-
-                switch(saveInfo.week){
-                    case 0:
-                        stickerSets = ["bf", "gf"];
-                    case 1:
-                        stickerSets = ["bf", "gf", "dad"];
-                    case 2:
-                        stickerSets = ["bf", "gf", "skid", "pump", "monster"];
-                    case 3:
-                        stickerSets = ["bf", "gf", "pico"];
-                    case 4:
-                        stickerSets = ["bf", "gf", "mom"];
-                    case 5:
-                        stickerSets = ["bf", "gf", "dad", "mom", "monster"];
-                    case 6:
-                        stickerSets = ["bf", "gf", "spirit", "senpai"];
-                    case 7:
-                        stickerSets = ["bf", "gf", "pico", "tankman"];
-                    case 101:
-                        stickerSets = ["pico", "nene", "darnell"];
-                }
-
-                customTransOut = new StickerOut(stickerSets);
+                customTransOut = new StickerOut(useCustomStickerSet);
 
 				switchState(new StoryMenuState(true));
                 FlxTween.tween(FlxG.sound.music, {pitch: 3}, 0.1, {onComplete: function(t){
@@ -744,6 +728,6 @@ class ResultsState extends FlxUIStateExt
 
 typedef SaveInfo = {
     song:String,
-    week:Null<Int>,
+    week:Null<String>,
     diff:Int
 }

@@ -1,0 +1,30 @@
+class HudEvents extends Events
+{
+
+    override function defineEvents() {
+        addEvent("setHudSkin", setHudSkin, SET_HUD_SKIN_DESC);
+        addEvent("hudVisible", hudVisible, HUD_VISIBLE_DESC);
+        addEvent("showSongMeta", showSongMeta, SHOW_SONG_META_DESC);
+    }
+
+    function setHudSkin(tag:String):Void{
+        var args = Events.getArgs(tag, ["Default"]);
+        playstate.regenerateUiSkin(args[0]);
+    }
+
+    function hudVisible(tag:String):Void{
+        var args = Events.getArgs(tag);
+        playstate.camHUD.visible = Events.parseBool(args[0]);
+    }
+    
+    function showSongMeta(tag:String):Void{
+        if(playstate.meta != null){ playstate.meta.start(); }
+    }
+    
+
+
+    //Event descriptions. Not required but it helps with charting.
+    var SET_HUD_SKIN_DESC:String = "Changes the HUD note skin.\n\nArgs:\n    String: Skin name";
+    var HUD_VISIBLE_DESC:String = "Sets the visibility of the HUD.\n\nArgs:\n    Bool: HUD visibility";
+    var SHOW_SONG_META_DESC:String = "Shows the song name and artist.";
+}

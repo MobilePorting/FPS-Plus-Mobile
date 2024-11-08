@@ -1,5 +1,6 @@
 package;
 
+import characters.ScriptableCharacter;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.util.FlxSignal;
 import flixel.group.FlxSpriteGroup;
@@ -10,7 +11,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
-import stages.elements.*;
+import objects.*;
 
 using StringTools;
 
@@ -420,13 +421,15 @@ class Character extends FlxSpriteGroup
 
 	function createCharacterFromInfo(name:String):Void{
 
-		var characterClass = Type.resolveClass("characters.data." + name);
-		if(characterClass == null){ characterClass = characters.data.Bf; }
-		characterInfo = Type.createInstance(characterClass, []);
+		if(!ScriptableCharacter.listScriptClasses().contains(name)){ name = "Bf"; }
+		characterInfo = ScriptableCharacter.init(name);
 
 		characterInfo.characterReference = this;
-		
-		curCharacter = characterInfo.info.name;
+
+		//trace(characterInfo.info);
+		if(characterInfo.info.name != ""){ curCharacter = characterInfo.info.name; }
+		else{ curCharacter = name.toLowerCase(); }
+			
 		iconName = characterInfo.info.iconName;
 		deathCharacter = characterInfo.info.deathCharacter;
 		characterColor = characterInfo.info.healthColor;
@@ -804,8 +807,8 @@ class Character extends FlxSpriteGroup
 
 }
 
-enum AttachedAction {
-    withDance;
-	withSing;
-	withPlayAnim;
+enum abstract AttachedAction(Int){
+    var withDance = 0;
+	var withSing = 1;
+	var withPlayAnim = 2;
 }

@@ -1,5 +1,6 @@
 package freeplay;
 
+import haxe.Json;
 import flixel.util.FlxTimer;
 import flixel.FlxG;
 import openfl.display.BlendMode;
@@ -37,7 +38,6 @@ class Capsule extends FlxSpriteGroup
 
     public var song:String;
     public var album:String;
-    public var week:Int;
     public var highscoreData:Array<SongStats> = [];
     public var difficulties:Array<Int> = [];
     public var skin:String;
@@ -52,11 +52,10 @@ class Capsule extends FlxSpriteGroup
     var scrollOffset:Float = 0;
     var scrollTween:FlxTween;
 
-    public function new(_song:String, _displayName:String, _icon:String, _week:Int, _album:String = "vol1", _difficulties:Array<Int>, _variations:Array<String>, _skinInfo:Array<Dynamic>) {
+    public function new(_song:String, _displayName:String, _icon:String, _album:String = "vol1", _difficulties:Array<Int>, _variations:Array<String>, _skinInfo:Array<Dynamic>) {
         super();
 
         song = _song;
-        week = _week;
         album = _album;
         difficulties = _difficulties;
         
@@ -105,14 +104,21 @@ class Capsule extends FlxSpriteGroup
         //var debugDot:FlxSprite = new FlxSprite(text.x, text.y).makeGraphic(2, 2, 0xFFFFAAFF);
         //var debugDot2:FlxSprite = new FlxSprite(0, 0).makeGraphic(4, 4, 0xFFAAFFFF);
 
-        //temp before I add a json or something
-        //because I have to add the animations and they dont have padding
         var iconXOffset:Float = 0;
         var iconYOffset:Float = 0;
-        switch(_icon){
-            case "parents-christmas":
-                iconXOffset = -38;
+
+        var noIcon:Bool = false;
+        if(_icon == "none"){
+            noIcon = true;
+            _icon = "bf";
         }
+
+        if(Utils.exists(Paths.json(_icon, "images/menu/freeplay/icons"))){
+            var iconJson = Json.parse(Utils.getText(Paths.json(_icon, "images/menu/freeplay/icons")));
+            iconXOffset = iconJson.offset[0];
+            iconYOffset = iconJson.offset[1];
+        }
+
         icon = new FlxSprite(iconXOffset, iconYOffset);
         icon.frames = Paths.getSparrowAtlas("menu/freeplay/icons/" + _icon);
         icon.animation.addByPrefix("idle", "idle", 0, false);
@@ -120,6 +126,7 @@ class Capsule extends FlxSpriteGroup
         icon.animation.play("idle", true);
         icon.origin.set(0, 0);
         icon.scale.set(2, 2);
+        icon.visible = !noIcon;
 
         rank = new FlxSprite(358, 27);
         rank.frames = Paths.getSparrowAtlas("menu/freeplay/rankbadges");

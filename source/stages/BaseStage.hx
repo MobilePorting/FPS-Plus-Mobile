@@ -12,12 +12,13 @@ import flixel.math.FlxPoint;
 	@author Rozebud
 **/
 
+@:build(modding.GlobalScriptingTypesMacro.build())
 class BaseStage
 {
 
     public var name:String;
     public var startingZoom:Float = 1;
-    public var uiType:String = "default";
+    public var uiType:String = "Default";
     public var cameraMovementEnabled:Bool = true;
     public var extraCameraMovementAmount:Null<Float> = null; //Leave null for PlayState default.
     public var cameraStartPosition:FlxPoint; //Leave null for PlayState default.
@@ -45,17 +46,7 @@ class BaseStage
     public var bfStart:FlxPoint = new FlxPoint(975.5, 862);
     public var gfStart:FlxPoint = new FlxPoint(751.5, 778);
 
-    /**
-	 * Do not override this function, override `init()` instead.
-	 */
-    public function new(){
-        init();
-    }
-
-    /**
-	 * Override this function to initialize all of your stage elements.
-	 */
-    function init(){}
+    public function new(){}
 
     /**
 	 * Adds an object to `backgroundElements` to be added to PlayState.
@@ -127,8 +118,17 @@ class BaseStage
      *
      * @param   obj     The object that will be added to the update loop.
      */
-     public function addToUpdate(obj:FlxBasic){
+    public function addToUpdate(obj:FlxBasic){
         updateGroup.add(obj);
+    }
+
+    /**
+     * Remove an object from the stage's update loop.
+     *
+     * @param   obj     The object that will be added to the update loop.
+     */
+    public function removeFromUpdate(obj:FlxBasic){
+        updateGroup.remove(obj);
     }
 
     /**
@@ -171,7 +171,7 @@ class BaseStage
      *
      * @param   curBeat  The current song beat passed in by PlayState.
 	 */
-     public function countdownBeat(curBeat:Int){}
+    public function countdownBeat(curBeat:Int){}
 
     /**
 	 * Called every step hit in PlayState.
@@ -215,22 +215,7 @@ class BaseStage
 	 */
     public function exit(){}
 
-
-    var boyfriend(get, never):Character;
-    @:noCompletion inline function get_boyfriend()  { return PlayState.instance.boyfriend; }
-    var gf(get, never):Character;
-    @:noCompletion inline function get_gf()         { return PlayState.instance.gf; }
-    var dad(get, never):Character;
-    @:noCompletion inline function get_dad()        { return PlayState.instance.dad; }
-    var playstate(get, never):PlayState;
-    @:noCompletion inline function get_playstate()  { return PlayState.instance; }
-    var tween(get, never):FlxTweenManager;
-    @:noCompletion inline function get_tween()      { return PlayState.instance.tweenManager; }
-    var data(get, never):Map<String, Dynamic>;
-    @:noCompletion inline function get_data()       { return PlayState.instance.arbitraryData; }
-
-
-    //It is only recommended that you only use this if you have to add dynamic objects.
+    //It is only recommended that you only use this if you have to add objects dynamically.
     //For normal stage elements you should just add them to the groups in the init() and toggle their visibility.
     inline function addToBackgroundLive(x:FlxBasic)      { PlayState.instance.backgroundLayer.add(x); }
     inline function removeFromBackgroundLive(x:FlxBasic) { PlayState.instance.backgroundLayer.remove(x); }
@@ -242,5 +227,10 @@ class BaseStage
     inline function removeFromCharacterLive(x:FlxBasic)  { PlayState.instance.characterLayer.remove(x); }
     inline function addToForegroundLive(x:FlxBasic)      { PlayState.instance.foregroundLayer.add(x); }
     inline function removeFromForegroundLive(x:FlxBasic) { PlayState.instance.foregroundLayer.remove(x); }
+    inline function addToOverlayLive(x:FlxBasic)         { PlayState.instance.overlayLayer.add(x); }
+    inline function removeFromOverlayLive(x:FlxBasic)    { PlayState.instance.overlayLayer.remove(x); }
+    inline function addToHudLive(x:FlxBasic)             { PlayState.instance.hudLayer.add(x); }
+    inline function removeHudLive(x:FlxBasic)            { PlayState.instance.hudLayer.remove(x); }
 
+    public function toString():String{ return "Stage: " + name; }
 }

@@ -1,11 +1,13 @@
 package characters;
 
+import flixel.tweens.FlxTween.FlxTweenManager;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.FlxG;
 import flixel.FlxBasic;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
+import Character.AttachedAction;
 
 enum AnimType {
     prefix;
@@ -94,50 +96,52 @@ typedef CharacterInfo = {
 	This is the base class for character info. When making your own character make a new class extending this one.    
 	@author Rozebud
 **/
+@:build(modding.GlobalScriptingTypesMacro.build())
 class CharacterInfoBase
 {
 
-    public var info:CharacterInfo;
+    public var includeInCharacterList:Bool = true;
+    public var includeInGfList:Bool = false;
+
+    public var info:CharacterInfo = {
+        name: "",
+        spritePath: "",
+        frameLoadType: sparrow,
+        iconName: "face",
+        deathCharacter: "Bf",
+        resultsCharacter: "BoyfriendResults",
+        healthColor: null,
+        facesLeft: false,
+        antialiasing: true,
+        anims: [],
+        idleSequence: ["idle"],
+        focusOffset: new FlxPoint(150, -100),
+        deathOffset: new FlxPoint(),
+        animChains: null,
+        functions: {
+            create: null,
+            update: null,
+            dance: null,
+            danceOverride: null,
+            beat: null,
+            step: null,
+            playAnim: null,
+            idleEnd: null,
+            idleEndOverride: null,
+            frame: null,
+            animationEnd: null,
+            add: null,
+            deathCreate: null,
+            deathAdd: null,
+            songStart: null,
+        },
+        actions: null,
+        extraData: null
+    };
 
     public var characterReference:Character;
 
-    public function new() {
-        info = {
-            name: "",
-            spritePath: "",
-            frameLoadType: sparrow,
-            iconName: "face",
-            deathCharacter: "Bf",
-            resultsCharacter: "Boyfriend",
-            healthColor: null,
-            facesLeft: false,
-            antialiasing: true,
-            anims: [],
-            idleSequence: ["idle"],
-            focusOffset: new FlxPoint(150, -100),
-            deathOffset: new FlxPoint(),
-            animChains: null,
-            functions: {
-                create: null,
-                update: null,
-                dance: null,
-                danceOverride: null,
-                beat: null,
-                step: null,
-                playAnim: null,
-                idleEnd: null,
-                idleEndOverride: null,
-                frame: null,
-                animationEnd: null,
-                add: null,
-                deathCreate: null,
-                deathAdd: null,
-                songStart: null,
-            },
-            actions: null,
-            extraData: null
-        };
-    }
+    public function new() {}
 
     /**
 	 * Generates the x and y offsets for an animation.
@@ -417,10 +421,10 @@ class CharacterInfoBase
     inline function addToSubstate(x:FlxBasic)           { FlxG.state.subState.add(x); }
     inline function removeFromSubstate(x:FlxBasic)      { FlxG.state.subState.remove(x); }
 
-    var playstate(get, never):PlayState;
-    @:noCompletion inline function get_playstate()  { return PlayState.instance; }
+    function setSparrow():FrameLoadType{ return FrameLoadType.sparrow; }
+    function setPacker():FrameLoadType{ return FrameLoadType.packer; }
+    function setLoad(frameWidth:Int, frameHeight:Int):FrameLoadType{ return FrameLoadType.load(frameWidth, frameHeight); }
+    function setAtlas():FrameLoadType{ return FrameLoadType.atlas; }
 
-    var gameover(get, never):GameOverSubstate;
-    @:noCompletion inline function get_gameover()  { return GameOverSubstate.instance; }
-
+    public function toString():String{ return ""+info; }
 }

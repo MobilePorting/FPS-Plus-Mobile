@@ -1,7 +1,9 @@
 package note;
 
 import flixel.tweens.FlxTween.FlxTweenManager;
+import note.*;
 
+@:build(modding.GlobalScriptingTypesMacro.build())
 class NoteType
 {
 
@@ -14,10 +16,8 @@ class NoteType
         sustainTypes = new Map<String, Array<Dynamic>>();
         typeSkins = new Map<String, String>();
 
-        var noteTypeClasses = CompileTime.getAllClasses("note.types", false, note.NoteType);
-        trace(noteTypeClasses);
-		for(x in noteTypeClasses){
-			var noteTypeClass = Type.createInstance(x, []);
+		for(x in ScriptableNoteType.listScriptClasses()){
+			var noteTypeClass:NoteType = ScriptableNoteType.init(x);
             noteTypeClass.defineTypes();
 		}
     }
@@ -39,19 +39,6 @@ class NoteType
         typeSkins.set(name, noteSkinName);
     }
 
-    var boyfriend(get,never):Character;
-    @:noCompletion inline function get_boyfriend()  { return PlayState.instance.boyfriend; }
-    var gf(get,never):Character;
-    @:noCompletion inline function get_gf()         { return PlayState.instance.gf; }
-    var dad(get,never):Character;
-    @:noCompletion inline function get_dad()        { return PlayState.instance.dad; }
-    var playstate(get,never):PlayState;
-    @:noCompletion inline function get_playstate()  { return PlayState.instance; }
-    var tween(get,never):FlxTweenManager;
-    @:noCompletion inline function get_tween()      { return PlayState.instance.tweenManager; }
-    var data(get,never):Map<String, Dynamic>;
-    @:noCompletion inline function get_data()       { return PlayState.instance.arbitraryData; }
-
     @:isVar var healthAdjust(never,set):Float;
     @:noCompletion inline function set_healthAdjust(v:Float):Float{ 
         healthAdjust = v;
@@ -62,5 +49,5 @@ class NoteType
     function shouldPlayAnimation(note:Note, character:Character):Bool{
         return PlayState.characterShouldPlayAnimation(note, character);
     }
-
+    public function toString():String{ return "NoteType"; }
 }

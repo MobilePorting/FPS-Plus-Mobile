@@ -1,10 +1,14 @@
 package debug;
 
+import stages.ScriptableStage;
+import note.NoteType;
+import characters.CharacterInfoBase;
+import modding.PolymodHandler;
+import characters.ScriptableCharacter;
 import events.Events;
 import sys.FileSystem;
 import ui.HealthIcon;
 import flixel.util.FlxSort;
-import note.NoteType;
 import extensions.flixel.addons.ui.FlxUIDropDownMenuScrollable;
 import note.Note;
 import transition.data.InstantTransition;
@@ -173,6 +177,8 @@ class ChartingState extends MusicBeatState
 		PlayState.fromChartEditor = true;
 		SaveManager.global();
 		ee2Check = Config.ee2;
+
+		loadLists();
 
 		var controlInfo = new FlxText(10, 30, 0, "LEFT CLICK - Place Notes\nRIGHT CLICK - Delete Notes\nMIDDLE CLICK - Reselect a note.\n\nSHIFT - Unlock cursor from grid\nALT - Triplets\nCONTROL - 1/32 Notes\nSHIFT + CONTROL - 1/64 Notes\n\nTAB - Place notes on both sides\nHJKL - Place notes during\n                       playback\n\nR - Top of section\nCTRL + R - Song start\n\nENTER - Test chart.\nCTRL + ENTER - Test chart from\n                         current section.", 12);
 		controlInfo.scrollFactor.set();
@@ -423,7 +429,7 @@ class ChartingState extends MusicBeatState
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
 
-		var fullreset:FlxButton = new FlxButton(10, 150, "Full Blank", function()
+		var fullreset:FlxButton = new FlxButton(10, 300, "Full Blank", function()
 		{
 			var song_name = _song.song;
 
@@ -431,11 +437,15 @@ class ChartingState extends MusicBeatState
 				song: song_name,
 				notes: [],
 				bpm: 120.0,
-				player1: 'bf',
-				player2: 'dad',
-				stage: 'stage',
-				gf: 'gf',
+				player1: 'Bf',
+				player2: 'Dad',
+				stage: 'Stage',
+				gf: 'Gf',
 				speed: 1
+			};
+
+			PlayState.EVENTS = {
+				events: []
 			};
 
 			FlxG.resetState();
@@ -448,10 +458,6 @@ class ChartingState extends MusicBeatState
 		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 50, 1, 1, 1, 999, 2);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
-
-		//var characters:Array<String> = Utils.coolTextFile(Paths.text("characterList"));
-		//var gfs:Array<String> = Utils.coolTextFile(Paths.text("gfList"));
-		//var stages:Array<String> = Utils.coolTextFile(Paths.text("stageList"));
 
 		player1DropDown = new FlxUIDropDownMenuScrollable(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(charactersList, true), function(character:String)
 		{
@@ -505,6 +511,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stageDropDown);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
+		tab_group_song.add(fullreset);
 		
 
 		UI_box.addGroup(tab_group_song);
@@ -1412,6 +1419,12 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		if(Binds.justPressed("polymodReload")){
+			PlayState.SONG = _song;
+			PlayState.EVENTS = _events;
+			PolymodHandler.reload();
+		}
+
 		super.update(elapsed);
 	}
 
@@ -1582,8 +1595,11 @@ class ChartingState extends MusicBeatState
 	function updateHeads(?changedCharacters:Bool = false):Void{
 
 		if(changedCharacters){
-			var leftChar:characters.CharacterInfoBase = Type.createInstance(Type.resolveClass("characters.data." + player2DropDown.selectedLabel), []);
-			var rightChar:characters.CharacterInfoBase = Type.createInstance(Type.resolveClass("characters.data." + player1DropDown.selectedLabel), []);
+			var leftChar:characters.CharacterInfoBase;
+			var rightChar:characters.CharacterInfoBase;
+
+			leftChar = ScriptableCharacter.init(player2DropDown.selectedLabel);
+			rightChar = ScriptableCharacter.init(player1DropDown.selectedLabel);
 
 			leftIcon.setIconCharacter(leftChar.info.iconName);
 			rightIcon.setIconCharacter(rightChar.info.iconName);
@@ -2270,34 +2286,45 @@ class ChartingState extends MusicBeatState
 	public static function loadLists():Void{
 		
 
-		//static var charactersList:Array<String> = [];
-		//static var gfList:Array<String> = [];
-		//static var stageList:Array<String> = [];
+		charactersList = [];
+		gfList = [];
+		stageList = [];
 
-		var characterClasses = CompileTime.getAllClasses("characters.data", false, characters.CharacterInfoBase);
-		//trace(characterClasses);
-		for(x in characterClasses){
-			var meta = Meta.getType(x);
-			if(meta.charList == null || meta.charList[0]){
-				charactersList.push(Type.getClassName(x).split("characters.data.")[1]);
-			}
-			if(meta.gfList != null && meta.gfList[0]){
-				gfList.push(Type.getClassName(x).split("characters.data.")[1]);
-			}
+		for(x in ScriptableCharacter.listScriptClasses()){
+			var getScriptInfo:CharacterInfoBase = ScriptableCharacter.init(x);
+			if(getScriptInfo.includeInCharacterList){ charactersList.push(x); }
+			if(getScriptInfo.includeInGfList){ gfList.push(x); }
 		}
 
-		var stageClasses = CompileTime.getAllClasses("stages.data", false, stages.BaseStage);
-		//trace(stageClasses);
-		for(x in stageClasses){
-			stageList.push(Type.getClassName(x).split("stages.data.")[1]);
+		for(x in ScriptableStage.listScriptClasses()){
+			stageList.push(x);
 		}
 
-		//makes them be in alphabetical order instead of reverse alphabetical order
-		charactersList.reverse();
-		gfList.reverse();
-		stageList.reverse();
+		//makes them be in alphabetical order
+		charactersList.sort(function(a:String, b:String):Int{
+			a = a.toUpperCase();
+			b = b.toUpperCase();
+			if(a < b){ return -1; }
+			else if(a > b){ return 1; }
+			else{ return 0; }
+		});
+		gfList.sort(function(a:String, b:String):Int{
+			a = a.toUpperCase();
+			b = b.toUpperCase();
+			if(a < b){ return -1; }
+			else if(a > b){ return 1; }
+			else{ return 0; }
+		});
+		
+		stageList.sort(function(a:String, b:String):Int{
+			a = a.toUpperCase();
+			b = b.toUpperCase();
+			if(a < b){ return -1; }
+			else if(a > b){ return 1; }
+			else{ return 0; }
+		});
 
-		var iconsRaw = FileSystem.readDirectory("assets/images/chartEditor/event/");
+		var iconsRaw = Utils.readDirectory("assets/images/chartEditor/event/");
 		for(icon in iconsRaw){
 			if(icon.split(".")[1] == "png"){
 				eventIconList.push(icon.split(".")[0]);

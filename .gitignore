@@ -8,3 +8,8 @@ art/scripts/convertedSongs
 .haxelib/
 .vscode/
 art/scripts/__pycache__
+art/moddingDocs
+
+# Modding test stuff
+mods/test*
+.DS_Store

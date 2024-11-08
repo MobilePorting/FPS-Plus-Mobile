@@ -1,5 +1,6 @@
 package title;
 
+import modding.PolymodHandler;
 import transition.data.InstantTransition;
 import config.Config;
 import flixel.addons.display.FlxBackdrop;
@@ -49,10 +50,7 @@ class TitleScreen extends MusicBeatState
 	var inputSequence:Array<String> = ["menuUp", "menuUp", "menuDown", "menuDown", "menuLeft", "menuRight", "menuLeft", "menuRight"];
 	var inputTime:Float = 0;
 
-	override public function create():Void
-	{
-		//Polymod.init({modRoot: "mods", dirs: ['introMod']});
-
+	override public function create():Void{
 		// DEBUG BULLSHIT
 
 		Config.setFramerate(60);
@@ -163,8 +161,9 @@ class TitleScreen extends MusicBeatState
 
 	var transitioning:Bool = false;
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float):Void{
+		FlxG.mouse.visible = false;
+
 		Conductor.songPosition = FlxG.sound.music.time;
 			// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
@@ -197,6 +196,11 @@ class TitleScreen extends MusicBeatState
 				switchState(new MainMenuState());
 			});
 		}
+
+		/*if(!transitioning && Binds.justPressed("polymodReload")){
+			PolymodHandler.reInit();
+			PolymodHandler.reload();
+		}*/
 
 		//Titlescreen Easter Egg
 		if(inputTime > 0){

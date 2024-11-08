@@ -1,5 +1,8 @@
 package;
 
+import modding.ModManagerState;
+import modding.PolymodHandler;
+import story.StoryMenuState;
 import flixel.util.FlxTimer;
 import flixel.system.debug.console.ConsoleUtil;
 import flixel.math.FlxPoint;
@@ -28,7 +31,7 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	
-	public static var optionShit:Array<String> = ['storymode', 'freeplay', 'donate', "options"];
+	public static var optionShit:Array<String> = ['storymode', 'freeplay', 'mods', "options"];
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -44,7 +47,7 @@ class MainMenuState extends MusicBeatState
 	public static final lerpSpeed:Float = 0.01;
 	final warningDelay:Float = 10;
 
-	public static final version:String = "v6.0.2 (Non-Release Build)";
+	inline public static final VERSION:String = "6.1.0 (Pre-release)";
 
 	override function create()
 	{
@@ -106,7 +109,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow);
 
-		versionText = new FlxTextExt(5, FlxG.height - 21, 0, "FPS Plus: " + version, 16);
+		versionText = new FlxTextExt(5, FlxG.height - 21, 0, "FPS Plus: v" + VERSION + " | Mod API: v" + PolymodHandler.API_VERSION_STRING, 16);
 		versionText.scrollFactor.set();
 		versionText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionText);
@@ -164,6 +167,7 @@ class MainMenuState extends MusicBeatState
 			}
 			else if (Binds.justPressed("menuBack") && !FlxG.keys.pressed.CONTROL){
 				switchState(new TitleScreen());
+				FlxG.sound.play(Paths.sound("cancelMenu"));
 			}
 
 			if (Binds.justPressed("menuAccept")){
@@ -232,6 +236,9 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");*/
 									case 'options':
 										switchState(new ConfigMenu());
+										trace("options time");
+									case 'mods':
+										switchState(new ModManagerState());
 										trace("options time");
 								}
 							});

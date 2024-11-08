@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin' FPS Plus" file="FunkinFPSPlus" packageName="com.Rozebud.FPSPlus" package="com.Rozebud.FPSPlus" main="Main" version="FNF: v0.2.7 | FPS Plus: v5.0" company="Rozebud" />
+	<app title="Friday Night Funkin' FPS Plus" file="FunkinFPSPlus" packageName="com.Rozebud.FPSPlus" package="com.Rozebud.FPSPlus" main="Main" version="FNF: v0.2.7 | FPS Plus: v6.0" company="Rozebud" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -11,21 +11,12 @@
 	<set name="SWF_VERSION" value="11.8" />
 
 	<!--Makes sure that all of these are included when complied even if they aren't directly called in the code.-->
-	<compilerflag name="--macro" value="include('stages.data', true)" />
-	<compilerflag name="--macro" value="include('characters.data', true)" />
 	<compilerflag name="--macro" value="include('cutscenes', true)" />
-	<compilerflag name="--macro" value="include('cutscenes.data', true)" />
-	<compilerflag name="--macro" value="include('note.types', true)" />
-	<compilerflag name="--macro" value="include('note.noteSkins', true)" />
-	<compilerflag name="--macro" value="include('note.noteSplashSkins', true)" />
-	<compilerflag name="--macro" value="include('note.noteHoldCoverSkins', true)" />
-	<compilerflag name="--macro" value="include('events.data', true)" />
-	<compilerflag name="--macro" value="include('ui.countdownSkins', true)" />
-	<compilerflag name="--macro" value="include('ui.comboPopupSkins', true)" />
-	<compilerflag name="--macro" value="include('ui.hudNoteSkins', true)" />
-	<compilerflag name="--macro" value="include('results.characters', true)" />
-	<compilerflag name="--macro" value="include('freeplay.characters', true)" />
-	<compilerflag name="--macro" value="include('characterSelect.characters', true)" />
+	<compilerflag name="--macro" value="include('shaders', true)" />
+	<compilerflag name="--macro" value="include('objects', true)" />
+
+	<!--Allows all of Flixel to be used by scripts at runtime instead of only what was imported in the code.-->
+	<compilerflag name="--macro" value="include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])" />
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
@@ -63,6 +54,8 @@
 	<assets path="assets/music" include="*.ogg" />
 	<assets path="assets/sounds" include="*.ogg" />
 	<assets path="assets/songs" />
+
+	<assets path="mods" />
 
 	<!--assets path="CHANGELOG.md"/-->
 	<!-- <define name="PRELOAD_ALL" /> -->
@@ -110,6 +103,7 @@
 	<haxelib name="hxCodec" if="desktop || mobile" />
 	<haxelib name="funkin.vis" />
 	<haxelib name="grig.audio" />
+	<haxelib name="polymod" />
 	<haxelib name="extension-androidtools" if="android" />
 
 	<!--haxelib name="newgrounds"/-->
@@ -186,5 +180,13 @@
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<!--haxedef name="NG_LOGIN" if="newgrounds" /-->
+
+	<!-- _________________________________ Polymod Stuff _______________________________ -->
+
+	<haxedef name="POLYMOD_MOD_METADATA_FILE" value="meta.json" />
+	<haxedef name="POLYMOD_MOD_ICON_FILE" value="icon.png" />
+	<haxedef name="POLYMOD_SCRIPT_LIBRARY" value="data" />
+	<haxedef name="POLYMOD_APPEND_FOLDER" value="append" />
+	<haxedef name="POLYMOD_MERGE_FOLDER" value="merge" />
 
 </project>

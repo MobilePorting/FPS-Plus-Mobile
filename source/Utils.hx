@@ -1,5 +1,6 @@
 package;
 
+import modding.PolymodHandler;
 import mobile.input.MobileInputID;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
@@ -11,7 +12,7 @@ import sys.io.File;
 import sys.FileSystem;
 import flixel.math.FlxMath;
 import flixel.FlxG;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -39,7 +40,7 @@ class Utils
 		#end
 	}
 
-	public static function coolTextFile(path:String):Array<String>{
+	public static function getTextInLines(path:String):Array<String>{
 		var daList:Array<String> = getText(path).trim().split('\n');
 
 		for (i in 0...daList.length){
@@ -103,26 +104,14 @@ class Utils
 	}
 
 	/*
-	* Uses FileSystem.exists for desktop and Assets.exists for non-desktop builds.
-	* This is because Assets.exists just checks the manifest and can't find files that weren't compiled with the game.
-	* This also means that if you delete a file, it will return true because it's still in the manifest.
-	* FileSystem only works on certain build types though (namely, not web).
+	*	Left over functions. Hopefully polymod should be able to do this now.
 	*/
 	public static function exists(path:String):Bool{
-		#if desktop
-		return FileSystem.exists(path);
-        #else
-        return Assets.exists(path);
-		#end
+		return Assets.exists(path);
 	}
 
-	//Same as above but for getting text from a file.
 	public static function getText(path:String):String{
-		#if desktop
-		return File.getContent(path);
-        #else
-        return Assets.getText(path);
-		#end
+		return Assets.getText(path);
 	}
 
 	public static function clamp(v:Float, min:Float, max:Float):Float {
@@ -163,6 +152,52 @@ class Utils
 		var colorNum:Null<FlxColor> = FlxColor.fromString(color);
 		if(colorNum == null) colorNum = FlxColor.fromString('#$color');
 		return colorNum != null ? colorNum : FlxColor.WHITE;
+	}
+
+	//FileSystem readDirectory but with mods folder
+	public static inline function readDirectory(path:String):Array<String>{
+		var files:Array<String> = null;
+		if(FileSystem.exists(path)){ files = FileSystem.readDirectory(path); }
+		for (mod in PolymodHandler.loadedModDirs){
+			if (FileSystem.exists('mods/$mod/' + path.split("assets/")[1])){
+				if(files == null){ files = []; }
+				var modfile = FileSystem.readDirectory('mods/$mod/' + path.split("assets/")[1]);
+				for (file in modfile){
+					if (!files.contains(file)){
+                        files.push(file);
+                    }
+				}
+			}
+		}
+		return files;
+	}
+
+	//Removes duplicate items from an array. Can additionally supply extra arrays to check from.
+	public static function removeDuplicates(arr:Dynamic, ?extraArrayComparisons:Array<Dynamic>):Dynamic{
+		if(extraArrayComparisons == null){ extraArrayComparisons = []; }
+		var duplicates:Array<Dynamic> = [];
+		return arr.filter(function(element){
+			if(!duplicates.contains(element)){
+				var r:Bool = true;
+				for(array in extraArrayComparisons){ if(array.contains(element)){ r = false; } }
+				duplicates.push(element);
+				return r;
+			}
+			return false;
+		});
+	}
+
+	public static inline function defaultSongMetadata(_name:String):Dynamic{
+		return {
+			name: _name,
+			artist: "",
+			album: "none",
+			difficulties: [0, 0, 0],
+    		dadBeats: [0, 2],
+			bfBeats: [1, 3],
+			compatableInsts: null,
+			mixName: "Original"
+		}
 	}
 
 	public static inline function keyToString(key:FlxKey):String{
