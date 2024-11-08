@@ -23,8 +23,8 @@ class MobileSettings extends FlxUIStateExt
 	var warningText:Array<String> = [
 		"Selects the opacity for the mobile buttons (careful not to put it at 0 and lose track of your buttons).",
 		#if mobile
-		"Enabling this will make your phone sleep after going inactive for few seconds.\n(The time depends on your phone\'s options)",
-		"Enabling this will make the game will stetch to fill your whole screen. (Can result in bad visuals & break some mods that resizes the game/cameras)",
+		"Enabling this will make your phone sleep after going inactive for few seconds.\n(The time depends on your phone's options)",
+		"Enabling this will make the game will stretch to fill your whole screen. (Can result in bad visuals & break some mods that resize the game/cameras)",
 		#end
 		"Choose how your hitbox should look like."
 	];
@@ -43,7 +43,7 @@ class MobileSettings extends FlxUIStateExt
 		"Hitbox Design"
 	];
 	var onOff:Array<String> = ["off", "on"];
-
+	var hintOptions:Array<String> = ["No Gradient", "No Gradient (Old)", "Gradient", "Hidden"];
 	var curSelected:Int = 0;
 
 	var state:String = "select";
@@ -93,28 +93,6 @@ class MobileSettings extends FlxUIStateExt
 		warning.screenCenter(X);
 		add(warning);
 
-		var binds = Binds.binds.get("menuBack").binds;
-		var backBindsString = "";
-
-		for (x in binds)
-		{
-			backBindsString += x.toString() + "/";
-		}
-
-		if (backBindsString != "")
-		{
-			backBindsString = backBindsString.substr(0, backBindsString.length - 1);
-		}
-		else
-		{
-			backBindsString = "You can't leave I guess. Reset your game and press BACKSPACE or DELETE before the preload.";
-		}
-
-		var backText = new FlxTextExt(5, FlxG.height - 21, 0, backBindsString + " - Back to Menu", 16);
-		backText.scrollFactor.set();
-		backText.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(backText);
-
 		settings = [
 			Config.mobileCAlpha,
 			#if mobile
@@ -123,6 +101,7 @@ class MobileSettings extends FlxUIStateExt
 			#end
 			Config.hitboxType
 		];
+
 		startingSettings = [
 			Config.mobileCAlpha,
 			#if mobile
@@ -157,10 +136,22 @@ class MobileSettings extends FlxUIStateExt
 					changeItem(1);
 				}
 
-				if (Binds.justPressed("menuAccept") || Binds.justPressed("menuLeft") || Binds.justPressed("menuRight"))
+				if (Binds.justPressed("menuAccept"))
 				{
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					settings[curSelected] = !settings[curSelected];
+					switch (curSelected)
+					{
+						case 0:
+							Config.mobileCAlpha = Math.min(1, Math.max(0, Config.mobileCAlpha + 0.1));
+						#if mobile
+						case 1:
+							Config.allowScreenTimeout = !Config.allowScreenTimeout;
+						case 2:
+							Config.wideScreen = !Config.wideScreen;
+						#end
+						case #if mobile 3 #else 1 #end:
+							var currentIndex = hintOptions.indexOf(Config.hitboxType);
+							Config.hitboxType = hintOptions[(currentIndex + 1) % hintOptions.length];
+					}
 				}
 				else if (Binds.justPressed("menuBack"))
 				{
@@ -168,13 +159,9 @@ class MobileSettings extends FlxUIStateExt
 					quit();
 				}
 
-				if ((FlxG.keys.justPressed.ANY || FlxG.gamepads.anyJustPressed(ANY)) && state != "exiting")
-				{
-					textUpdate();
-				}
+				textUpdate();
 
 			case "exiting":
-
 			default:
 				state = "select";
 		}
@@ -196,7 +183,21 @@ class MobileSettings extends FlxUIStateExt
 		for (i in 0...startingSettings.length)
 		{
 			var sectionStart = keyTextDisplay.text.length;
-			keyTextDisplay.text += names[i] + ": " + (settings[i] ? onOff[1] : onOff[0]) + "\n";
+
+			switch (i)
+			{
+				case 0:
+					keyTextDisplay.text += names[i] + ": " + Std.int(Config.mobileCAlpha * 100) + "%\n";
+				#if mobile
+				case 1:
+					keyTextDisplay.text += names[i] + ": " + (Config.allowScreenTimeout ? onOff[1] : onOff[0]) + "\n";
+				case 2:
+					keyTextDisplay.text += names[i] + ": " + (Config.wideScreen ? onOff[1] : onOff[0]) + "\n";
+				#end
+				case #if mobile 3 #else 1 #end:
+					keyTextDisplay.text += names[i] + ": " + Config.hitboxType + "\n";
+			}
+
 			var sectionEnd = keyTextDisplay.text.length - 1;
 
 			if (i == curSelected)
@@ -211,7 +212,6 @@ class MobileSettings extends FlxUIStateExt
 	function save()
 	{
 		Config.mobileWrite(#if mobile settings[1], settings[2], #end settings[0], settings[3]);
-		// FlxG.save.flush();
 	}
 
 	function quit()

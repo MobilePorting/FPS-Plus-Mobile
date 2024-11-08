@@ -35,6 +35,10 @@ Run `lime test PLATFORM` or `lime build PLATFORM` to compile the game.
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
 
+### FPS Plus Mobile
+- [Lily](https://www.youtube.com/@mcagabe19) - Everything on this port
+- [Karim Akra](https://www.youtube.com/@Karim-Akra) - Helped on Binds
+
 ### FPS Plus
 - [Rozebud](https://twitter.com/helpme_thebigt) - *Basically everything that's been added.*
 - [Elikapika](https://twitter.com/elikapika) - *Additional Sticker Art*
