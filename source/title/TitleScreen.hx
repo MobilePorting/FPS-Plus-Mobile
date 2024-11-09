@@ -48,7 +48,7 @@ class TitleScreen extends MusicBeatState
 
 	var inputIndex:Int = 0;
 	var inputSequence:Array<String> = ["menuUp", "menuUp", "menuDown", "menuDown", "menuLeft", "menuRight", "menuLeft", "menuRight"];
-	var swipeSequence:Array<String> = ["up", "up", "down", "down", "left", "right", "left", "right	"]
+	var swipeSequence:Array<String> = ["down", "down", "up", "up", "right", "left", "right", "left"];
 	var inputTime:Float = 0;
 
 	override public function create():Void{
@@ -173,7 +173,7 @@ class TitleScreen extends MusicBeatState
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
 
-		var pressedEnter:Bool = /*(!mobile.SwipeUtil.swipedAny && */mobile.TouchUtil.justReleased/*)*/ || (!allowControllerPress ? Binds.justPressedKeyboardOnly("menuAccept") : Binds.justPressed("menuAccept"));
+		var pressedEnter:Bool = (!mobile.SwipeUtil.swipeAny && mobile.TouchUtil.justReleased) || (!allowControllerPress ? Binds.justPressedKeyboardOnly("menuAccept") : Binds.justPressed("menuAccept"));
 
 		if(!transitioning && Binds.justPressed("menuBack")){
 			System.exit(0);
