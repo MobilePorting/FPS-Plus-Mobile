@@ -215,6 +215,7 @@ class Binds
             category: "Developement",
             binds: [SEVEN],
             controllerBinds: [],
+            mobileBinds: [MobileInputID.NONE],
             local: true
         };
         r.set("chartEditor", k);
@@ -224,6 +225,7 @@ class Binds
             category: "Developement",
             binds: [EIGHT],
             controllerBinds: [],
+            mobileBinds: [MobileInputID.NONE],
             local: true
         };
         r.set("offsetEditor", k);
@@ -233,6 +235,7 @@ class Binds
             category: "Developement",
             binds: [F5],
             controllerBinds: [],
+            mobileBinds: [MobileInputID.NONE],
             local: true
         };
         r.set("polymodReload", k);
