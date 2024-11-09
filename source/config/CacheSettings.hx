@@ -157,7 +157,7 @@ class CacheSettings extends FlxUIStateExt
 
         }
 
-        if(!noFunMode && !ConfigMenu.USE_MENU_MUSIC && ConfigMenu.USE_LAYERED_MUSIC && Math.abs(FlxG.sound.music.time - songLayer.time) > 20){
+        if(!noFunMode && state != "exiting" && !ConfigMenu.USE_MENU_MUSIC && ConfigMenu.USE_LAYERED_MUSIC && Math.abs(FlxG.sound.music.time - songLayer.time) > 20){
 			resyncMusic();
 		}
 
