@@ -21,12 +21,13 @@ class MobileSettings extends FlxUIStateExt
 	var keyTextDisplay:FlxTextExt;
 	var warning:FlxTextExt;
 	var warningText:Array<String> = [
-		"Selects the opacity for the mobile buttons (careful not to put it at 0 and lose track of your buttons).",
+		'Selects the opacity for the mobile buttons\n(careful not to put it at 0 and lose track of your buttons).',
 		#if mobile
-		"Enabling this will make your phone sleep after going inactive for few seconds.\n(The time depends on your phone's options)",
-		"Enabling this will make the game will stretch to fill your whole screen. (Can result in bad visuals & break some mods that resize the game/cameras)",
+		'Enabling this will make your phone sleep after going inactive for a few seconds.\n(The time depends on your phone\'s options)',
+		'Enabling this will make the game stretch to fill your whole screen.\n(Can result in bad visuals & break some mods that resize the game/cameras)',
 		#end
-		"Choose how your hitbox should look like."
+		"Choose how your hitbox should look like." #if android ,
+		'Choose which folder FPS Plus should use.\n(CHANGING THIS MAKES DELETE YOUR OLD FOLDER!!)' #end
 	];
 
 	public static var returnLoc:FlxState;
@@ -40,10 +41,15 @@ class MobileSettings extends FlxUIStateExt
 		"Allow Phone Screensaver",
 		"Wide Screen Mode",
 		#end
-		"Hitbox Design"
+		"Hitbox Design" #if android ,
+		"Storage Type" #end
 	];
 	var onOff:Array<String> = ["off", "on"];
 	var hintOptions:Array<String> = ["No Gradient", "No Gradient (Old)", "Gradient", "Hidden"];
+	#if android
+	var storageTypes:Array<String> = ["EXTERNAL_DATA", "EXTERNAL_OBB", "EXTERNAL_MEDIA", "EXTERNAL"];
+	final lastStorageType:String = Config.storageType;
+	#end
 	var curSelected:Int = 0;
 
 	var state:String = "select";
@@ -85,7 +91,7 @@ class MobileSettings extends FlxUIStateExt
 		keyTextDisplay.borderQuality = 1;
 		add(keyTextDisplay);
 
-		warning = new FlxTextExt(0, 540, 1120, warningText[curSelected], 32);
+		warning = new FlxTextExt(0, 590, 1120, warningText[curSelected], 32);
 		warning.scrollFactor.set(0, 0);
 		warning.setFormat(Paths.font("vcr"), 32, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		warning.borderSize = 3;
@@ -99,7 +105,8 @@ class MobileSettings extends FlxUIStateExt
 			Config.allowScreenTimeout,
 			Config.wideScreen,
 			#end
-			Config.hitboxType
+			Config.hitboxType #if android ,
+			Config.storageType #end
 		];
 
 		startingSettings = [
@@ -108,7 +115,8 @@ class MobileSettings extends FlxUIStateExt
 			Config.allowScreenTimeout,
 			Config.wideScreen,
 			#end
-			Config.hitboxType
+			Config.hitboxType #if android ,
+			Config.storageType #end
 		];
 
 		textUpdate();
@@ -158,6 +166,11 @@ class MobileSettings extends FlxUIStateExt
 						case #if mobile 3 #else 1 #end:
 							var currentIndex = hintOptions.indexOf(Config.hitboxType);
 							Config.hitboxType = hintOptions[(currentIndex + direction + hintOptions.length) % hintOptions.length];
+						#if android
+						case 4:
+							var currentIndex = storageTypes.indexOf(Config.storageType);
+							Config.storageType = storageTypes[(currentIndex + direction + storageTypes.length) % storageTypes.length];
+						#end
 					}
 				}
 
@@ -210,6 +223,10 @@ class MobileSettings extends FlxUIStateExt
 				#end
 				case #if mobile 3 #else 1 #end:
 					keyTextDisplay.text += names[i] + ": " + Config.hitboxType + "\n";
+				#if android
+				case 4:
+					keyTextDisplay.text += names[i] + ": " + Config.storageType + "\n";
+				#end
 			}
 
 			var sectionEnd = keyTextDisplay.text.length - 1;
@@ -231,8 +248,20 @@ class MobileSettings extends FlxUIStateExt
 		settings[2] = Config.wideScreen;
 		#end
 		settings[3] = Config.hitboxType;
+		#if android
+		settings[4] = Config.storageType;
+		#end
 
-		Config.mobileWrite(#if mobile settings[1], settings[2], #end settings[0], settings[3]);
+		Config.mobileWrite(#if mobile settings[1], settings[2], #end settings[0], settings[3] #if android , settings[4] #end);
+
+		#if android
+		if (Config.storageType != lastStorageType)
+		{
+			onStorageChange();
+			Utils.showPopUp('Storage Type has been changed and you need restart the game!!\nPress OK to close the game.', 'Notice!');
+			lime.system.System.exit(0);
+		}
+		#end
 	}
 
 	function quit()
@@ -263,11 +292,27 @@ class MobileSettings extends FlxUIStateExt
 	{
 		curSelected += _amount;
 
-		if (curSelected > #if mobile 3 #else 1 #end)
+		if (curSelected > #if android 4 #elseif mobile 3 #else 1 #end)
 			curSelected = 0;
 		if (curSelected < 0)
-			curSelected = #if mobile 3 #else 1 #end;
+			curSelected = #if android 4 #elseif mobile 3 #else 1 #end;
 
 		warning.text = warningText[curSelected];
 	}
+
+	#if android
+	function onStorageChange():Void
+	{
+		sys.io.File.saveContent(lime.system.System.applicationStorageDirectory + 'storagetype.txt', Config.storageType);
+
+		var lastStoragePath:String = mobile.MobileUtil.StorageType.fromStrForce(lastStorageType) + '/';
+
+		try
+		{
+			Sys.command('rm', ['-rf', lastStoragePath]);
+		}
+		catch (e:haxe.Exception)
+			trace('Failed to remove last directory. (${e.message})');
+	}
+	#end
 }

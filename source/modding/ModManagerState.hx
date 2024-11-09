@@ -218,6 +218,8 @@ class ModManagerState extends FlxUIStateExt
         changeModSelection(0, false);
         changeButtonSelection(0);
 
+        addTouchPad("LEFT_FULL", "A_B");
+
         super.create();
     }
 
