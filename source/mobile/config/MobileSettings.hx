@@ -116,6 +116,8 @@ class MobileSettings extends FlxUIStateExt
 		customTransIn = new WeirdBounceIn(0.6);
 		customTransOut = new WeirdBounceOut(0.6);
 
+		addTouchPad("LEFT_FULL", "A_B");
+
 		super.create();
 	}
 
@@ -136,30 +138,42 @@ class MobileSettings extends FlxUIStateExt
 					changeItem(1);
 				}
 
-				if (Binds.justPressed("menuAccept"))
+				if (Binds.justPressed("menuLeft") || Binds.justPressed("menuRight"))
 				{
+					var direction = Binds.justPressed("menuRight") ? 1 : -1;
+
 					switch (curSelected)
 					{
 						case 0:
-							Config.mobileCAlpha = Math.min(1, Math.max(0, Config.mobileCAlpha + 0.1));
+							var newAlpha = Math.round((Config.mobileCAlpha + 0.1 * direction) * 10) / 10;
+							Config.mobileCAlpha = Math.min(1, Math.max(0, newAlpha));
+							touchPad.alpha = 0;
+							touchPad.alpha = Config.mobileCAlpha;
 						#if mobile
 						case 1:
-							Config.allowScreenTimeout = !Config.allowScreenTimeout;
+							Config.allowScreenTimeout = direction > 0;
 						case 2:
-							Config.wideScreen = !Config.wideScreen;
+							Config.wideScreen = direction > 0;
 						#end
 						case #if mobile 3 #else 1 #end:
 							var currentIndex = hintOptions.indexOf(Config.hitboxType);
-							Config.hitboxType = hintOptions[(currentIndex + 1) % hintOptions.length];
+							Config.hitboxType = hintOptions[(currentIndex + direction + hintOptions.length) % hintOptions.length];
 					}
 				}
-				else if (Binds.justPressed("menuBack"))
+
+				if (Binds.justPressed("menuBack"))
 				{
 					FlxG.sound.play(Paths.sound('cancelMenu'));
 					quit();
 				}
 
-				textUpdate();
+				if ((touchPad.anyJustPressed([mobile.input.MobileInputID.ANY])
+					|| FlxG.keys.justPressed.ANY
+					|| FlxG.gamepads.anyJustPressed(ANY))
+					&& state != "exiting")
+				{
+					textUpdate();
+				}
 
 			case "exiting":
 			default:
@@ -211,6 +225,13 @@ class MobileSettings extends FlxUIStateExt
 
 	function save()
 	{
+		settings[0] = Config.mobileCAlpha;
+		#if mobile
+		settings[1] = Config.allowScreenTimeout;
+		settings[2] = Config.wideScreen;
+		#end
+		settings[3] = Config.hitboxType;
+
 		Config.mobileWrite(#if mobile settings[1], settings[2], #end settings[0], settings[3]);
 	}
 

@@ -56,6 +56,8 @@ class PolymodHandler
     }
 
     public static function buildModDirectories():Void{
+        if (!sys.FileSystem.exists("mods"))
+            sys.FileSystem.createDirectory("mods");
         //Get disabled list. Create file if not already created.
         var disabled:String;
         if(sys.FileSystem.exists("mods/disabled")){
