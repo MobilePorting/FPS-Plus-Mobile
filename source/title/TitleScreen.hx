@@ -48,6 +48,7 @@ class TitleScreen extends MusicBeatState
 
 	var inputIndex:Int = 0;
 	var inputSequence:Array<String> = ["menuUp", "menuUp", "menuDown", "menuDown", "menuLeft", "menuRight", "menuLeft", "menuRight"];
+	var swipeSequence:Array<String> = ["up", "up", "down", "down", "left", "right", "left", "right	"]
 	var inputTime:Float = 0;
 
 	override public function create():Void{
@@ -209,12 +210,12 @@ class TitleScreen extends MusicBeatState
 		else{
 			inputIndex = 0;
 		}
-		if(Binds.justPressed(inputSequence[inputIndex]) && !transitioning){
-			trace(inputSequence[inputIndex]);
+		if((mobile.SwipeUtil.justSwiped(swipeSequence[inputIndex]) || Binds.justPressed(inputSequence[inputIndex])) && !transitioning){
+			(mobile.SwipeUtil.justSwiped(swipeSequence[inputIndex])) ? trace(swipeSequence[inputIndex]) : trace(inputSequence[inputIndex]);
 			inputIndex++;
 			inputTime = 1;
 		}
-		if(inputIndex == inputSequence.length){
+		if(inputIndex == (inputSequence.length) || inputIndex == (swipeSequence.length)){
 			transitioning = true;
 			customTransOut = new InstantTransition();
 			switchState(new TitleEasterEgg());

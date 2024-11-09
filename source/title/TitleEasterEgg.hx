@@ -70,6 +70,8 @@ class TitleEasterEgg extends MusicBeatState
         add(dj);
 
         FlxG.camera.flash();
+        
+        addTouchPad("NONE", "A_B");
 
         super.create();
     }

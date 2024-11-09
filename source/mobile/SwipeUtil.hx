@@ -14,6 +14,16 @@ class SwipeUtil
 	public static var swipeUp(get, never):Bool;
 	public static var swipeAny(get, never):Bool;
 
+	public static function justSwiped(direction:String):Bool
+		return switch(direction)
+		{
+			case "down": get_swipeDown();
+			case "left": get_swipeLeft();
+			case "right": get_swipeRight();
+			case "up": get_swipeUp();
+			default: return false;
+		}
+
 	@:noCompletion
 	static function get_swipeDown():Bool
 	{
