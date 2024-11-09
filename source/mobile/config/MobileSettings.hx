@@ -162,6 +162,7 @@ class MobileSettings extends FlxUIStateExt
 							Config.allowScreenTimeout = direction > 0;
 						case 2:
 							Config.wideScreen = direction > 0;
+							FlxG.scaleMode = new mobile.scalemodes.MobileScaleMode();
 						#end
 						case #if mobile 3 #else 1 #end:
 							var currentIndex = hintOptions.indexOf(Config.hitboxType);

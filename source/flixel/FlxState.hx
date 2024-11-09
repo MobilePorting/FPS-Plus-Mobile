@@ -99,8 +99,8 @@ class FlxState extends FlxContainer
 
 	@:noCompletion
 	var _subStateClosed:FlxTypedSignal<FlxSubState->Void>;
-
-  public var touchPad:TouchPad;
+	
+	public var touchPad:TouchPad;
 	public var tpadCam:FlxCamera;
 	public var hitbox:Hitbox;
 	public var hboxCam:FlxCamera;
@@ -246,7 +246,7 @@ class FlxState extends FlxContainer
 
 	override function destroy():Void
 	{
-    removeTouchPad();
+		removeTouchPad();
 		removeHitbox();
 
 		_constructor = function():FlxState
