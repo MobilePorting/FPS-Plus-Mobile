@@ -185,6 +185,7 @@ class MobileSettings extends FlxUIStateExt
 			default:
 				state = "select";
 		}
+		super.update(elapsed);
 	}
 
 	function textUpdate()
