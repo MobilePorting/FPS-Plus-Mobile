@@ -15,6 +15,8 @@ class CharacterAnimationEvents extends Events
         addEvent("bfAnimLockToggle", bfAnimLockToggle, BF_ANIM_LOCK_TOGGLE_DESC);
         addEvent("dadAnimLockToggle", dadAnimLockToggle, DAD_ANIM_LOCK_TOGGLE_DESC);
         addEvent("gfAnimLockToggle", gfAnimLockToggle, GF_ANIM_LOCK_TOGGLE_DESC);
+
+        addEvent("changeCharacter", changeCharacter, CHANGE_CHARACTER_DESC);
     }
 
     function playAnim(tag:String):Void{
@@ -112,6 +114,71 @@ class CharacterAnimationEvents extends Events
         gf.canAutoAnim = !gf.canAutoAnim;
     }
 
+    function changeCharacter(tag:String):Void{
+        var args = Events.getArgs(tag, ["bf", "Bf"]);
+        switch(args[0].toLowerCase()){
+            case "bf":
+                if (boyfriend.charClass == args[1]){ return; }
+
+                var newCharacter = new Character(boyfriend.x - boyfriend.repositionPoint.x, boyfriend.y - boyfriend.repositionPoint.y, args[1], true);
+                playstate.iconP1.setIconCharacter(newCharacter.iconName);
+
+                if((playstate.stage.useStartPoints && !playstate.stage.overrideBfStartPoints) || (!playstate.stage.useStartPoints && playstate.stage.overrideBfStartPoints)){
+                    newCharacter.setPosition(playstate.stage.bfStart.x - ((newCharacter.getFrameWidth() * newCharacter.getScale().x)/2), playstate.stage.bfStart.y - (newCharacter.getFrameHeight() * newCharacter.getScale().y));
+                }
+                newCharacter.reposition();
+
+                playstate.characterLayer.remove(playstate.boyfriend);
+                playstate.boyfriend = newCharacter;
+                playstate.characterLayer.add(playstate.boyfriend);
+
+                if(!boyfriend.debugMode && boyfriend.characterInfo.info.functions.add != null){
+                    boyfriend.characterInfo.info.functions.add(boyfriend);
+                }
+
+            case "dad":
+                if (dad.charClass == args[1]){ return; }
+
+                playstate.characterLayer.remove(dad);
+
+                var newCharacter = new Character(dad.x - dad.repositionPoint.x, dad.y - dad.repositionPoint.y, args[1]);
+                playstate.iconP2.setIconCharacter(newCharacter.iconName);
+
+                if((playstate.stage.useStartPoints && !playstate.stage.overrideDadStartPoints) || (!playstate.stage.useStartPoints && playstate.stage.overrideDadStartPoints)){
+                    newCharacter.setPosition(playstate.stage.dadStart.x - ((newCharacter.getFrameWidth() * newCharacter.getScale().x)/2), playstate.stage.dadStart.y - (newCharacter.getFrameHeight() * newCharacter.getScale().y));
+                }
+                newCharacter.reposition();
+
+                playstate.characterLayer.remove(playstate.dad);
+                playstate.dad = newCharacter;
+                playstate.characterLayer.add(playstate.dad);
+
+                if(!dad.debugMode && dad.characterInfo.info.functions.add != null){
+                    dad.characterInfo.info.functions.add(dad);
+                }
+
+            case "gf":
+                if (gf.charClass == args[1]){ return; }
+
+                playstate.gfLayer.remove(gf);
+
+                var newCharacter = new Character(gf.x - gf.repositionPoint.x, gf.y - gf.repositionPoint.y, args[1], false, true);
+
+                if((playstate.stage.useStartPoints && !playstate.stage.overrideGfStartPoints) || (!playstate.stage.useStartPoints && playstate.stage.overrideGfStartPoints)){
+                    newCharacter.setPosition(playstate.stage.gfStart.x - ((newCharacter.getFrameWidth() * newCharacter.getScale().x)/2), playstate.stage.gfStart.y - (newCharacter.getFrameHeight() * newCharacter.getScale().y));
+                }
+                newCharacter.reposition();
+
+                playstate.characterLayer.remove(playstate.gf);
+                playstate.gf = newCharacter;
+                playstate.characterLayer.add(playstate.gf);
+
+                if(!gf.debugMode && gf.characterInfo.info.functions.add != null){
+                    gf.characterInfo.info.functions.add(gf);
+                }
+        }
+    }
+
 
 
     //Event descriptions. Not required but it helps with charting.
@@ -125,4 +192,5 @@ class CharacterAnimationEvents extends Events
     var BF_ANIM_LOCK_TOGGLE_DESC:String = "Toggle whether BF will automatically play animations.";
     var DAD_ANIM_LOCK_TOGGLE_DESC:String = "Toggle whether Dad will automatically play animations.";
     var GF_ANIM_LOCK_TOGGLE_DESC:String = "Toggle whether GF will automatically play animations.";
+    var CHANGE_CHARACTER_DESC:String = "Change a character to a different one.\n\nArgs:\n    String: Target character to change (\"bf\", \"dad\", or \"gf\")\n    String: New character's class name";
 }

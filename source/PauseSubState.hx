@@ -31,10 +31,8 @@ class PauseSubState extends MusicBeatSubstate
 	var songName:FlxTextExt;
 	var songArtist:FlxTextExt;
 
-	public function new(x:Float, y:Float){
+	override function create():Void{
 		Binds.isInSubstate = true;
-
-		super();
 
 		Config.setFramerate(60);
 
@@ -134,6 +132,8 @@ class PauseSubState extends MusicBeatSubstate
 
 		addTouchPad("UP_DOWN", "A_B");
 		addTouchPadCamera();
+
+		super.create();
 	}
 
 	override function update(elapsed:Float){
