@@ -76,7 +76,7 @@ class Config
 		FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
 		FlxG.save.data.hitboxType = 'No Gradient';
 		#if android
-		FlxG.save.data.storageType = 'EXTERNAL_DATA';
+		FlxG.save.data.storageType = 'EXTERNAL';
 		#end
 
 		reload();
@@ -256,7 +256,7 @@ class Config
 			FlxG.save.data.hitboxType = 'No Gradient';
 		#if android
 		if(FlxG.save.data.storageType == null)
-			FlxG.save.data.storageType = 'EXTERNAL_DATA';
+			FlxG.save.data.storageType = 'EXTERNAL';
 		#end
 
 		if(FlxG.save.data.ee1 == null)
