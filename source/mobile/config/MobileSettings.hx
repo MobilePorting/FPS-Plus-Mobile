@@ -16,8 +16,6 @@ using StringTools;
 
 class MobileSettings extends FlxUIStateExt
 {
-	public static var noFunMode = false;
-
 	var keyTextDisplay:FlxTextExt;
 	var warning:FlxTextExt;
 	var warningText:Array<String> = [
@@ -61,13 +59,7 @@ class MobileSettings extends FlxUIStateExt
 		var bgColor:FlxColor = 0xFF9766BE;
 		var font:String = Paths.font("Funkin-Bold", "otf");
 
-		if (noFunMode)
-		{
-			bgColor = 0xFF303030;
-			font = "VCR OSD Mono";
-		}
-
-		if (!ConfigMenu.USE_MENU_MUSIC && ConfigMenu.USE_LAYERED_MUSIC && !noFunMode)
+		if (!ConfigMenu.USE_MENU_MUSIC && ConfigMenu.USE_LAYERED_MUSIC)
 		{
 			songLayer = FlxG.sound.play(Paths.music(ConfigMenu.cacheSongTrack), 0, true);
 			songLayer.time = FlxG.sound.music.time;
@@ -198,14 +190,7 @@ class MobileSettings extends FlxUIStateExt
 	function textUpdate()
 	{
 		keyTextDisplay.clearFormats();
-		if (!noFunMode)
-		{
-			keyTextDisplay.text = "\n";
-		}
-		else
-		{
-			keyTextDisplay.text = "";
-		}
+		keyTextDisplay.text = "\n";
 		keyTextDisplay.text += "\n\nMOBILE SETTINGS\n\n";
 
 		for (i in 0...startingSettings.length)
@@ -271,20 +256,15 @@ class MobileSettings extends FlxUIStateExt
 
 		save();
 
-		if (!noFunMode)
-		{
-			ConfigMenu.startSong = false;
-		}
+		ConfigMenu.startSong = false;
 
-		if (!ConfigMenu.USE_MENU_MUSIC && ConfigMenu.USE_LAYERED_MUSIC && !noFunMode)
+		if (!ConfigMenu.USE_MENU_MUSIC && ConfigMenu.USE_LAYERED_MUSIC)
 		{
 			songLayer.fadeOut(0.5, 0, function(x)
 			{
 				songLayer.stop();
 			});
 		}
-
-		noFunMode = false;
 
 		switchState(returnLoc);
 	}
