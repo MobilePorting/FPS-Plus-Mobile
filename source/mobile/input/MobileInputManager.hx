@@ -125,7 +125,7 @@ class MobileInputManager extends FlxTypedSpriteGroup<TouchButton>
 						return true;
 
 			case MobileInputID.NONE:
-				return false;
+				return !checkStatus(ANY, state);
 
 			default:
 				if (trackedButtons.exists(button))
