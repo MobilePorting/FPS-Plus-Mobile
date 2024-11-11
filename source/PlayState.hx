@@ -1,5 +1,6 @@
 package;
 
+import thx.Path;
 import shaders.*;
 import ui.*;
 import config.*;
@@ -60,7 +61,6 @@ class PlayState extends MusicBeatState
 	public static var instance:PlayState = null;
 
 	public static var curStage:String = '';
-	public static var curUiType:String = '';
 	public static var SONG:SwagSong;
 	public static var EVENTS:SongEvents;
 	public static var loadEvents:Bool = true;
@@ -73,6 +73,14 @@ class PlayState extends MusicBeatState
 	public static var overrideInsturmental:String = "";
 	
 	public static var returnLocation:String = "main";
+
+	public static var uiSkinNames = {
+		comboPopup: "Default",
+    	countdown: "Default",
+    	note: "DefaultNoteSkin",
+    	playerNotes: "Default",
+    	opponentNotes: "Default"
+	};
 
 	var previousReportedSongTime:Float = -1;
 	
@@ -417,7 +425,24 @@ class PlayState extends MusicBeatState
 		}
 
 		curStage = stage.name;
-		curUiType = stage.uiType;
+
+		uiSkinNames = {
+			comboPopup: "Default",
+			countdown: "Default",
+			note: "DefaultNoteSkin",
+			playerNotes: "Default",
+			opponentNotes: "Default"
+		};
+
+		if(Utils.exists(Paths.json(stage.uiType, "data/uiSkins"))){
+			var skinJson = Json.parse(Utils.getText(Paths.json(stage.uiType, "data/uiSkins")));
+
+			if(skinJson.note != null && ScriptableNoteSkin.listScriptClasses().contains(skinJson.note)){ uiSkinNames.note = skinJson.note; }
+			if(skinJson.comboPopup != null && Utils.exists(Paths.json(skinJson.comboPopup, "data/uiSkins/comboPopup"))){ uiSkinNames.comboPopup = skinJson.comboPopup; }
+			if(skinJson.countdown != null && Utils.exists(Paths.json(skinJson.countdown, "data/uiSkins/countdown"))){ uiSkinNames.countdown = skinJson.countdown; }
+			if(skinJson.playerNotes != null && Utils.exists(Paths.json(skinJson.playerNotes, "data/uiSkins/hudNote"))){ uiSkinNames.playerNotes = skinJson.playerNotes; }
+			if(skinJson.opponentNotes != null && Utils.exists(Paths.json(skinJson.opponentNotes, "data/uiSkins/hudNote"))){ uiSkinNames.opponentNotes = skinJson.opponentNotes; }
+		}
 
 		//Set the start point of the characters.
 		if((stage.useStartPoints && !stage.overrideBfStartPoints) || (!stage.useStartPoints && stage.overrideBfStartPoints)){
@@ -797,7 +822,7 @@ class PlayState extends MusicBeatState
 
 		var swagCounter:Int = 0;
 
-		var countdownSkinName:String = PlayState.curUiType;
+		var countdownSkinName:String = uiSkinNames.countdown;
 		var countdownSkin:CountdownSkinBase = new CountdownSkinBase(countdownSkinName);
 
 		stage.countdownBeat(-1);
@@ -1104,18 +1129,15 @@ class PlayState extends MusicBeatState
 
 	//player 1 is player, player 0 is opponent
 	public function generateStaticArrows(player:Int, ?instant:Bool = false, ?skin:String):Void{
-		if(skin == null){ skin = PlayState.curUiType; }
+		if(skin == null){ 
+			if(player == 0){ skin = uiSkinNames.opponentNotes; }
+			else{ skin = uiSkinNames.playerNotes; }
+		}
 
 		var hudNoteSkinName:String = skin;
 		var hudNoteSkin:HudNoteSkinBase = new HudNoteSkinBase(hudNoteSkinName);
 
-		var hudNoteSkinInfo = hudNoteSkin.info.notes;
-
-		if(player == 0){
-			if(hudNoteSkin.info.opponentNotes != null){
-				hudNoteSkinInfo = hudNoteSkin.info.opponentNotes;
-			}
-		}
+		var hudNoteSkinInfo = hudNoteSkin.info;
 
 		for (i in 0...4){
 			
@@ -1124,8 +1146,8 @@ class PlayState extends MusicBeatState
 			switch(hudNoteSkinInfo.noteFrameLoadType){
 				case sparrow:
 					babyArrow.frames = Paths.getSparrowAtlas(hudNoteSkinInfo.notePath);
-				case packer:
-					babyArrow.frames = Paths.getPackerAtlas(hudNoteSkinInfo.notePath);
+				//case packer:
+				//	babyArrow.frames = Paths.getPackerAtlas(hudNoteSkinInfo.notePath);
 				case load(fw, fh):
 					babyArrow.loadGraphic(Paths.image(hudNoteSkinInfo.notePath), true, fw, fh);
 				default:
@@ -1236,7 +1258,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function generateComboPopup(?skin:String):Void{
-		if(skin == null){ skin = PlayState.curUiType; }
+		if(skin == null){ skin = uiSkinNames.comboPopup; }
 
 		var comboPopupSkin:ComboPopupSkinBase = new ComboPopupSkinBase(skin);
 
@@ -1692,7 +1714,7 @@ class PlayState extends MusicBeatState
 
 			if(daNote.tooLate){
 				if (!daNote.didTooLateAction && !daNote.isFake){
-					noteMiss(daNote.noteData, daNote.missCallback, Scoring.MISS_DAMAGE_AMMOUNT, true, true);
+					noteMiss(daNote.noteData, daNote.missCallback, Scoring.MISS_DAMAGE_AMOUNT, true, true);
 					if(canChangeVocalVolume){ vocals.volume = 0; }
 					daNote.didTooLateAction = true;
 				}
@@ -1721,6 +1743,12 @@ class PlayState extends MusicBeatState
 
 				daNote.hitCallback(daNote, dad);
 				healthAdjustOverride = null;
+
+				if(dad.characterInfo.info.functions.noteHit != null){
+					dad.characterInfo.info.functions.noteHit(dad, daNote);
+				}
+				stage.noteHit(dad, daNote);
+				for(script in scripts){ script.noteHit(dad, daNote); }
 
 				enemyStrums.forEach(function(spr:FlxSprite){
 					if (Math.abs(daNote.noteData) == spr.ID){
@@ -1910,20 +1938,20 @@ class PlayState extends MusicBeatState
 
 		switch(rating){
 			case "sick":
-				health += Scoring.SICK_HEAL_AMMOUNT * Config.healthMultiplier * noHealMultiply;
+				health += Scoring.SICK_HEAL_AMOUNT * Config.healthMultiplier * noHealMultiply;
 				songStats.sickCount++;
 				if(Config.noteSplashType >= 1 && Config.noteSplashType < 4){
 					createNoteSplash(note.noteData);
 				}
 			case "good":
-				health += Scoring.GOOD_HEAL_AMMOUNT * Config.healthMultiplier * noHealMultiply;
+				health += Scoring.GOOD_HEAL_AMOUNT * Config.healthMultiplier * noHealMultiply;
 				songStats.goodCount++;
 			case "bad":
-				health += Scoring.BAD_HEAL_AMMOUNT * Config.healthMultiplier * noHealMultiply;
+				health += Scoring.BAD_HEAL_AMOUNT * Config.healthMultiplier * noHealMultiply;
 				songStats.badCount++;
 				comboBreak();
 			case "shit":
-				health += Scoring.SHIT_HEAL_AMMOUNT * Config.healthMultiplier * noHealMultiply;
+				health += Scoring.SHIT_HEAL_AMOUNT * Config.healthMultiplier * noHealMultiply;
 				songStats.shitCount++;
 				comboBreak();
 		}
@@ -2148,36 +2176,6 @@ class PlayState extends MusicBeatState
 					}
 			}
 
-		/*	switch(spr.animation.curAnim.name){
-
-				case "confirm":
-
-					//spr.alpha = 1;
-					spr.centerOffsets();
-
-					if(!(curUiType.toLowerCase() == "pixel")){
-						spr.offset.x -= 14;
-						spr.offset.y -= 14;
-					}
-
-					//i'm bored lol
-				//	if(spr.animation.curAnim.curFrame == 0){
-				//		tweenManager.cancelTweensOf(spr.scale);
-				//		spr.centerOrigin();
-				//		spr.scale.set(1.4, 1.4);
-				//		tweenManager.tween(spr.scale, {x: 0.7, y: 0.7}, 1, {ease: FlxEase.elasticOut});
-				//	}
-
-				//case "static":
-				//	spr.alpha = 0.5; //Might mess around with strum transparency in the future or something.
-				//	spr.centerOffsets();
-
-				default:
-					//spr.alpha = 1;
-					spr.centerOffsets();
-
-			}*/
-
 		});
 	}
 
@@ -2216,14 +2214,6 @@ class PlayState extends MusicBeatState
 			playerStrums.forEach(function(spr:FlxSprite){
 				if (Math.abs(x.noteData) == spr.ID){
 					spr.animation.play('confirm', true);
-					/*if (spr.animation.curAnim.name == 'confirm' && !(curUiType.toLowerCase() == "pixel")){
-						spr.centerOffsets();
-						spr.offset.x -= 14;
-						spr.offset.y -= 14;
-					}
-					else{
-						spr.centerOffsets();
-					}*/
 				}
 			});
 
@@ -2266,13 +2256,19 @@ class PlayState extends MusicBeatState
 				healthAdjustOverride = null;
 			}
 
+			if(boyfriend.characterInfo.info.functions.noteMiss != null){
+				boyfriend.characterInfo.info.functions.noteMiss(boyfriend, direction, countMiss);
+			}
+			stage.noteMiss(direction, countMiss);
+			for(script in scripts){ script.noteMiss(direction, countMiss); }
+
 		}
 
 	}
 
 	inline function noteMissWrongPress(direction:Int = 1):Void{
 		var forceMissNextNoteState = forceMissNextNote;
-		noteMiss(direction, defaultNoteMiss, Scoring.WRONG_TAP_DAMAGE_AMMOUNT, true, false, false, Scoring.WRONG_PRESS_PENALTY);
+		noteMiss(direction, defaultNoteMiss, Scoring.WRONG_TAP_DAMAGE_AMOUNT, true, false, false, Scoring.WRONG_PRESS_PENALTY);
 		setBoyfriendInvuln(4/60);
 		forceMissNextNote = forceMissNextNoteState;
 	}
@@ -2329,7 +2325,7 @@ class PlayState extends MusicBeatState
 			}
 			else{
 				if(healthAdjustOverride != null){
-					health += Scoring.HOLD_HEAL_AMMOUNT * Config.healthMultiplier;
+					health += Scoring.HOLD_HEAL_AMOUNT * Config.healthMultiplier;
 				}
 				songStats.score += Std.int(Scoring.HOLD_SCORE_PER_SECOND * (Conductor.stepCrochet/1000));
 				songStats.susCount++;
@@ -2368,6 +2364,13 @@ class PlayState extends MusicBeatState
 					});
 				}
 			}
+
+			if(boyfriend.characterInfo.info.functions.noteHit != null){
+				boyfriend.characterInfo.info.functions.noteHit(boyfriend, note);
+			}
+			stage.noteHit(boyfriend, note);
+			for(script in scripts){ script.noteHit(boyfriend, note); }
+
 		}
 	}
 
