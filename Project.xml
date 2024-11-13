@@ -100,7 +100,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="compiletime" />
 	<haxelib name="flxanimate" />
-	<haxelib name="hxCodec" if="desktop || mobile" />
+	<haxelib name="hxvlc" if="desktop || mobile" />
 	<haxelib name="funkin.vis" />
 	<haxelib name="grig.audio" />
 	<haxelib name="polymod" />
