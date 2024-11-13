@@ -48,7 +48,7 @@ class ALSoftConfig
 	}
 	#end
 
-	#if macro
+	#if (android && macro)
 	public static function setupConfig()
 	{
 		var fields = Context.getBuildFields();
