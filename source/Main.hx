@@ -53,6 +53,8 @@ class Main extends Sprite
 		addChild(new FlxGame(#if mobile 1280, 720 #else 0, 0 #end, #if mobile !mobile.CopyState.checkExistingFiles() ? mobile.CopyState : #end Startup, 60, 60, true));
 		addChild(fpsDisplay);
 
+		trace(sys.FileSystem.fullPath('assets'));
+
 		//On web builds, video tends to lag quite a bit, so this just helps it run a bit faster.
 		#if web
 		VideoHandler.MAX_FPS = 30;

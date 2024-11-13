@@ -37,7 +37,7 @@ class VideoCutsceneEnd extends ScriptedCutscene
 
     override function update(elapsed:Float) {
         super.update(elapsed);
-        if(!videoOver && Binds.justPressed("menuAccept") && playstate.inVideoCutscene && skipable){
+        if(!videoOver && (mobile.TouchUtil.justPressed || Binds.justPressed("menuAccept")) && playstate.inVideoCutscene && skipable){
             videoOver = true;
             black.visible = true;
 			tween.tween(video, {alpha: 0, volume: 0}, 0.4, {ease: FlxEase.quadInOut, onComplete: function(t){
