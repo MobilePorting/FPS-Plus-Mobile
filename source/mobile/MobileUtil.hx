@@ -28,7 +28,7 @@ class MobileUtil
 		var path:String = '';
 		#if android
 		if (!FileSystem.exists(rootDir + 'storagetype.txt'))
-			File.saveContent(rootDir + 'storagetype.txt', "EXTERNAL");
+			File.saveContent(rootDir + 'storagetype.txt', "EXTERNAL_DATA");
 		var curStorageType:String = File.getContent(rootDir + 'storagetype.txt');
 		path = force ? StorageType.fromStrForce(curStorageType) : StorageType.fromStr(curStorageType);
 		path = haxe.io.Path.addTrailingSlash(path);
