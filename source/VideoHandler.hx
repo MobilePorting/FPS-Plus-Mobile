@@ -17,8 +17,11 @@ import openfl.net.NetStream;
 /**
 	An adaptation of MAJigsaw77's OpenFL desktop MP4 code to not only make         
 	work as a Flixel Sprite, but also allow it to work with standard OpenFL               
-	on Web builds as well.              
+	on Web builds as well.     
+
+	Quick Side Note: Rozebud if you seeing this, I'm sorry but screw you man
 	@author Rozebud
+	@author Lily Ross
 **/
 
 class VideoHandler extends FlxSprite
