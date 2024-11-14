@@ -239,6 +239,7 @@ class PolymodHandler
         Polymod.addDefaultImport(Paths);
         Polymod.addDefaultImport(flixel.group.FlxGroup);
         Polymod.addDefaultImport(flixel.group.FlxSpriteGroup);
+        Polymod.addDefaultImport(modding.ScriptingUtil.FlxTextBorderStyle);
 
         Polymod.addDefaultImport(PlayState);
         Polymod.addDefaultImport(GameOverSubstate);
@@ -278,6 +279,9 @@ class PolymodHandler
         //Alias
         Polymod.addImportAlias("lime.utils.Assets", Assets);
         Polymod.addImportAlias("openfl.utils.Assets", Assets);
+
+        Polymod.addImportAlias("flash.display.BlendMode", modding.ScriptingUtil.PolyBlendMode);
+        Polymod.addImportAlias("openfl.display.BlendMode", modding.ScriptingUtil.PolyBlendMode);
 
         Polymod.addImportAlias("flixel.math.FlxPoint", flixel.math.FlxPoint.FlxBasePoint);
 
