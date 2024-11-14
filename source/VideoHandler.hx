@@ -6,7 +6,8 @@ import flixel.FlxG;
 import flixel.util.FlxColor;
 
 #if hxvlc
-import hxvlc.openfl.Video;
+import flixel.util.FlxTimer;
+import hxvlc.flixel.FlxVideoSprite;
 #elseif web
 import openfl.media.SoundTransform;
 import openfl.media.Video;
@@ -24,6 +25,61 @@ import openfl.net.NetStream;
 	@author Lily Ross
 **/
 
+#if hxvlc
+class VideoHandler extends FlxVideoSprite
+{
+	public static var MAX_FPS = 60;
+	public var muted(get, never):Bool;
+	public var volume(get, never):Float;
+	public var length(get, never):Float;
+	public var onStart:FlxSignal = new FlxSignal();
+	public var onEnd:FlxSignal = new FlxSignal();
+
+	/*override public function new(?x:Float = 0, ?y:Float = 0)
+		super(x, y);*/
+
+	public function playMP4(videoPath:String, callback:Void->Void, ?repeat:Bool = false):Void
+		playDesktopMP4(videoPath, callback, repeat);
+
+	public function playDesktopMP4(videoPath:String, callback:Void->Void, ?repeat:Bool = false):Void
+	{
+		this.bitmap.onFormatSetup.add(function():Void
+		{
+    		if (this.bitmap != null && this.bitmap.bitmapData != null)
+    		{
+        		final scale:Float = Math.min(FlxG.width / this.bitmap.bitmapData.width, FlxG.height / this.bitmap.bitmapData.height);
+
+        		this.setGraphicSize(this.bitmap.bitmapData.width * scale, this.bitmap.bitmapData.height * scale);
+        		this.updateHitbox();
+        		this.screenCenter();
+    		}
+		});
+
+		this.bitmap.onEndReached.add(function()
+		{
+			this.destroy();
+			onEnd.dispatch();
+			callback();
+		});
+		this.bitmap.onOpening.add(()->onStart.dispatch());
+
+		if (this.load(videoPath))
+			FlxTimer.wait(0.001, () -> this.play());
+	}
+
+	public function skip():Void
+		this.bitmap.onEndReached.dispatch();
+
+	private function get_muted():Bool
+		return FlxG.sound.muted;
+
+	private function get_volume():Float
+		return FlxG.sound.volume;
+
+	private function get_length():Float
+		return haxe.io.FPHelper.i64ToDouble(this.bitmap.time.low, this.bitmap.time.high) / 1000;
+}
+#elseif web
 class VideoHandler extends FlxSprite
 {
 	/**
@@ -52,14 +108,10 @@ class VideoHandler extends FlxSprite
 	public var onStart:FlxSignal = new FlxSignal();
 	public var onEnd:FlxSignal = new FlxSignal();
 
-	#if hxvlc
-	var bitmap:Video;
-	#elseif web
 	var video:Video;
 	var netStream:NetStream;
 	var netPath:String;
 	var netLoop:Bool;
-	#end
 
 	public function new(?x:Float = 0, ?y:Float = 0){
 		super(x, y);
@@ -72,85 +124,12 @@ class VideoHandler extends FlxSprite
 	**/
 	public function playMP4(videoPath:String, callback:Void->Void, ?repeat:Bool = false){
 
-		#if hxvlc
-		playDesktopMP4(videoPath, callback, repeat);
-		#end
-
-		#if web
 		playWebMP4(videoPath, callback, repeat);
-		#end
 
 	}
 
 	//===========================================================================================================//
 
-	#if hxvlc
-	/**
-		Plays MP4s using VLC Bitmaps as the source.
-		Only works on desktop builds.
-		It is recommended that you use `playMP4()` instead since that works for desktop and web.
-	**/
-	@:noCompletion public function playDesktopMP4(path:String, callback:Void->Void, ?repeat:Bool = false):Void {
-
-		//FlxG.autoPause = false;
-
-		//if (FlxG.sound.music != null)
-		//{
-		//	FlxG.sound.music.stop();
-		//}
-
-		finishCallback = callback;
-
-		bitmap = new Video();
-		bitmap.onOpening.add(onVLCVideoReady);
-		bitmap.onEndReached.add(onVLCComplete);
-		
-		FlxG.addChildBelowMouse(bitmap);
-		bitmap.load(path, (repeat) ? ['input-repeat=65545'] : null);
-		bitmap.play();
-		bitmap.alpha = 0;
-		
-		if (FlxG.autoPause) {
-			FlxG.signals.focusLost.add(pause);
-			FlxG.signals.focusGained.add(resume);
-		}
-
-		waitingStart = true;
-	}
-
-	function onVLCVideoReady(){
-		trace("video loaded!");
-	}
-
-	function onVLCComplete(){
-		onEnd.dispatch();
-
-		if (finishCallback != null){
-			finishCallback();
-		}
-
-		destroy();
-	}
-
-	function vlcClean(){
-		bitmap.stop();
-
-		// Clean player, just in case!
-		bitmap.dispose();
-
-		if (FlxG.game.contains(bitmap))
-		{
-			FlxG.game.removeChild(bitmap);
-		}
-
-		trace("Done!");
-		completed = true;
-	}
-	#end
-
-	//===========================================================================================================//
-
-	#if web
 	/**
 		Plays MP4s using OpenFL NetStreams and Videos as the source.
 		Only works on web builds.
@@ -250,7 +229,6 @@ class VideoHandler extends FlxSprite
 			netStream.soundTransform = new SoundTransform(0);
 		}
 	}
-	#end
 
 	//===========================================================================================================//
 
@@ -259,29 +237,6 @@ class VideoHandler extends FlxSprite
 
 		super.update(elapsed);
 
-		#if hxvlc
-		if(waitingStart){
-
-			if(bitmap.bitmapData != null){
-				waitingStart = false;
-				startDrawing = true;
-				onStart.dispatch();
-			}
-			
-		}
-
-		if(startDrawing && !paused){
-
-			if(frameTimer >= 1/MAX_FPS){
-				loadGraphic(bitmap.bitmapData);
-				frameTimer = 0;
-			}
-			frameTimer += elapsed;
-
-		}
-		#end
-
-		#if web
 		if(FlxG.keys.justPressed.MINUS || FlxG.keys.justPressed.PLUS){
 			setSoundTransform(__muted);
 		}
@@ -302,7 +257,6 @@ class VideoHandler extends FlxSprite
 			frameTimer += elapsed;
 
 		}
-		#end
 
 	}
 
@@ -319,17 +273,9 @@ class VideoHandler extends FlxSprite
 			FlxG.signals.focusGained.remove(resume);
 		}
 
-		#if hxvlc
-		if(!completed){
-			vlcClean();
-		}
-		#end
-
-		#if web
 		if(!completed){
 			netClean();
 		}
-		#end
 
 		super.destroy();
 		
@@ -340,17 +286,9 @@ class VideoHandler extends FlxSprite
 	**/
 	public function pause(){
 
-		#if hxvlc
-		if(bitmap != null && !paused){
-			bitmap.pause();
-		}
-		#end
-
-		#if web
 		if(netStream != null && !paused){
 			netStream.pause();
 		}
-		#end
 
 		paused = true;
 	}
@@ -360,29 +298,16 @@ class VideoHandler extends FlxSprite
 	**/
 	public function resume(){
 
-		#if hxvlc
-		if(bitmap != null && paused){ 
-			bitmap.resume();
-		}
-		#end
-
-		#if web
 		if(netStream != null && paused){ 
 			netStream.resume();
 		}
-		#end
 
 		paused = false;
 	}
 
 	public function skip(){
 
-		#if hxvlc
-		onVLCComplete();
-		#end
-		#if web
 		finishVideo();
-		#end
 
 	}
 
@@ -392,26 +317,18 @@ class VideoHandler extends FlxSprite
 
 	private function set_muted(value:Bool):Bool{
 
-		#if web
 		if(startDrawing){
 			setSoundTransform(value);
 		}
-		#end
 
 		return __muted = value;
 	}
 	
 
 	function get_length():Float {
-		#if hxvlc
-		@:privateAccess
-			var smthSilly:String = bitmap.length.toString();
 
-		return Std.parseFloat(smthSilly) / 1000;
-		#end
-		#if web
 		@:privateAccess
 		return netStream.__video.duration;
-		#end
 	}
 }
+#end
