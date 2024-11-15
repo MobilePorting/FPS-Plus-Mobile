@@ -54,14 +54,13 @@ class VideoHandler extends FlxVideoSprite
         		this.screenCenter();
     		}
 		});
-
 		this.bitmap.onEndReached.add(function()
 		{
 			this.destroy();
 			onEnd.dispatch();
 			callback();
 		});
-		this.bitmap.onOpening.add(()->onStart.dispatch());
+		this.bitmap.onOpening.add(()-> onStart.dispatch());
 
 		if (this.load(videoPath))
 			FlxTimer.wait(0.001, () -> this.play());
