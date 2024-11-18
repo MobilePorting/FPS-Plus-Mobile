@@ -40,7 +40,7 @@ class CharacterSelectState extends MusicBeatState
 
     var characterGroup:FlxSpriteGroup= new FlxSpriteGroup();
 
-    var startLeaving:Bool = false;
+    var blockingSelection:Bool = false;
     var canAccept:Bool = false;
     var canReverse:Bool = false;
     var reverseTime:Float = 0;
@@ -52,8 +52,10 @@ class CharacterSelectState extends MusicBeatState
 
     var characterGrid:CharacterGrid;
 
-    final gridSize = 3;
     var curGridPosition:Array<Int> = [1, 1];
+
+    var gridWidth:Int = 3;
+    var gridHeight:Int = 3;
 
     var denyCount:Int = 0;
     var skipIdleCount:Int = 0;
@@ -97,11 +99,56 @@ class CharacterSelectState extends MusicBeatState
         //addCharacter("bf", "BfPlayer", "GfPartner", "Boyfriend", [1, 1]);
         //addCharacter("pico", "PicoPlayer", "NenePartner", "Pico", [0, 1]);
 
+        var usedPositions:Array<Array<Int>> = [];
+
+        final MAX_GRID_WIDTH:Int = 3;
+
+        var curGridPosX:Int = 0;
+        var curGridPosY:Int = 0;
+
         for(file in Utils.readDirectory("assets/data/characterSelect/")){
             if(file.endsWith(".json")){
                 var charJson = Json.parse(Utils.getText(Paths.json(file.split(".json")[0], "data/characterSelect")));
                 if (charJson.id == null){ charJson.id = file.split(".json")[0].toLowerCase(); }
-                addCharacter(charJson.id, charJson.playerCharacter, charJson.partnerCharacter, charJson.freeplayCharacter, charJson.position);
+                var charPos = charJson.position;
+
+                if(charPos[0] >= 3){ charPos[0] = 0; }
+                if(charPos[1] >= 3){ charPos[1] = 0; }
+
+                var repositionCharacter:Bool = false;
+
+                for(usedPos in usedPositions){
+                    if(usedPos[0] == charPos[0] && usedPos[1] == charPos[1]){
+                        repositionCharacter = true;
+                        break;
+                    }
+                }
+
+                if(repositionCharacter){
+                    var repositioned:Bool = false;
+                    while(!repositioned){
+                        repositioned = true;
+                        for(usedPos in usedPositions){
+                            if(usedPos[0] == curGridPosX && usedPos[1] == curGridPosY){
+                                curGridPosX++;
+                                if(curGridPosX >= MAX_GRID_WIDTH){
+                                    curGridPosX = 0;
+                                    curGridPosY++;
+                                    if(curGridPosY >= gridHeight){
+                                        gridHeight++;
+                                    }
+                                }
+                                repositioned = false;
+                                break;
+                            }
+                        }
+                    }
+                    charPos = [curGridPosX, curGridPosY];
+                }
+
+                usedPositions.push([charPos[0], charPos[1]]);
+
+                addCharacter(charJson.id, charJson.playerCharacter, charJson.partnerCharacter, charJson.freeplayCharacter, charPos);
             }
         }
 
@@ -208,15 +255,37 @@ class CharacterSelectState extends MusicBeatState
         FlxTween.tween(characterTitle, {y: characterTitle.y - 80}, 1.3, {ease: FlxEase.expoOut});
         add(characterTitle);
 
-        characterGrid = new CharacterGrid(480, 200, gridSize, characters);
+        characterGrid = new CharacterGrid(480, 200, gridWidth, gridHeight, characters);
         characterGrid.scrollFactor.set();
+
+        switch(gridHeight){
+            case 1 | 2 | 3:
+            default:
+                characterGrid.y -= 80;
+
+                chooseDipshit.setGraphicSize(chooseDipshit.frameWidth, chooseDipshit.frameHeight + (110 * (gridHeight-4)));
+                chooseDipshit.updateHitbox();
+
+                dipshitBacking.scale.set(chooseDipshit.scale.x, chooseDipshit.scale.y);
+                dipshitBacking.updateHitbox();
+
+                dipshitBlur.scale.set(chooseDipshit.scale.x, chooseDipshit.scale.y);
+                dipshitBlur.updateHitbox();
+
+                dipshitDarkBack.scale.set(chooseDipshit.scale.x, chooseDipshit.scale.y);
+                dipshitDarkBack.updateHitbox();
+        }
+
+        if(!characters.exists(persistentCharacter)){
+            persistentCharacter = "bf";
+        }
+
         characterGrid.y += 230;
         characterGrid.select(characters.get(persistentCharacter).position);
-        //characterGrid.forceTrackPosition = characters.get(persistentCharacter).position.copy();
         FlxTween.tween(characterGrid, {y: characterGrid.y - 230}, 1, {ease: FlxEase.expoOut});
         add(characterGrid);
 
-        curGridPosition = characters.get(persistentCharacter).position;
+        curGridPosition = characters.get(persistentCharacter).position.copy();
         changeGridPos([0, 0], true);
 
         changeCharacter(persistentCharacter, true);
@@ -234,10 +303,10 @@ class CharacterSelectState extends MusicBeatState
 
         Conductor.songPosition = FlxG.sound.music.time;
 
-        if(!startLeaving){
+        if(!blockingSelection){
             if(Binds.justPressed("menuUp")){
                 changeGridPos([0, -1]);
-                changeCharacter(getCharacterFromPosition());
+                changeCharacter(getCharacterFromPosition(curGridPosition));
                 characterGrid.showNormalCursor();
                 characterGrid.select(curGridPosition);
                 repeatDelayY = 2;
@@ -246,7 +315,7 @@ class CharacterSelectState extends MusicBeatState
             }
             else if(Binds.justPressed("menuDown")){
                 changeGridPos([0, 1]);
-                changeCharacter(getCharacterFromPosition());
+                changeCharacter(getCharacterFromPosition(curGridPosition));
                 characterGrid.showNormalCursor();
                 characterGrid.select(curGridPosition);
                 repeatDelayY = 2;
@@ -255,7 +324,7 @@ class CharacterSelectState extends MusicBeatState
             }
             if(Binds.justPressed("menuLeft")){
                 changeGridPos([-1, 0]);
-                changeCharacter(getCharacterFromPosition());
+                changeCharacter(getCharacterFromPosition(curGridPosition));
                 characterGrid.showNormalCursor();
                 characterGrid.select(curGridPosition);
                 repeatDelayX = 2;
@@ -264,7 +333,7 @@ class CharacterSelectState extends MusicBeatState
             }
             else if(Binds.justPressed("menuRight")){
                 changeGridPos([1, 0]);
-                changeCharacter(getCharacterFromPosition());
+                changeCharacter(getCharacterFromPosition(curGridPosition));
                 characterGrid.showNormalCursor();
                 characterGrid.select(curGridPosition);
                 repeatDelayX = 2;
@@ -273,43 +342,10 @@ class CharacterSelectState extends MusicBeatState
             }
         }
 
-        if(Binds.justPressed("menuAccept") && characters.get(curCharacter).freeplayClass != null && !startLeaving && canAccept){
-            startLeaving = true;
-            canReverse = true;
-            persistentCharacter = curCharacter;
-            FreeplayState.djCharacter = characters.get(curCharacter).freeplayClass;
-
-            characters.get(curCharacter).player.playConfirm();
-            characters.get(curCharacter).partner.playConfirm();
-            characterGrid.confirm(characters.get(curCharacter).position);
-
-            FlxG.sound.play(Paths.sound("characterSelect/confirm"));
-
-            reverseCount++;
-            var reverseCheck = reverseCount;
-
-            FlxG.sound.music.pitch = 1;
-            FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.8, {ease: FlxEase.quadOut, onComplete: function(t){
-                if(reverseCheck == reverseCount){
-                    FlxG.sound.music.fadeOut(0.05);
-                    canReverse = false;
-                    new FlxTimer().start(0.3, function(t) {
-                        switchState(new FreeplayState(fromCharacterSelect));
-                        FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8, {ease: FlxEase.backIn});
-                        FlxTween.tween(titleBar, {y: titleBar.y + 80}, 0.8, {ease: FlxEase.backIn});
-                        FlxTween.tween(characterTitle, {y: characterTitle.y + 80}, 0.8, {ease: FlxEase.backIn});
-                        FlxTween.tween(dipshitBlur, {y: dipshitBlur.y + 220}, 0.8, {ease: FlxEase.backIn});
-                        FlxTween.tween(dipshitBacking, {y: dipshitBacking.y + 210}, 0.8, {ease: FlxEase.backIn});
-                        FlxTween.tween(chooseDipshit, {y: chooseDipshit.y + 200}, 0.8, {ease: FlxEase.backIn});
-                        FlxTween.tween(dipshitDarkBack, {y: dipshitDarkBack.y + 200}, 0.8, {ease: FlxEase.backIn});
-                        FlxTween.tween(characterGrid, {y: characterGrid.y + 230}, 0.8, {ease: FlxEase.backIn});
-                        fadeShader.fadeVal = 1;
-                        FlxTween.tween(fadeShader, {fadeVal: 0}, 0.8, {ease: FlxEase.quadIn});
-                    });
-                }
-            }});
+        if(Binds.justPressed("menuAccept") && characters.get(curCharacter).freeplayClass != null && !blockingSelection && canAccept){
+            acceptCharacter();
         }
-        else if(Binds.justPressed("menuAccept") && characters.get(curCharacter).freeplayClass == null && !startLeaving){
+        else if(Binds.justPressed("menuAccept") && characters.get(curCharacter).freeplayClass == null && !blockingSelection){
             characterGrid.deny(curGridPosition);
             FlxG.sound.play(Paths.sound("characterSelect/deny"));
             denyCount++;
@@ -321,8 +357,15 @@ class CharacterSelectState extends MusicBeatState
             });
         }
 
-        if(Binds.justPressed("menuBack") && canReverse){
-            startLeaving = false;
+        if(Binds.justPressed("menuBack") && !blockingSelection && !canReverse){
+            curGridPosition = characters.get(persistentCharacter).position.copy();
+            changeGridPos([0, 0]);
+            changeCharacter(getCharacterFromPosition(curGridPosition));
+            characterGrid.select(curGridPosition, true);
+            acceptCharacter();
+        }
+        else if(Binds.justPressed("menuBack") && canReverse){
+            blockingSelection = false;
             canReverse = false;
             skipIdleCount = 1;
             reverseCount++;
@@ -357,7 +400,7 @@ class CharacterSelectState extends MusicBeatState
             skipIdleCount--;
         }
         else{
-            if(!startLeaving){
+            if(!blockingSelection){
                 if(characters.get(curCharacter).player != null){
                     characters.get(curCharacter).player.playIdle();
                 }
@@ -371,7 +414,7 @@ class CharacterSelectState extends MusicBeatState
     }
 
     override function stepHit():Void{
-        if(!startLeaving){
+        if(!blockingSelection){
             var changeAmount = [0, 0];
 
             if(repeatDelayY > 0){
@@ -401,7 +444,7 @@ class CharacterSelectState extends MusicBeatState
             if(changeAmount[0] != 0 || changeAmount[1] != 0){
                 if(Binds.pressed("menuUp") || Binds.pressed("menuDown") || Binds.pressed("menuLeft") || Binds.pressed("menuRight")){
                     changeGridPos(changeAmount);
-                    changeCharacter(getCharacterFromPosition());
+                    changeCharacter(getCharacterFromPosition(curGridPosition));
                     characterGrid.showNormalCursor();
                     characterGrid.select(curGridPosition);
                     playCursorMoveSound();
@@ -410,6 +453,43 @@ class CharacterSelectState extends MusicBeatState
         }
 
         super.stepHit();
+    }
+
+    function acceptCharacter():Void{
+        blockingSelection = true;
+        canReverse = true;
+
+        characters.get(curCharacter).player.playConfirm();
+        characters.get(curCharacter).partner.playConfirm();
+        characterGrid.confirm(characters.get(curCharacter).position);
+
+        FlxG.sound.play(Paths.sound("characterSelect/confirm"));
+
+        reverseCount++;
+        var reverseCheck = reverseCount;
+
+        FlxG.sound.music.pitch = 1;
+        FlxTween.tween(FlxG.sound.music, {pitch: 0.5}, 0.8, {ease: FlxEase.quadOut, onComplete: function(t){
+            if(reverseCheck == reverseCount){
+                FlxG.sound.music.fadeOut(0.05);
+                canReverse = false;
+                persistentCharacter = curCharacter;
+                FreeplayState.djCharacter = characters.get(curCharacter).freeplayClass;
+                new FlxTimer().start(0.3, function(t) {
+                    switchState(new FreeplayState(fromCharacterSelect));
+                    FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8, {ease: FlxEase.backIn});
+                    FlxTween.tween(titleBar, {y: titleBar.y + 80}, 0.8, {ease: FlxEase.backIn});
+                    FlxTween.tween(characterTitle, {y: characterTitle.y + 80}, 0.8, {ease: FlxEase.backIn});
+                    FlxTween.tween(dipshitBlur, {y: dipshitBlur.y + 220}, 0.8, {ease: FlxEase.backIn});
+                    FlxTween.tween(dipshitBacking, {y: dipshitBacking.y + 210}, 0.8, {ease: FlxEase.backIn});
+                    FlxTween.tween(chooseDipshit, {y: chooseDipshit.y + 200}, 0.8, {ease: FlxEase.backIn});
+                    FlxTween.tween(dipshitDarkBack, {y: dipshitDarkBack.y + 200}, 0.8, {ease: FlxEase.backIn});
+                    FlxTween.tween(characterGrid, {y: characterGrid.y + 230}, 0.8, {ease: FlxEase.backIn});
+                    fadeShader.fadeVal = 1;
+                    FlxTween.tween(fadeShader, {fadeVal: 0}, 0.8, {ease: FlxEase.quadIn});
+                });
+            }
+        }});
     }
 
     function startSong():Void{
@@ -446,8 +526,19 @@ class CharacterSelectState extends MusicBeatState
             position: position,
         });
 
-        characterPositions.set((""+position[0]) + (""+position[1]), name);
+        characterPositions.set((""+position[0]) + ("|"+position[1]), name);
     }
+
+    function getCharacterFromPosition(position:Array<Int>):String{
+        return characterPositions.get((""+position[0]) + ("|"+position[1]));
+    }
+
+    function characterExistsAtPosition(position:Array<Int>):Bool{
+        return characterPositions.exists((""+position[0]) + ("|"+position[1]));
+    }
+
+    var initialPlayerTimer:FlxTimer;
+    var initialPartnerTimer:FlxTimer;
 
     function changeCharacter(changeCharacter:String, ?initial:Bool = false):Void{
         if(changeCharacter == null){ changeCharacter = "locked"; }
@@ -458,9 +549,12 @@ class CharacterSelectState extends MusicBeatState
         var leavingCharacter = curCharacter;
         curCharacter = changeCharacter;
 
+        if(initialPlayerTimer != null){ initialPlayerTimer.destroy(); }
+        if(initialPartnerTimer != null){ initialPartnerTimer.destroy(); }
+
         if(characters.get(curCharacter).player != null){
             if(initial){
-                new FlxTimer().start(0.2, function(t){
+                initialPlayerTimer = new FlxTimer().start(0.2, function(t){
                     characters.get(curCharacter).player.playEnter();
                     characterGroup.add(characters.get(curCharacter).player);
                 });
@@ -472,7 +566,7 @@ class CharacterSelectState extends MusicBeatState
         }
         if(characters.get(curCharacter).partner != null){
             if(initial){
-                new FlxTimer().start(0.2, function(t){
+                initialPartnerTimer = new FlxTimer().start(0.2, function(t){
                     characters.get(curCharacter).partner.playEnter();
                     characterGroup.add(characters.get(curCharacter).partner);
                 });
@@ -535,31 +629,17 @@ class CharacterSelectState extends MusicBeatState
         }*/
     }
 
-    function getCharacterFromPosition():String{
-        //idk why this shit dont work
-        /*for(key => val in characters){
-            if(val.position[0] == curGridPosition[0] && val.position[1] == curGridPosition[1]){
-                trace(key);
-                trace(val.position);
-                trace(curGridPosition);
-                return key;
-            }
-        }
-        return null;*/
-        return characterPositions.get((""+curGridPosition[0]) + (""+curGridPosition[1]));
-    }
-
     function changeGridPos(?change:Array<Int>, ?_instant:Bool = false):Void{
         if(change == null){ change = [0, 0]; }
 
         curGridPosition[0] += change[0];
         curGridPosition[1] += change[1];
 
-        if(curGridPosition[0] >= gridSize){ curGridPosition[0] = 0; }
-        else if(curGridPosition[0] < 0){ curGridPosition[0] = gridSize-1; }
+        if(curGridPosition[0] >= gridWidth){ curGridPosition[0] = 0; }
+        else if(curGridPosition[0] < 0){ curGridPosition[0] = gridWidth-1; }
 
-        if(curGridPosition[1] >= gridSize){ curGridPosition[1] = 0; }
-        else if(curGridPosition[1] < 0){ curGridPosition[1] = gridSize-1; }
+        if(curGridPosition[1] >= gridHeight){ curGridPosition[1] = 0; }
+        else if(curGridPosition[1] < 0){ curGridPosition[1] = gridHeight-1; }
 
         if(!_instant){
             FlxTween.cancelTweensOf(camShift);
