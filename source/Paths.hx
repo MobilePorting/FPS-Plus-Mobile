@@ -5,6 +5,7 @@ import sys.FileSystem;
 #end
 
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.FlxGraphic;
 
 using StringTools;
 
@@ -25,14 +26,14 @@ class Paths
         var data:String = file(key, "images", "png");
 
         if(ImageCache.exists(data) && !forceLoadFromDisk){
-            //trace(key + " is in the cache");
             return ImageCache.get(data);
         }
         else{
-            //trace(key + " loading from file");
+            if(!ImageCache.trackedAssets.contains(data)){
+                ImageCache.trackedAssets.push(data);
+            }
             return data;
         }
-            
     }
 
     inline static public function xml(key:String, ?location:String = "images"){

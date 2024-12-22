@@ -52,7 +52,6 @@ class TitleScreen extends MusicBeatState
 	var inputTime:Float = 0;
 
 	override public function create():Void{
-		// DEBUG BULLSHIT
 
 		Config.setFramerate(60);
 

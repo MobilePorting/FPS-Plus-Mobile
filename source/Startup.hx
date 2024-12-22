@@ -212,6 +212,7 @@ class Startup extends FlxState
         }
         if(splash.animation.curAnim.finished && splash.animation.curAnim.name == "end"){
             System.gc();
+            ImageCache.trackedAssets = [];
             FlxG.switchState(nextState);  
         }
 
