@@ -169,6 +169,10 @@
 	<!-- Do whatever you want I'm tired uninstall and install everytime -->
 	<certificate path="key.keystore" password="fpsplus" alias="fpsplusport" alias-password="fpsplus" if="android" unless="debug" />
 
+	<!-- Category Type for Apple Systems -->
+	<config:ios category_type="public.app-category.music-games" />
+	<config:mac category_type="public.app-category.music-games" />
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!-- Disable trace() calls in release builds to bump up performance. -->
