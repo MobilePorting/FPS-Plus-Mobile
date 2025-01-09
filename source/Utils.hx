@@ -33,11 +33,11 @@ class Utils
 
 	public static function showPopUp(message:String, title:String):Void
 	{
-		#if android
+		/*#if android
 		android.Tools.showAlertDialog(title, message, {name: "OK", func: null}, null);
-		#else
+		#else*/
 		FlxG.stage.window.alert(message, title);
-		#end
+		//#end
 	}
 
 	public static function getTextInLines(path:String):Array<String>{
