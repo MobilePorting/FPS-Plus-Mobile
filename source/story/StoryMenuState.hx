@@ -16,6 +16,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import caching.*;
 
 using StringTools;
 
@@ -68,8 +69,6 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
-
-		ImageCache.clear();
 		Config.setFramerate(60);
 	
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing){

@@ -6,6 +6,7 @@ import sys.FileSystem;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.FlxGraphic;
+import caching.*;
 
 using StringTools;
 
@@ -28,10 +29,15 @@ class Paths
         if(ImageCache.exists(data) && !forceLoadFromDisk){
             return ImageCache.get(data);
         }
-        else{
-            if(!ImageCache.trackedAssets.contains(data)){
-                ImageCache.trackedAssets.push(data);
+        else if(!forceLoadFromDisk){
+            if(ImageCache.localCache.exists(data)){
+                return ImageCache.localCache.get(data);
             }
+            else{
+                return ImageCache.addLocal(data);
+            }
+        }
+        else{
             return data;
         }
     }
@@ -49,7 +55,11 @@ class Paths
     }
 
     inline static public function sound(key:String){
-        return file(key, "sounds", audioExtension);
+        var data:String = file(key, "sounds", audioExtension);
+        if(!AudioCache.trackedSounds.contains(data)){
+            AudioCache.trackedSounds.push(data);
+        }
+        return data;
     }
 
     inline static public function music(key:String){

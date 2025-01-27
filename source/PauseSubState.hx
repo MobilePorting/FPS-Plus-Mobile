@@ -1,5 +1,6 @@
 package;
 
+import caching.*;
 import flixel.tweens.FlxEase;
 import extensions.flixel.FlxTextExt;
 import haxe.Json;
@@ -155,6 +156,7 @@ class PauseSubState extends MusicBeatSubstate
 						
 					case "Restart Song":
 						PlayState.instance.tweenManager.clear();
+						ImageCache.keepCache = true;
 						PlayState.instance.switchState(new PlayState());
 						PlayState.sectionStart = false;
 						PlayState.replayStartCutscene = false;
@@ -166,6 +168,7 @@ class PauseSubState extends MusicBeatSubstate
 	
 					case "Restart Section":
 						PlayState.instance.tweenManager.clear();
+						ImageCache.keepCache = true;
 						PlayState.instance.switchState(new PlayState());
 						PlayState.replayStartCutscene = false;
 						if(PlayState.instance.instSong != null){
@@ -192,11 +195,15 @@ class PauseSubState extends MusicBeatSubstate
 						
 					case "Options":
 						PlayState.instance.tweenManager.clear();
+						ImageCache.keepCache = true;
 						PlayState.instance.switchState(new ConfigMenu());
 						ConfigMenu.exitTo = PlayState;
 						PlayState.replayStartCutscene = false;
 						pauseMusic.fadeOut(0.5, 0);
 						FlxG.sound.play(Paths.sound('scrollMenu'), 0.8);
+						if(PlayState.instance.instSong != null){
+							PlayState.overrideInsturmental = PlayState.instance.instSong;
+						}
 						
 					case "Exit to menu":
 						PlayState.instance.tweenManager.clear();

@@ -52,6 +52,7 @@ import scripts.Script;
 import modding.PolymodHandler;
 import openfl.filters.ShaderFilter;
 import story.StoryMenuState;
+import caching.*;
 
 using StringTools;
 
@@ -309,8 +310,6 @@ class PlayState extends MusicBeatState
 		instance = this;
 		FlxG.mouse.visible = false;
 		add(tweenManager);
-
-		ImageCache.clear();
 
 		FlxG.signals.preStateSwitch.addOnce(preStateChange);
 
@@ -653,7 +652,6 @@ class PlayState extends MusicBeatState
 
 		iconP1 = new HealthIcon(boyfriend.iconName, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2) + iconP1.yOffset;
-		
 
 		iconP2 = new HealthIcon(dad.iconName, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2) + iconP2.yOffset;
@@ -1284,12 +1282,12 @@ class PlayState extends MusicBeatState
 			if(!Config.downscroll){
 				comboUI.ratingInfo.position.set(844, 580);
 				comboUI.numberInfo.position.set(340, 505);
-				comboUI.comboBreakInfo.position.set(844, 580);
+				comboUI.comboBreakInfo.position.set(400, 535);
 			}
 			else{
 				comboUI.ratingInfo.position.set(844, 150);
 				comboUI.numberInfo.position.set(340, 125);
-				comboUI.comboBreakInfo.position.set(844, 150);
+				comboUI.comboBreakInfo.position.set(400, 165);
 			}
 
 			comboUI.ratingInfo.scale *= comboPopupSkin.info.ratingsHudScaleMultiply;
@@ -1894,8 +1892,8 @@ class PlayState extends MusicBeatState
 
 				switchState(new PlayState());
 
-				transIn = FlxTransitionableState.defaultTransIn;
-				transOut = FlxTransitionableState.defaultTransOut;
+				//transIn = FlxTransitionableState.defaultTransIn;
+				//transOut = FlxTransitionableState.defaultTransOut;
 			}
 		}
 		//CODE FOR ENDING A FREEPLAY SONG
@@ -2871,6 +2869,10 @@ class PlayState extends MusicBeatState
 				Assets.cache.removeSound(Paths.inst(SONG.song));
 			}
 		}
+
+		var pauseSongName = "pause/breakfast";
+		if(metadata != null){ pauseSongName = metadata.pauseMusic; }
+		Assets.cache.removeSound(Paths.music(pauseSongName));
 
 		super.switchState(_state);
 	}

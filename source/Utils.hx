@@ -1,5 +1,6 @@
 package;
 
+import caching.AudioCache;
 import modding.PolymodHandler;
 import mobile.input.MobileInputID;
 import flixel.input.gamepad.FlxGamepadInputID;
@@ -13,6 +14,7 @@ import sys.FileSystem;
 import flixel.math.FlxMath;
 import flixel.FlxG;
 import openfl.utils.Assets;
+import openfl.system.System;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -333,6 +335,14 @@ class Utils
 			default:
 				return button.toString();
 		}
+	}
+
+	//Runs garbage collection and compacts memory.
+	public static function gc():Void{
+		System.gc();
+        #if cpp
+        cpp.vm.Gc.compact();
+        #end
 	}
 
 	public static inline function mobileButtonToString(button:MobileInputID):String{

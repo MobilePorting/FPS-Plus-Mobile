@@ -1,5 +1,6 @@
 package transition;
 
+import caching.*;
 import extensions.flixel.FlxUIStateExt;
 import openfl.system.System;
 import flixel.FlxG;
@@ -38,11 +39,22 @@ class BaseTransition extends FlxSpriteGroup{
     **/
     public function end(){
         FlxUIStateExt.inTransition = false;
-        System.gc();
-        if(state != null){
+        
+        if(state != null){ //State exit animation.
+            //FlxG.signals.postStateSwitch.addOnce(Utils.gc);
+            FlxG.signals.preStateCreate.addOnce(function(state){
+                if(!ImageCache.keepCache){
+                    ImageCache.clear();
+                    AudioCache.clear();
+                    ImageCache.keepCache = false; // Make sure to set this to false to avoid clutter
+                }
+                Utils.gc();
+            });
+
             FlxG.switchState(state);
         }
-        else{
+        else{ //State intro animation.
+            FlxG.signals.postUpdate.addOnce(Utils.gc);
             FlxG.cameras.remove(cameras[0], true);
             this.destroy();
         }
