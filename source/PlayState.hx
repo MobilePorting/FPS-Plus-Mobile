@@ -1497,6 +1497,18 @@ class PlayState extends MusicBeatState
 			PolymodHandler.reload();
 		}
 
+		/*if(FlxG.keys.anyJustPressed([P])){
+			trace(getBfFocusPostion());
+		}
+
+		if(FlxG.keys.anyJustPressed([O])){
+			trace(getOpponentFocusPosition());
+		}
+
+		if(FlxG.keys.anyJustPressed([I])){
+			trace(getGfFocusPosition());
+		}*/
+
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconP1.xOffset);
 		iconP1.y = healthBar.y - (iconP1.height / 2) + iconP1.yOffset;
 		
@@ -2613,7 +2625,12 @@ class PlayState extends MusicBeatState
 	}
 
 	public inline function getOpponentFocusPosition():FlxPoint{
-		return new FlxPoint(dad.getMidpoint().x + dad.focusOffset.x + stage.dadCameraOffset.x, dad.getMidpoint().y + dad.focusOffset.y + stage.dadCameraOffset.y);
+		if(!stage.useStaticStageCameras){
+			return new FlxPoint(dad.getMidpoint().x + dad.focusOffset.x + stage.dadCameraOffset.x, dad.getMidpoint().y + dad.focusOffset.y + stage.dadCameraOffset.y);
+		}
+		else{
+			return new FlxPoint(stage.staticDadCamera.x + stage.dadCameraOffset.x, stage.staticDadCamera.y + stage.dadCameraOffset.y);
+		}
 	}
 
 	public function camFocusBF(?offsetX:Float = 0, ?offsetY:Float = 0, ?_time:Float = 1.9, ?_ease:Null<flixel.tweens.EaseFunction>){
@@ -2625,7 +2642,12 @@ class PlayState extends MusicBeatState
 	}
 
 	public inline function getBfFocusPostion():FlxPoint{
-		return new FlxPoint(boyfriend.getMidpoint().x + boyfriend.focusOffset.x + stage.bfCameraOffset.x, boyfriend.getMidpoint().y + boyfriend.focusOffset.y + stage.bfCameraOffset.y);
+		if(!stage.useStaticStageCameras){
+			return new FlxPoint(boyfriend.getMidpoint().x + boyfriend.focusOffset.x + stage.bfCameraOffset.x, boyfriend.getMidpoint().y + boyfriend.focusOffset.y + stage.bfCameraOffset.y);
+		}
+		else{
+			return new FlxPoint(stage.staticBfCamera.x + stage.bfCameraOffset.x, stage.staticBfCamera.y + stage.bfCameraOffset.y);
+		}
 	}
 
 	public function camFocusGF(?offsetX:Float = 0, ?offsetY:Float = 0, ?_time:Float = 1.9, ?_ease:Null<flixel.tweens.EaseFunction>){
@@ -2637,7 +2659,12 @@ class PlayState extends MusicBeatState
 	}
 
 	public inline function getGfFocusPosition():FlxPoint{
-		return new FlxPoint(gf.getMidpoint().x + gf.focusOffset.x + stage.gfCameraOffset.x, gf.getMidpoint().y + gf.focusOffset.y + stage.gfCameraOffset.y);
+		if(!stage.useStaticStageCameras){
+			return new FlxPoint(gf.getMidpoint().x + gf.focusOffset.x + stage.gfCameraOffset.x, gf.getMidpoint().y + gf.focusOffset.y + stage.gfCameraOffset.y);
+		}
+		else{
+			return new FlxPoint(stage.staticGfCamera.x + stage.gfCameraOffset.x, stage.staticGfCamera.y + stage.gfCameraOffset.y);
+		}
 	}
 
 	public function camMove(_x:Float, _y:Float, _time:Float, ?_ease:Null<flixel.tweens.EaseFunction>, ?_focus:String = "", ?_onComplete:Null<TweenCallback> = null):Void{
