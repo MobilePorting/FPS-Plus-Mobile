@@ -3,6 +3,7 @@ package;
 import flixel.util.FlxSignal;
 import flixel.FlxSprite;
 import flixel.FlxG;
+import openfl.Assets;
 import flixel.util.FlxColor;
 
 #if hxvlc

@@ -41,6 +41,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		camPause = new FlxCamera();
 		camPause.bgColor.alpha = 0;
+		camPause.filters = [];
 		FlxG.cameras.add(camPause, false);
 		cameras = [camPause];
 		
