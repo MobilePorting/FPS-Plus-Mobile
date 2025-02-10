@@ -27,8 +27,7 @@ class FPSExt extends TextField
 	{
 		super();
 
-		this.x = x;
-		this.y = y;
+		positionFPS(x, y);
 
 		currentFPS = 0;
 		selectable = false;
@@ -67,5 +66,11 @@ class FPSExt extends TextField
 	}
 
 	inline function get_memoryMegas():Float
-		return cast(System.totalMemory, UInt);
+		return #if cpp cpp.vm.Gc.memInfo64(cpp.vm.Gc.MEM_INFO_USAGE) #else cast(System.totalMemory, UInt) #end;
+
+	public inline function positionFPS(X:Float, Y:Float, ?scale:Float = 1){
+		scaleX = scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+		x = #if mobile FlxG.game?.x + #end X;
+		y = #if mobile FlxG.game?.y + #end Y;
+	}
 }
