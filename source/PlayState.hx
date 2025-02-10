@@ -134,6 +134,8 @@ class PlayState extends MusicBeatState
 	public var canChangeVocalVolume:Bool = true;
 	public var songPlaybackSpeed(default, set):Float = 1;
 
+	public var scrollSpeedMultiplier(default, set):Float = 1;
+
 	public var dad:Character;
 	public var gf:Character;
 	public var boyfriend:Character;
@@ -1050,6 +1052,8 @@ class PlayState extends MusicBeatState
 
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 
+		var preloadSplashList:Array<String> = [];
+
 		for (section in noteData)
 		{
 			if(sectionStart && daBeats < sectionStartPoint){
@@ -1087,6 +1091,10 @@ class PlayState extends MusicBeatState
 
 				swagNote.mustPress = gottaHitNote;
 
+				if(swagNote.noteSplashOverride != null && !preloadSplashList.contains(swagNote.noteSplashOverride)){
+					preloadSplashList.push(swagNote.noteSplashOverride);
+				}
+
 				setNoteHitCallback(swagNote);
 				
 				unspawnNotes.push(swagNote);
@@ -1121,6 +1129,10 @@ class PlayState extends MusicBeatState
 		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
+
+		for(splash in preloadSplashList){
+			var preloadSplash = new NoteSplash(-2000, -2000, 0, false, splash);
+		}
 
 		generatedMusic = true;
 	}
@@ -1335,28 +1347,22 @@ class PlayState extends MusicBeatState
 		generateComboPopup(skin);
 	}
 
-	override function openSubState(SubState:FlxSubState) {
+	override function openSubState(SubState:FlxSubState){
 
-		if (paused){
-
-			if (FlxG.sound.music != null){
-				FlxG.sound.music.pause();
-				vocals.pause();
-				if(vocalType == splitVocalTrack){ vocalsOther.pause(); }
-			}
-
-			if (startTimer != null && !startTimer.finished)
+		if(paused){
+			pauseSongPlayback();
+			if (startTimer != null && !startTimer.finished){
 				startTimer.active = false;
+			}
 		}
 
 		super.openSubState(SubState);
 	}
 
-	override function closeSubState() {
+	override function closeSubState(){
 		
-		if (paused){
-
-			if (FlxG.sound.music != null && !startingSong){
+		if(paused){
+			if(!startingSong){
 				resyncVocals();
 			}
 
@@ -1374,6 +1380,7 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void {
 		vocals.pause();
+		//FlxG.sound.music.pause();
 		FlxG.sound.music.play();
 		Conductor.songPosition = FlxG.sound.music.time;
 		if (Conductor.songPosition <= vocals.length){
@@ -1389,6 +1396,22 @@ class PlayState extends MusicBeatState
 			}
 		}
 		//trace("resyncing vocals");
+	}
+
+	public function pauseSongPlayback():Void {
+		if(FlxG.sound.music != null){
+			FlxG.sound.music.pause();
+			vocals.pause();
+			if(vocalType == splitVocalTrack){ vocalsOther.pause(); }
+		}
+	}
+
+	public function resumeSongPlayback():Void {
+		if(FlxG.sound.music != null){
+			FlxG.sound.music.play();
+			vocals.play();
+			if(vocalType == splitVocalTrack){ vocalsOther.play(); }
+		}
 	}
 
 	private var paused:Bool = false;
@@ -1526,10 +1549,9 @@ class PlayState extends MusicBeatState
 		}
 
 		if(healthLerp != health){
-			healthLerp = Utils.fpsAdjsutedLerp(healthLerp, health, 0.7);
-		}
-		if(inRange(healthLerp, 2, 0.001)){
-			healthLerp = 2;
+			//Designed to be roughly equivalent to Utils.fpsAdjustedLerp(healthLerp, health, 0.07, 600),
+			//which is roughly equivalent to Utils.fpsAdjustedLerpOld(healthLerp, health, 0.7) at the performance I got when I implemented with smoother health bar.
+			healthLerp = Utils.fpsAdjustedLerp(healthLerp, health, 0.516, 60, true, 0.0001);
 		}
 
 		//Health Icons
@@ -1561,9 +1583,11 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		FlxG.sound.music.pitch = songPlaybackSpeed;
-		vocals.pitch = songPlaybackSpeed;
-		if(vocalType == splitVocalTrack){ vocalsOther.pitch = songPlaybackSpeed; }
+		if(songPlaybackSpeed != FlxG.sound.music.pitch){
+			FlxG.sound.music.pitch = songPlaybackSpeed;
+			vocals.pitch = songPlaybackSpeed;
+			if(vocalType == splitVocalTrack){ vocalsOther.pitch = songPlaybackSpeed; }
+		}
 
 		if (startingSong){
 			if (startedCountdown){
@@ -1577,7 +1601,7 @@ class PlayState extends MusicBeatState
 			if(previousReportedSongTime != FlxG.sound.music.time){
 				Conductor.songPosition = FlxG.sound.music.time;
 				//Failsafe to make sure that the onComplete actually runs because sometimes it would just not run sometimes when I was doing stuff with the song playback speed.
-				if(inRange(previousReportedSongTime, FlxG.sound.music.length, 1000) && !inRange(Conductor.songPosition, FlxG.sound.music.length, 1000) && !songEnded){ FlxG.sound.music.onComplete(); }
+				if(Utils.inRange(previousReportedSongTime, FlxG.sound.music.length, 1000) && !Utils.inRange(Conductor.songPosition, FlxG.sound.music.length, 1000) && !songEnded){ FlxG.sound.music.onComplete(); }
 				previousReportedSongTime = FlxG.sound.music.time;
 			}
 			else{
@@ -1698,6 +1722,8 @@ class PlayState extends MusicBeatState
 			else{
 				scrollSpeed = FlxMath.roundDecimal(PlayState.SONG.speed, 2);
 			}
+
+			scrollSpeed *= scrollSpeedMultiplier;
 
 			if(Config.downscroll){
 				daNote.y = (targetY + (Conductor.songPosition - daNote.strumTime) * (0.45 * scrollSpeed)) - daNote.yOffset;	
@@ -1962,7 +1988,7 @@ class PlayState extends MusicBeatState
 				health += Scoring.SICK_HEAL_AMOUNT * Config.healthMultiplier * noHealMultiply;
 				songStats.sickCount++;
 				if(Config.noteSplashType >= 1 && Config.noteSplashType < 4){
-					createNoteSplash(note.noteData);
+					createNoteSplash(note);
 				}
 			case "good":
 				health += Scoring.GOOD_HEAL_AMOUNT * Config.healthMultiplier * noHealMultiply;
@@ -1984,8 +2010,8 @@ class PlayState extends MusicBeatState
 
 	}
 
-	private function createNoteSplash(note:Int){
-		var bigSplashy = new NoteSplash(Utils.getGraphicMidpoint(playerStrums.members[note]).x, Utils.getGraphicMidpoint(playerStrums.members[note]).y, note);
+	private function createNoteSplash(note:Note){
+		var bigSplashy = new NoteSplash(Utils.getGraphicMidpoint(playerStrums.members[note.noteData]).x, Utils.getGraphicMidpoint(playerStrums.members[note.noteData]).y, note.noteData, false, note.noteSplashOverride);
 		bigSplashy.cameras = [camHUD];
 		add(bigSplashy);
 	}
@@ -2340,12 +2366,13 @@ class PlayState extends MusicBeatState
 			note.hitCallback(note, boyfriend);
 
 			if (!note.isSustainNote){
-				popUpScore(note, healthAdjustOverride == null);
 				combo++;
+				popUpScore(note, healthAdjustOverride == null);
+				if(gf.hasAnimation("combo" + combo)){ gf.danceLockout = gf.playAnim("combo" + combo); }
 				if(combo > songStats.highestCombo) { songStats.highestCombo = combo; }
 			}
 			else{
-				if(healthAdjustOverride != null){
+				if(healthAdjustOverride == null){
 					health += Scoring.HOLD_HEAL_AMOUNT * Config.healthMultiplier;
 				}
 				songStats.score += Std.int(Scoring.HOLD_SCORE_PER_SECOND * (Conductor.stepCrochet/1000));
@@ -2395,14 +2422,16 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	final RESYNC_WINDOW:Float = 25;
+
 	override function stepHit(){
 
-		if((Math.abs(FlxG.sound.music.time - (Conductor.songPosition)) > (20 * songPlaybackSpeed) || (vocalType != noVocalTrack && Math.abs(vocals.time - (Conductor.songPosition)) > (20 * songPlaybackSpeed))) && FlxG.sound.music.playing){
+		if((Math.abs(FlxG.sound.music.time - (Conductor.songPosition)) > (RESYNC_WINDOW * songPlaybackSpeed) || (vocalType != noVocalTrack && Math.abs(vocals.time - (Conductor.songPosition)) > (RESYNC_WINDOW * songPlaybackSpeed))) && FlxG.sound.music.playing){
 			resyncVocals();
 		}
 
 		if(vocalType == splitVocalTrack){
-			if((Math.abs(vocalsOther.time - (Conductor.songPosition)) > (20 * songPlaybackSpeed)) && FlxG.sound.music.playing){
+			if((Math.abs(vocalsOther.time - (Conductor.songPosition)) > (RESYNC_WINDOW * songPlaybackSpeed)) && FlxG.sound.music.playing){
 				resyncVocals();
 			}
 		}
@@ -2563,7 +2592,7 @@ class PlayState extends MusicBeatState
 	//Moved to a separate function and out of note check so the hit callback function will be run every note hit and not just when the animation is supposed to play.
 	public inline static function characterShouldPlayAnimation(note:Note, character:Character):Bool{
 		return (Character.LOOP_ANIM_ON_HOLD ? (note.isSustainNote ? (Character.HOLD_LOOP_WAIT ? (!character.isSinging || (character.timeInCurrentAnimation >= (3/24) || character.curAnimFinished())) : true) : true) : !note.isSustainNote)
-			&& (Character.PREVENT_SHORT_SING ? !inRange(character.lastSingTime, Conductor.songPosition, Character.SHORT_SING_TOLERENCE) : true);
+			&& (Character.PREVENT_SHORT_SING ? !Utils.inRange(character.lastSingTime, Conductor.songPosition, Character.SHORT_SING_TOLERENCE) : true);
 	}
 
 	var bfOnTop:Bool = true;
@@ -2850,10 +2879,6 @@ class PlayState extends MusicBeatState
 		combo = 0;
 	}
 
-	static function inRange(a:Float, b:Float, tolerance:Float):Bool{
-		return (a <= b + tolerance && a >= b - tolerance);
-	}
-
 	function sortNotes(){
 		if (generatedMusic){
 			notes.sort(noteSortThing, FlxSort.DESCENDING);
@@ -2915,6 +2940,11 @@ class PlayState extends MusicBeatState
 		for(script in scripts){ script.exit(); }
 	}
 
+	override function onFocus(){
+		Utils.gc();
+		super.onFocus();
+	}
+
 	/* 
 	* This is done because changing the playback speed causes the song time to update slower essentially
 	* causing the hit window to change with the playback speed. This mitigates that.
@@ -2922,6 +2952,21 @@ class PlayState extends MusicBeatState
 	private function set_songPlaybackSpeed(value:Float):Float{
 		songPlaybackSpeed = value;
 		Conductor.recalculateHitZones(value);
+		return value;
+	}
+	
+	private function set_scrollSpeedMultiplier(value:Float):Float{
+		scrollSpeedMultiplier = value;
+		for(note in unspawnNotes){
+			if(note.isSustainNote && !note.isSustainEnd){
+				note.updateHoldLength(value);
+			}
+		}
+		notes.forEachAlive(function(note){
+			if(note.isSustainNote && !note.isSustainEnd){
+				note.updateHoldLength(value);
+			}
+		});
 		return value;
 	}
 

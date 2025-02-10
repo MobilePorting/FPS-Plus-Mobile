@@ -120,6 +120,8 @@ class PauseSubState extends MusicBeatSubstate
 		addTouchPadCamera();
 
 		super.create();
+
+		Utils.gc();
 	}
 
 	override function update(elapsed:Float){

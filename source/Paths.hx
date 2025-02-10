@@ -22,23 +22,22 @@ class Paths
 
 	}
 
-	inline static public function image(key:String, forceLoadFromDisk:Bool = false):Dynamic{
+	inline static public function image(key:String, forcePath:Bool = false):Dynamic{
 
 		var data:String = file(key, "images", "png");
 
-		if(ImageCache.exists(data) && !forceLoadFromDisk){
+		if(forcePath) { return data; }
+
+		if(ImageCache.exists(data)){
 			return ImageCache.get(data);
 		}
-		else if(!forceLoadFromDisk){
+		else{
 			if(ImageCache.localCache.exists(data)){
 				return ImageCache.localCache.get(data);
 			}
 			else{
 				return ImageCache.addLocal(data);
 			}
-		}
-		else{
-			return data;
 		}
 	}
 
@@ -87,6 +86,23 @@ class Paths
 
 	inline static public function getTextureAtlas(key:String){
 		return 'assets/images/$key';
+	}
+
+	//Stolen from Psych Engine hehehhehe
+	inline static public function getMultipleSparrowAtlas(keys:Array<String>){
+		var parentFrames:FlxAtlasFrames = getSparrowAtlas(keys[0]);
+		if(keys.length > 1){
+			var original:FlxAtlasFrames = parentFrames;
+			parentFrames = new FlxAtlasFrames(parentFrames.parent);
+			parentFrames.addAtlas(original, true);
+			for (i in 1...keys.length){
+				var extraFrames:FlxAtlasFrames = getSparrowAtlas(keys[i]);
+				if(extraFrames != null){
+					parentFrames.addAtlas(extraFrames, true);
+				}
+			}
+		}
+		return parentFrames;
 	}
 
 	inline static public function video(key:String){

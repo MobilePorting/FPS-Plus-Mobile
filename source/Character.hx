@@ -394,6 +394,9 @@ class Character extends FlxSpriteGroup
 			case sparrow:
 				character = new FlxSprite();
 				character.frames = Paths.getSparrowAtlas(characterInfo.info.spritePath);
+			case multiSparrow:
+				character = new FlxSprite();
+				character.frames = Paths.getMultipleSparrowAtlas(characterInfo.info.spritePaths);
 			case packer:
 				character = new FlxSprite();
 				character.frames = Paths.getPackerAtlas(characterInfo.info.spritePath);
@@ -615,6 +618,10 @@ class Character extends FlxSpriteGroup
 				originalAnimOffsets.set("singLEFTmiss", oldMissOffsetOriginal);
 			}
 		}
+	}
+
+	public function hasAnimation(_name:String):Bool{
+		return animOffsets.exists(_name);
 	}
 
 
