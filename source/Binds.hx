@@ -378,24 +378,6 @@ class Binds
 		return r;
 	}
 
-	inline static public function justReleasedControllerOnly(input:String){
-		var r:Bool = false;
-		for(x in binds.get(input).controllerBinds){
-			r = FlxG.gamepads.anyJustReleased(x);
-			if(r){ break; }
-		}
-		return r;
-	}
-
-	 inline static public function justPressedControllerOnly(input:String){
-        var r:Bool = false;
-        for(x in binds.get(input).controllerBinds){
-            r = FlxG.gamepads.anyJustPressed(x);
-            if(r){ break; }
-        }
-        return r;
-    }
-
     inline static public function justReleasedControllerOnly(input:String){
         var r:Bool = false;
         for(x in binds.get(input).controllerBinds){
