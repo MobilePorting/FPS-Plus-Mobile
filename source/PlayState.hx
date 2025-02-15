@@ -1053,6 +1053,7 @@ class PlayState extends MusicBeatState
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 
 		var preloadSplashList:Array<String> = [];
+		var preloadCoverList:Array<String> = [];
 
 		for (section in noteData)
 		{
@@ -1094,6 +1095,10 @@ class PlayState extends MusicBeatState
 				if(swagNote.noteSplashOverride != null && !preloadSplashList.contains(swagNote.noteSplashOverride)){
 					preloadSplashList.push(swagNote.noteSplashOverride);
 				}
+				
+				if(swagNote.holdCoverOverride != null && !preloadCoverList.contains(swagNote.holdCoverOverride)){
+					preloadCoverList.push(swagNote.holdCoverOverride);
+				}
 
 				setNoteHitCallback(swagNote);
 				
@@ -1130,9 +1135,23 @@ class PlayState extends MusicBeatState
 
 		unspawnNotes.sort(sortByShit);
 
-		for(splash in preloadSplashList){
-			var preloadSplash = new NoteSplash(-2000, -2000, 0, false, splash);
+		if(preloadSplashList.length > 0){
+			for(splash in preloadSplashList){
+				var preloadSplash = new NoteSplash(-2000, -2000, 0, false, splash);
+			}
 		}
+		
+		if(preloadCoverList.length > 0){
+			var preloadCover = new NoteHoldCover(null, 0, preloadSplashList[0]);
+			for(cover in preloadCoverList){
+				if(cover != preloadCover.coverSkin){
+					preloadCover.coverSkin = cover;
+					preloadCover.loadSkin();
+				}
+			}
+			preloadCover.destroy();
+		}
+		
 
 		generatedMusic = true;
 	}
@@ -1200,6 +1219,8 @@ class PlayState extends MusicBeatState
 			babyArrow.antialiasing = hudNoteSkinInfo.antialiasing;
 
 			var noteCover:NoteHoldCover = new NoteHoldCover(babyArrow, i, hudNoteSkinInfo.coverPath);
+			noteCover.ID = i;
+			NoteHoldCover.defaultSkin = hudNoteSkinInfo.coverPath;
 
 			babyArrow.scrollFactor.set();
 
@@ -1209,13 +1230,13 @@ class PlayState extends MusicBeatState
 
 			if (player == 1) {
 				playerStrums.add(babyArrow);
-				babyArrow.animation.finishCallback = function(name:String){
+				babyArrow.animation.onFinish.add(function(name:String){
 					if(autoplay){
 						if(name == "confirm"){
 							babyArrow.animation.play('static', true);
 						}
 					}
-				}
+				});
 
 				if(!Config.centeredNotes && !forceCenteredNotes){
 					babyArrow.x += ((FlxG.width / 2));
@@ -1229,11 +1250,11 @@ class PlayState extends MusicBeatState
 			}
 			else {
 				enemyStrums.add(babyArrow);
-				babyArrow.animation.finishCallback = function(name:String){
+				babyArrow.animation.onFinish.add(function(name:String){
 					if(name == "confirm"){
 						babyArrow.animation.play('static', true);
 					}
-				}
+				});
 
 				if(Config.centeredNotes || forceCenteredNotes){
 					babyArrow.x -= 1280;
@@ -1248,7 +1269,7 @@ class PlayState extends MusicBeatState
 				tweenManager.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
 
-			babyArrow.animation.callback = function(name:String, frame:Int, index:Int) {
+			babyArrow.animation.onFrameChange.add(function(name:String, frame:Int, index:Int) {
 				if(frame == 0){
 					babyArrow.centerOffsets();
 					switch(name){
@@ -1263,7 +1284,7 @@ class PlayState extends MusicBeatState
 							babyArrow.offset.y += hudNoteSkinInfo.arrowInfo[i].confrimedInfo.data.offset[1];
 					}
 				}
-			}
+			});
 
 			babyArrow.animation.play('static');
 		}
@@ -1819,14 +1840,15 @@ class PlayState extends MusicBeatState
 				}
 				else{
 					if(daNote.prevNote == null || !daNote.prevNote.isSustainNote){
-						enemyCovers.forEach(function(cover:NoteHoldCover) {
+						/*enemyCovers.forEach(function(cover:NoteHoldCover) {
 							if (Math.abs(daNote.noteData) == cover.noteDirection) {
 								cover.start();
 							}
-						});
+						});*/
+						startHoldCover(daNote);
 					}
 					else if(daNote.isSustainEnd){
-						enemyCovers.forEach(function(cover:NoteHoldCover) {
+						enemyCovers.forEachAlive(function(cover:NoteHoldCover) {
 							if (Math.abs(daNote.noteData) == cover.noteDirection) {
 								cover.end(false);
 							}
@@ -2014,6 +2036,33 @@ class PlayState extends MusicBeatState
 		var bigSplashy = new NoteSplash(Utils.getGraphicMidpoint(playerStrums.members[note.noteData]).x, Utils.getGraphicMidpoint(playerStrums.members[note.noteData]).y, note.noteData, false, note.noteSplashOverride);
 		bigSplashy.cameras = [camHUD];
 		add(bigSplashy);
+	}
+
+	private function startHoldCover(note:Note){
+
+		if(note.mustPress){
+			playerCovers.forEachAlive(function(cover:NoteHoldCover){
+				if(cover.ID == note.noteData){
+					if((note.holdCoverOverride == null && cover.coverSkin != NoteHoldCover.defaultSkin) || (note.holdCoverOverride != null && cover.coverSkin != note.holdCoverOverride)){
+						cover.coverSkin = note.holdCoverOverride == null ? NoteHoldCover.defaultSkin : note.holdCoverOverride;
+						cover.loadSkin();
+					}
+					cover.start();
+				}
+			});
+		}
+		else{
+			enemyCovers.forEachAlive(function(cover:NoteHoldCover){
+				if(cover.ID == note.noteData){
+					if((note.holdCoverOverride == null && cover.coverSkin != NoteHoldCover.defaultSkin) || (note.holdCoverOverride != null && cover.coverSkin != note.holdCoverOverride)){
+						cover.coverSkin = note.holdCoverOverride == null ? NoteHoldCover.defaultSkin : note.holdCoverOverride;
+						cover.loadSkin();
+					}
+					cover.start();
+				}
+			});
+		}
+
 	}
 
 	private function keyCheck():Void{
@@ -2354,11 +2403,12 @@ class PlayState extends MusicBeatState
 			if(note.isFake){
 				note.wasGoodHit = true;
 				if(note.prevNote == null || !note.prevNote.isSustainNote){
-					playerCovers.forEach(function(cover:NoteHoldCover) {
+					/*playerCovers.forEach(function(cover:NoteHoldCover) {
 						if (Math.abs(note.noteData) == cover.noteDirection) {
 							cover.start();
 						}
-					});
+					});*/
+					startHoldCover(note);
 				}
 				return;
 			}
@@ -2404,14 +2454,10 @@ class PlayState extends MusicBeatState
 			}
 			else{
 				if(note.prevNote == null || !note.prevNote.isSustainNote){
-					playerCovers.forEach(function(cover:NoteHoldCover) {
-						if (Math.abs(note.noteData) == cover.noteDirection) {
-							cover.start();
-						}
-					});
+					startHoldCover(note);
 				}
 				else if(note.isSustainEnd){
-					playerCovers.forEach(function(cover:NoteHoldCover) {
+					playerCovers.forEachAlive(function(cover:NoteHoldCover) {
 						if (Math.abs(note.noteData) == cover.noteDirection) {
 							cover.end(true);
 						}

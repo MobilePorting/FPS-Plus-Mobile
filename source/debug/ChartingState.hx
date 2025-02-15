@@ -1,5 +1,6 @@
 package debug;
 
+import openfl.display.Sprite;
 import caching.*;
 import stages.ScriptableStage;
 import note.NoteType;
@@ -63,7 +64,7 @@ using StringTools;
 class ChartingState extends MusicBeatState
 {
 
-	public static var screenshotBitmap:Bitmap = null;
+	public static var screenshotBitmap:BitmapData = null;
 	public static var startSection:Int = 0;
 
 	var _file:FileReference;
@@ -197,9 +198,9 @@ class ChartingState extends MusicBeatState
 		lilBf.animation.add("3", [12, 13, 14], 12, false);
 		lilBf.animation.add("yeah", [17, 20, 23], 12, false);
 		lilBf.animation.play("idle");
-		lilBf.animation.finishCallback = function(name:String){
+		lilBf.animation.onFinish.add(function(name:String){
 			lilBf.animation.play(name, true, false, lilBf.animation.getByName(name).numFrames - 2);
-		}
+		});
 		lilBf.scrollFactor.set();
 		add(lilBf);
 
@@ -210,9 +211,9 @@ class ChartingState extends MusicBeatState
 		lilOpp.animation.add("2", [9, 10, 11], 12, false);
 		lilOpp.animation.add("3", [12, 13, 14], 12, false);
 		lilOpp.animation.play("idle");
-		lilOpp.animation.finishCallback = function(name:String){
+		lilOpp.animation.onFinish.add(function(name:String){
 			lilOpp.animation.play(name, true, false, lilOpp.animation.getByName(name).numFrames - 2);
-		}
+		});
 		lilOpp.scrollFactor.set();
 		add(lilOpp);
 
@@ -263,8 +264,8 @@ class ChartingState extends MusicBeatState
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);
 
-		leftIcon.defualtIconScale = 0.5;
-		rightIcon.defualtIconScale = 0.5;
+		leftIcon.defualtIconScale = leftIcon.defualtIconScale * 0.5;
+		rightIcon.defualtIconScale = rightIcon.defualtIconScale * 0.5;
 
 		leftIcon.setPosition((gridBG.width / 6) - (leftIcon.width / 4), -75);
 		rightIcon.setPosition((gridBG.width / 6) * 3 - (rightIcon.width / 4), -75);
@@ -384,6 +385,7 @@ class ChartingState extends MusicBeatState
 		updateHeads(true);
 
 		FlxG.camera.follow(strumLine);
+		FlxG.camera.flashSprite.cacheAsBitmap = true;
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
@@ -1349,13 +1351,13 @@ class ChartingState extends MusicBeatState
 			SaveManager.chartAutosave(_song.song.replace(" ", "-"));
 		}
 
-		if(Startup.hasEe2 && lilBuddiesBox.checked){
+		if(Startup.hasEe2 && lilBuddiesBox.checked && false){ //temp disable cuz its broken and i dont wanna try to fix it right now
 			if(!ee2Check && 
 				!FlxG.sound.music.playing &&
-				FlxG.mouse.screenX >= lilBf.x &&
-				FlxG.mouse.screenX <= lilBf.x + lilBf.width &&
-				FlxG.mouse.screenY >= lilBf.y &&
-				FlxG.mouse.screenY <= lilBf.y + lilBf.height &&
+				FlxG.mouse.viewX >= lilBf.x &&
+				FlxG.mouse.viewX <= lilBf.x + lilBf.width &&
+				FlxG.mouse.viewY >= lilBf.y &&
+				FlxG.mouse.viewY <= lilBf.y + lilBf.height &&
 				FlxG.mouse.justPressed){
 	
 					autosaveSong();
@@ -1368,7 +1370,9 @@ class ChartingState extends MusicBeatState
 					Config.reload();
 	
 					PlayState.fceForLilBuddies = true;
-					screenshotBitmap = FlxScreenGrab.grab(null, false, true);
+					screenshotBitmap = FlxG.camera.buffer.clone();
+
+					//FlxScreenGrab.grab(null, false, true);
 	
 					customTransOut = new InstantTransition();
 	
@@ -1385,20 +1389,20 @@ class ChartingState extends MusicBeatState
 					//lilBf.animation.play("yeah");
 			}
 			else if(!FlxG.sound.music.playing &&
-				FlxG.mouse.screenX >= lilBf.x &&
-				FlxG.mouse.screenX <= lilBf.x + lilBf.width &&
-				FlxG.mouse.screenY >= lilBf.y &&
-				FlxG.mouse.screenY <= lilBf.y + lilBf.height &&
+				FlxG.mouse.viewX >= lilBf.x &&
+				FlxG.mouse.viewX <= lilBf.x + lilBf.width &&
+				FlxG.mouse.viewY >= lilBf.y &&
+				FlxG.mouse.viewY <= lilBf.y + lilBf.height &&
 				FlxG.mouse.justPressed){
 					lilBf.animation.play("yeah");
 			}
 		}
 		else if(lilBuddiesBox.checked){
 			if(!FlxG.sound.music.playing &&
-				FlxG.mouse.screenX >= lilBf.x &&
-				FlxG.mouse.screenX <= lilBf.x + lilBf.width &&
-				FlxG.mouse.screenY >= lilBf.y &&
-				FlxG.mouse.screenY <= lilBf.y + lilBf.height &&
+				FlxG.mouse.viewX >= lilBf.x &&
+				FlxG.mouse.viewX <= lilBf.x + lilBf.width &&
+				FlxG.mouse.viewY >= lilBf.y &&
+				FlxG.mouse.viewY <= lilBf.y + lilBf.height &&
 				FlxG.mouse.justPressed){
 					lilBf.animation.play("yeah");
 			}
@@ -1588,6 +1592,12 @@ class ChartingState extends MusicBeatState
 
 			leftIcon.setIconCharacter(leftChar.info.iconName);
 			rightIcon.setIconCharacter(rightChar.info.iconName);
+
+			leftIcon.defualtIconScale = leftIcon.defualtIconScale * 0.5;
+			rightIcon.defualtIconScale = rightIcon.defualtIconScale * 0.5;
+
+			leftIcon.tweenToDefaultScale(0, null);
+			rightIcon.tweenToDefaultScale(0, null);
 		}
 
 		if (_song.notes[curSection].mustHitSection){

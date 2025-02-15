@@ -26,7 +26,7 @@ import mobile.scalemodes.MobileScaleMode;
 
 using StringTools;
 
-class Startup extends FlxState
+class Startup extends FlxUIStateExt
 {
 
 	var nextState:FlxState = new TitleVideo();
@@ -222,7 +222,8 @@ class Startup extends FlxState
 		if(splash.animation.curAnim.finished && splash.animation.curAnim.name == "end"){
 			ImageCache.localCache.clear();
 			Utils.gc();
-			FlxG.switchState(nextState);  
+			customTransOut = new FadeOut(0.3);
+			switchState(nextState);  
 		}
 
 		if(songsCached && charactersCached && graphicsCached && splash.animation.curAnim.finished && !(splash.animation.curAnim.name == "end")){
@@ -364,7 +365,8 @@ class Startup extends FlxState
 		#if desktop
 		FlxG.sound.play(Paths.sound('cancelMenu'));
 		CacheSettings.noFunMode = true;
-		FlxG.switchState(new CacheSettings());
+		customTransOut = new FadeOut(0.3);
+		switchState(new CacheSettings());
 		CacheSettings.returnLoc = new Startup();
 		#end
 	}

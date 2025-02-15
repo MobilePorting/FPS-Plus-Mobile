@@ -278,6 +278,8 @@ class PolymodHandler
 		Polymod.addDefaultImport(objects.ScriptableSprite.ScriptedSprite);
 		Polymod.addDefaultImport(objects.ScriptableAtlasSprite.ScriptedAtlasSprite);
 		Polymod.addDefaultImport(objects.ScriptableSpriteGroup.ScriptedSpriteGroup);
+
+		Polymod.addDefaultImport(scripts.ScriptedState);
 		
 		//Alias
 		Polymod.addImportAlias("lime.utils.Assets", Assets);
@@ -330,6 +332,9 @@ class PolymodHandler
 		// `openfl.desktop.NativeProcess`
 		// Can load native processes on the host operating system.
 		Polymod.blacklistImport("openfl.desktop.NativeProcess");
+
+		//Restricted stuff from FPS Plus
+		Polymod.blacklistImport("restricted.RestrictedUtils");
 	}
 
 	static function buildFrameworkParams():polymod.Polymod.FrameworkParams{
