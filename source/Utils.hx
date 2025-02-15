@@ -28,9 +28,11 @@ import yaml.util.ObjectMap;
 using StringTools;
 using Lambda;
 
+#if cpp
+@:cppFileCode('#include <thread>')
+#end
 class Utils
 {
-
 	public static final resultsTextCharacters = "AaBbCcDdEeFfGgHhiIJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz:1234567890.-'[]()";
 
 	public static function showPopUp(message:String, title:String):Void
@@ -41,6 +43,16 @@ class Utils
 		FlxG.stage.window.alert(message, title);
 		//#end
 	}
+
+	#if cpp
+    @:functionCode('
+        return std::thread::hardware_concurrency();
+    ')
+	#end
+    public static function getCPUThreadsCount():Int
+    {
+        return 1;
+    }
 
 	public static function getTextInLines(path:String):Array<String>{
 		var daList:Array<String> = getText(path).trim().split('\n');
