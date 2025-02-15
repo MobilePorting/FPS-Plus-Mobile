@@ -29,6 +29,7 @@ import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import openfl.utils.ByteArray;
 import haxe.io.Path;
 import flixel.ui.FlxBar;
