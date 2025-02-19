@@ -165,6 +165,9 @@
 		<haxedef name="HXCPP_CATCH_SEGV" />
 	</section>
 
+	<haxedef name="HXVLC_NO_SHARE_DIRECTORY" if="desktop || mobile" />
+	<haxedef name="HXVLC_EXPERIMENTAL_WINDOWSARM" if="windows HXCPP_ARM64" />
+
 	<!--Disable deprecated warnings-->
 	<haxedef name='no-deprecation-warnings' />
 
