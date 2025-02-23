@@ -66,12 +66,12 @@ class MobileUtil
 
 		try
 		{
-			if (!FileSystem.exists(StorageUtil.getStorageDirectory()))
-				FileSystem.createDirectory(StorageUtil.getStorageDirectory());
+			if (!FileSystem.exists(MobileUtil.getStorageDirectory()))
+				FileSystem.createDirectory(MobileUtil.getStorageDirectory());
 		}
 		catch (e:Dynamic)
 		{
-			Utils.showPopUp('Please create directory to\n' + StorageUtil.getStorageDirectory(true) + '\nPress OK to close the game', 'Error!');
+			Utils.showPopUp('Please create directory to\n' + MobileUtil.getStorageDirectory() + '\nPress OK to close the game', 'Error!');
 			lime.system.System.exit(1);
 		}
 	}
