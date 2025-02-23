@@ -182,6 +182,9 @@
 	<config:ios category_type="public.app-category.music-games" />
 	<config:mac category_type="public.app-category.music-games" />
 
+	<!-- Allow Access to Engine Files in mobile -->
+	<haxedef name="SHARE_MOBILE_FILES" if="mobile" />
+
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!-- Disable trace() calls in release builds to bump up performance. -->

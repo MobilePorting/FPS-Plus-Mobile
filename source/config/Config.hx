@@ -35,9 +35,6 @@ class Config
 	#end
 	public static var mobileCAlpha:Float;
 	public static var hitboxType:String;
-	#if android
-	public static var storageType:String;
-	#end
 
 	public static var ee1:Bool;
 	public static var ee2:Bool;
@@ -77,9 +74,6 @@ class Config
 		#end
 		FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
 		FlxG.save.data.hitboxType = 'No Gradient';
-		#if android
-		FlxG.save.data.storageType = 'EXTERNAL_DATA';
-		#end
 
 		reload();
 
@@ -119,9 +113,6 @@ class Config
 		#end
 		mobileCAlpha = FlxG.save.data.mobileCAlpha;
 		hitboxType = FlxG.save.data.hitboxType;
-		#if android
-		storageType = FlxG.save.data.storageType;
-		#end
 
 		ee1 = FlxG.save.data.ee1;
 		ee2 = FlxG.save.data.ee2;
@@ -184,7 +175,7 @@ class Config
 
 	}
 
-	public static function mobileWrite(#if mobile allowScreenTimeoutW:Bool, wideScreenW:Bool, #end mobileCAlphaW:Float, hitboxTypeW:String #if android , storageTypeW:String #end):Void
+	public static function mobileWrite(#if mobile allowScreenTimeoutW:Bool, wideScreenW:Bool, #end mobileCAlphaW:Float, hitboxTypeW:String):Void
 	{
 		#if mobile
 		FlxG.save.data.allowScreenTimeout = allowScreenTimeoutW;
@@ -192,9 +183,6 @@ class Config
 		#end
 		FlxG.save.data.mobileCAlpha = mobileCAlphaW;
 		FlxG.save.data.hitboxType = hitboxTypeW;
-		#if android
-		FlxG.save.data.storageType = storageTypeW;
-		#end
 
 		SaveManager.flush();
 		
@@ -261,10 +249,6 @@ class Config
 			FlxG.save.data.mobileCAlpha = (FlxG.onMobile) ? 0.6 : 0;
 		if(FlxG.save.data.hitboxType == null)
 			FlxG.save.data.hitboxType = 'No Gradient';
-		#if android
-		if(FlxG.save.data.storageType == null)
-			FlxG.save.data.storageType = 'EXTERNAL_DATA';
-		#end
 
 		if(FlxG.save.data.ee1 == null)
 			FlxG.save.data.ee1 = false;

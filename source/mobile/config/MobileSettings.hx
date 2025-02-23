@@ -61,15 +61,10 @@ class MobileSettings extends FlxUIStateExt
 		"Allow Phone Screensaver",
 		"Wide Screen Mode",
 		#end
-		"Hitbox Design" #if android ,
-		"Storage Type" #end
+		"Hitbox Design"
 	];
 	var onOff:Array<String> = ["off", "on"];
 	var hintOptions:Array<String> = ["No Gradient", "No Gradient (Old)", "Gradient", "Hidden"];
-	#if android
-	var storageTypes:Array<String> = ["EXTERNAL_DATA", "EXTERNAL_OBB", "EXTERNAL_MEDIA", "EXTERNAL"];
-	final lastStorageType:String = Config.storageType;
-	#end
 	var curSelected:Int = 0;
 
 	var state:String = "select";
@@ -119,8 +114,7 @@ class MobileSettings extends FlxUIStateExt
 			Config.allowScreenTimeout,
 			Config.wideScreen,
 			#end
-			Config.hitboxType #if android ,
-			Config.storageType #end
+			Config.hitboxType
 		];
 
 		startingSettings = [
@@ -129,8 +123,7 @@ class MobileSettings extends FlxUIStateExt
 			Config.allowScreenTimeout,
 			Config.wideScreen,
 			#end
-			Config.hitboxType #if android ,
-			Config.storageType #end
+			Config.hitboxType
 		];
 
 		textUpdate();
@@ -181,11 +174,6 @@ class MobileSettings extends FlxUIStateExt
 						case #if mobile 3 #else 1 #end:
 							var currentIndex = hintOptions.indexOf(Config.hitboxType);
 							Config.hitboxType = hintOptions[(currentIndex + direction + hintOptions.length) % hintOptions.length];
-						#if android
-						case 4:
-							var currentIndex = storageTypes.indexOf(Config.storageType);
-							Config.storageType = storageTypes[(currentIndex + direction + storageTypes.length) % storageTypes.length];
-						#end
 					}
 				}
 
@@ -232,10 +220,6 @@ class MobileSettings extends FlxUIStateExt
 				#end
 				case #if mobile 3 #else 1 #end:
 					keyTextDisplay.text += names[i] + ": " + Config.hitboxType + "\n";
-				#if android
-				case 4:
-					keyTextDisplay.text += names[i] + ": " + Config.storageType + "\n";
-				#end
 			}
 
 			var sectionEnd = keyTextDisplay.text.length - 1;
@@ -257,20 +241,9 @@ class MobileSettings extends FlxUIStateExt
 		settings[2] = Config.wideScreen;
 		#end
 		settings[3] = Config.hitboxType;
-		#if android
-		settings[4] = Config.storageType;
-		#end
 
-		Config.mobileWrite(#if mobile settings[1], settings[2], #end settings[0], settings[3] #if android , settings[4] #end);
+		Config.mobileWrite(#if mobile settings[1], settings[2], #end settings[0], settings[3]);
 
-		#if android
-		if (Config.storageType != lastStorageType)
-		{
-			onStorageChange();
-			Utils.showPopUp('Storage Type has been changed and you need restart the game!!\nPress OK to close the game.', 'Notice!');
-			lime.system.System.exit(0);
-		}
-		#end
 	}
 
 	function quit()
@@ -303,20 +276,4 @@ class MobileSettings extends FlxUIStateExt
 
 		warning.text = warningText[curSelected];
 	}
-
-	#if android
-	function onStorageChange():Void
-	{
-		sys.io.File.saveContent(lime.system.System.applicationStorageDirectory + 'storagetype.txt', Config.storageType);
-
-		var lastStoragePath:String = mobile.MobileUtil.StorageType.fromStrForce(lastStorageType) + '/';
-
-		try
-		{
-			Sys.command('rm', ['-rf', lastStoragePath]);
-		}
-		catch (e:haxe.Exception)
-			trace('Failed to remove last directory. (${e.message})');
-	}
-	#end
 }
