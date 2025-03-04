@@ -120,13 +120,6 @@
       "dir": null,
       "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
       "url": "https://github.com/fponticelli/thx.semver"
-    },
-    {
-      "name": "extension-androidtools",
-      "type": "git",
-      "dir": null,
-      "ref": "main",
-      "url": "https://github.com/MAJigsaw77/extension-androidtools/"
     }
   ]
 }
