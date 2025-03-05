@@ -65,7 +65,7 @@
       "type": "git",
       "dir": null,
       "ref": "master",
-      "url": "https://github.com/mcagabe19-stuff/hxcpp.git"
+      "url": "https://github.com/MobilePorting/hxcpp.git"
     },
     {
       "name": "hxp",
@@ -91,14 +91,14 @@
       "type": "git",
       "dir": null,
       "ref": "main",
-      "url": "https://github.com/mcagabe19-stuff/lime.git"
+      "url": "https://github.com/MobilePorting/lime.git"
     },
     {
       "name": "openfl",
       "type": "git",
       "dir": null,
       "ref": "9.4.1",
-      "url": "https://github.com/mcagabe19-stuff/openfl.git"
+      "url": "https://github.com/MobilePorting/openfl.git"
     },
     {
       "name": "polymod",
